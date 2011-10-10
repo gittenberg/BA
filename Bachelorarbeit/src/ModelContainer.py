@@ -8,12 +8,12 @@ STGG = imp.load_source("STGG", os.path.join("STGgenerator.py"))
 LFG = imp.load_source("LFG", os.path.join("LanguageFileGenerator.py"))
 PSC = imp.load_source("PSC", os.path.join("ParameterSetContainer.py"))
 TS = imp.load_source("TS", os.path.join("TransitionSystem.py"))
-CPS = imp.load_source("CPS", os.path.join(os.pardir,os.pardir, "Modul_ModelContainer","2_Source","ComputeParameterSets.py"))
-LPS = imp.load_source("LPS", os.path.join(os.pardir,os.pardir, "Modul_ModelContainer","2_Source","LocalParameterSet.py"))
-AL = imp.load_source("AL", os.path.join(os.pardir,os.pardir, "Modul_AttractorLogic","2_Source","attractor_logic.py"))
-TS = imp.load_source("TS", os.path.join(os.pardir,os.pardir, "Modul_TransitionSystemContainer","2_Source","TransitionSystem.py"))
-IGC = imp.load_source("IGC", os.path.join(os.pardir,os.pardir, "Modul_ModelContainer","2_Source","inGraphChecker.py"))
-ConP = imp.load_source("MP", os.path.join(os.pardir,os.pardir, "Modul_TimeSeries","2_Source","ContextPreprocessor.py"))
+CPS = imp.load_source("CPS", os.path.join("ComputeParameterSets.py"))
+LPS = imp.load_source("LPS", os.path.join("LocalParameterSet.py"))
+AL = imp.load_source("AL", os.path.join("attractor_logic.py"))
+TS = imp.load_source("TS", os.path.join("TransitionSystem.py"))
+IGC = imp.load_source("IGC", os.path.join("inGraphChecker.py"))
+#ConP = imp.load_source("MP", os.path.join("ContextPreprocessor.py"))
 
 import subprocess as SP
 import networkx as nx #@UnresolvedImport
