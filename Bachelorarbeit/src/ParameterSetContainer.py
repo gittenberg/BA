@@ -499,7 +499,7 @@ class ParameterSetContainer():
     def analyze_strictestEdgeLabels(self, (predecessor, varname)): 
         '''To be used after model checking: checks whether filtered _parameterSets
         allow for stricter definition of edgeLabels from predecessor to varname.
-        Labels: +, -, +-, +obs, -obs, free, not-, not+. (obs is never reached.)
+        Labels: +, -, +-, obs+, obs-, free, not-, not+. (obs is never reached.)
         Pseudo code:
         for every wiring:
             for every context of varname:
