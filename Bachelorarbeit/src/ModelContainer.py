@@ -9,7 +9,7 @@ LFG = imp.load_source("LFG", os.path.join("LanguageFileGenerator.py"))
 PSC = imp.load_source("PSC", os.path.join("ParameterSetContainer.py"))
 TS = imp.load_source("TS", os.path.join("TransitionSystem.py"))
 CPS = imp.load_source("CPS", os.path.join("ComputeParameterSets.py"))
-LPS = imp.load_source("LPS", os.path.join("LocalParameterSet.py"))
+#LPS = imp.load_source("LPS", os.path.join("LocalParameterSet.py")) #TODO: experimentally commented out
 AL = imp.load_source("AL", os.path.join("attractor_logic.py"))
 TS = imp.load_source("TS", os.path.join("TransitionSystem.py"))
 IGC = imp.load_source("IGC", os.path.join("inGraphChecker.py"))
@@ -373,7 +373,7 @@ class ModelContainer():
             return self._thresholds[tuple(args[0])]
 
     def set_edgeLabels(self, edgeLabels):
-        '''Labels: +,-,+-,observable, +obs, -obs, free, not-, not+.'''
+        '''Labels: +,-,+-,observable, obs+, obs-, free, not-, not+.'''
         self._edgeLabels = edgeLabels.copy()
 
     def set_valueConstraints(self, valueConstraints):

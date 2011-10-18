@@ -7,7 +7,7 @@ import copy
 
 class ParameterSetContainer():
     def __init__(self, localSets, mc=None):
-        self._MC = mc
+        self._MC = mc # this is only used for messaging - no dependency this way it seems
         
         #used and changed by parameterset management functions (reject etc.):
         self._localParameterSets = localSets
@@ -669,10 +669,6 @@ class ParameterSetContainer():
         '''
         return self._conflictsGraph         
 
-    def uniquify(self, selflist):
-        ''' auxiliary function which removes duplicate elements from selflist '''
-        return list(set(selflist))
-    
     def get_parameterValues(self):
         return self._parameterValues
     
