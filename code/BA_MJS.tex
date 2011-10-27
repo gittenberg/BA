@@ -1,5 +1,9 @@
 \documentclass{article}
 
+\usepackage{pgf}
+\usepackage{tikz}
+\usetikzlibrary{arrows,automata}
+
 \begin{document}
 
 \section{Bachelorarbeit}
@@ -62,5 +66,53 @@ in AL
   Thomas formalism
   \item Enumerate all possible (connected) networks in Python
 \end{enumerate}
+
+\begin{tikzpicture}
+% Default actions for each node
+\tikzstyle{every node}=[draw];
+\tikzstyle{edge} = [draw,thick,-]
+\tikzstyle{weight} = [font=\tiny, draw=none, fill=none]
+% Define and draw five nodes
+\node [fill, color=red, shape=circle] (v3) at (150:4) {};
+\node [fill, color=black, shape=circle] (v4) at
+({-4*cos(60*2*pi/360)},{4*sin(60*2*pi/360)}) {};
+%4*sin(150*2*pi/360)
+\node [fill, color=blue, shape=circle] (v5) at (270:4) {}; 
+\node [fill, color=green, shape=circle] (v1) at (30:4) {};
+% Draw radial edges
+\draw 
+%(v1) [color=red] -- node[weight, label=right:\footnotesize 1] {} (v2)
+%(v2) -- node[weight, label=above:\footnotesize 1] {} (v3)
+%(v3) -- node[weight, label=left:\footnotesize 1] {} (v4)
+%(v4) -- node[weight, label=left:\footnotesize 1] {} (v5)
+%(v5) -- node[weight, label=below:\footnotesize 1] {} (v6);
+%\draw 
+%(v6) [color=black] -- node[weight, label=right:\footnotesize 1] {} (v1)
+
+%(v1) -- node[weight, right=1ex] (v3) 
+%(v4) -- node[weight, left=1ex] {\footnotesize 3} (v2) 
+%(v3) -- (v5) 
+%(v4) -- node[weight, left=1ex] {\footnotesize 3} (v6) 
+%(v5) -- node[weight, right=1ex] (v1) 
+%(v6) -- node[weight, above right=0.25ex] {\footnotesize 3} (v2) 
+
+%(v1) -- node[weight, right=6ex, above=0.25ex] {\footnotesize 5} (v4) 
+%(v2) -- node[weight, right=1ex, above=3ex] {\footnotesize 5} (v5)
+%(v3) -- node[weight, left=1ex, above=3ex] {\footnotesize 5} (v6)
+;
+\end{tikzpicture}
+
+\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2.8cm,
+                    semithick]
+  \tikzstyle{every state}=[fill=red,draw=none,text=white]
+
+  \node[initial,state] (A)                    {$q_a$};
+  \node[state]         (D) [below right of=A] {$q_d$};
+  \node[state]         (C) [right of=A] {$q_c$};
+
+  \path (A) edge              node {1,1,R} (C)
+        (C) edge              node {0,1,L} (D)
+        (D) edge              node {0,1,R} (A);
+\end{tikzpicture}
 
 \end{document}
