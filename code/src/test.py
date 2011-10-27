@@ -1,4 +1,3 @@
-# bla
 import imp
 import os
 import networkx as nx #@UnresolvedImport
