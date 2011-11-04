@@ -2,7 +2,7 @@
 
 \usepackage{pgf}
 \usepackage{tikz}
-\usetikzlibrary{arrows,automata}
+\usetikzlibrary{arrows,automata,decorations.pathmorphing,backgrounds,positioning,fit,petri}
 
 \begin{document}
 
@@ -104,15 +104,40 @@ in AL
 
 \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2.8cm,
                     semithick]
-  \tikzstyle{every state}=[fill=red,draw=none,text=white]
+  \tikzstyle{every state}=[draw=none,text=white]
 
-  \node[initial,state] (A)                    {$q_a$};
-  \node[state]         (D) [below right of=A] {$q_d$};
-  \node[state]         (C) [right of=A] {$q_c$};
+  \node[initial,state,fill=red] (A)                    {$q_a$};
+  \node[state,fill=blue]        (D) [below right of=A] {$q_d$};
+  \node[state,fill=green]       (C) [right of=A] {$q_c$};
 
   \path (A) edge              node {1,1,R} (C)
         (C) edge              node {0,1,L} (D)
         (D) edge              node {0,1,R} (A);
+\end{tikzpicture}
+
+\begin{tikzpicture}
+[->,>=stealth',shorten >=1pt,
+gene/.style={circle,thick,inner sep=0pt,minimum size=6mm}]
+\node[gene,draw=red,fill=red!50]     at (0,0)     (rr) {};
+\node[gene,draw=blue,fill=blue!50]   at (300:2cm) (bb) {};
+\node[gene,draw=green,fill=green!50] at (0:2cm)   (gg) {};
+
+\path [->,very thick] (rr) edge node {} (gg);
+\path [->,very thick] (rr) edge node {} (bb);
+\path [-|,very thick] (bb) edge node {} (gg);
+\path [->,very thick] (gg) edge [loop above,looseness=12] node {} (gg);
+\end{tikzpicture}
+
+\begin{tikzpicture}
+[place/.style={circle,draw=blue!50,fill=blue!20,thick,
+inner sep=0pt,minimum size=6mm},
+transition/.style={rectangle,draw=black!50,fill=black!20,thick,
+inner sep=0pt,minimum size=4mm}]
+\node[place] (waiting) {};
+\node[place] (critical) [below=of waiting] {};
+\node[place] (gg) [below=of critical] {};
+\node[transition] (leave critical) [right=of critical] {};
+\node[transition] (enter critical) [left=of critical] {};
 \end{tikzpicture}
 
 \end{document}
