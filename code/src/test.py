@@ -45,16 +45,14 @@ if __name__=='__main__':
         for lps in lpss[gene]:
             print lps
 
+    print "============"
     print "Filtering..."
 
     CTLformula, CTLsearch = "(rr=2&bb=0&gg=1->EF(AG(gg=0)))&(rr=1&bb=0&gg=1->EF(AG(gg=1)))&(rr=0&bb=0&gg=0->EF(AG(gg=0)))", "forAll" # (left, middle, right), the gg=1 in left and middle is from the drawing on page 5
-                                                                      #   ??/14 bei thresholds = 1, +-
+
     #CTLformula, CTLsearch = "(rr>0&bb>0&gg>0&EF(gg=0))", "exists" # 190/202 bei thresholds = 1, obs* # Modell fuer linke Region
-                                                                  #   18/14 bei thresholds = 1, +-
     #CTLformula, CTLsearch = "(rr>0&bb>0&gg>0&AF(gg=0))", "exists" #   0/202 bei thresholds = 1, obs* # Modell fuer linke Region
-                                                                  #    0/14 bei thresholds = 1, +-
     #CTLformula, CTLsearch = "(rr>0&bb>0&gg>0&EG(gg=0))", "exists" #   0/202 bei thresholds = 1, obs* # Modell fuer linke Region
-                                                                  #    0/14 bei thresholds = 1, +-
     #CTLformula, CTLsearch = "!(rr>0&bb>0&gg>0&EF(gg=0))", "forAll" #  12/202 bei thresholds = 1, obs* # Negation von Modell fuer linke Region 
     #CTLformula, CTLsearch = "(rr>0&bb>0&gg>0&EF(gg=1))", "exists" # 202/202 bei thresholds = 1, obs* # Modell fuer mittlere Region
     #CTLformula, CTLsearch = "EF(rr=0&bb=0&gg=1)", "exists" # 202/202 bei thresholds = 1, obs* # Modell fuer rechte Region
@@ -68,5 +66,9 @@ if __name__=='__main__':
 
     for parameterSet in mc._psc.get_parameterSets():
         print parameterSet 
+
+    print "============"
+    print "Exporting..."
+    mc.export_commonSTG(Type="transitions", filename="testexport.gml", initialRules=None)
 
     print "Done."

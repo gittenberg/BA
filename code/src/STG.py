@@ -3,7 +3,7 @@ Class to build and manipulate a STG.
 @author: Eric Kadikowski
 """
 
-import networkx as nx
+import networkx as nx #@UnresolvedImport
 import itertools as IT
 
 class STG() :

@@ -3,7 +3,7 @@ Methods to build and manipulate a STG.
 @author: Eric Kadikowski
 """
 
-import networkx as nx
+import networkx as nx #@UnresolvedImport
 import copy
 import itertools as IT
 
