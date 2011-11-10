@@ -59,11 +59,11 @@ class LocalParameterSet(dict):
         # copy flags
         flags = {}
         for reg in self._flags:
-		    flags[reg] = {}
-		    for flag in self._flags[reg]:
-		        flags[reg][flag] = True
+            flags[reg] = {}
+            for flag in self._flags[reg]:
+                flags[reg][flag] = True
         lps._flags = flags
-		# copy content
+        # copy content
         for context in self:
             lps[context] = self[context]
         return lps

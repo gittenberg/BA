@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import itertools as IT
-import networkx as nx
+import networkx as nx #@UnresolvedImport
 import time, sys
 import math
 import copy

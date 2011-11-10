@@ -13,7 +13,7 @@ CPS = imp.load_source("CPS", os.path.join("ComputeParameterSets.py"))
 AL = imp.load_source("AL", os.path.join("attractor_logic.py"))
 TS = imp.load_source("TS", os.path.join("TransitionSystem.py"))
 IGC = imp.load_source("IGC", os.path.join("inGraphChecker.py"))
-#ConP = imp.load_source("MP", os.path.join("ContextPreprocessor.py"))
+ConP = imp.load_source("MP", os.path.join("ContextPreprocessor.py"))
 
 import subprocess as SP
 import networkx as nx #@UnresolvedImport
