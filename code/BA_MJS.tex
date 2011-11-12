@@ -3,8 +3,10 @@
 \usepackage{pgf}
 \usepackage{tikz}
 \usetikzlibrary{arrows,automata,decorations.pathmorphing,backgrounds,positioning,fit,petri}
+\usepackage{subfigure}
 
 \begin{document}
+\begin{flushleft}
 
 \section{Bachelorarbeit}
 
@@ -54,12 +56,6 @@ inactive (low), one active (medium), both active (high).
   \item Finally, networks with more nodes can be investigated.
 \end{enumerate}
 
-\subsubsection{Defining stripes}
-
-in CTL
-
-in AL
-
 \subsection{Other To Dos}
 
 \begin{enumerate}
@@ -68,6 +64,7 @@ in AL
   \item Enumerate all possible (connected) networks in Python
 \end{enumerate}
 
+\begin{figure}
 \begin{tikzpicture}
 [->,>=stealth',shorten >=1pt,
 gene/.style={circle,thick,inner sep=0pt,minimum size=6mm}]
@@ -82,5 +79,57 @@ gene/.style={circle,thick,inner sep=0pt,minimum size=6mm}]
 \path [-|,very thick] (bb) edge node {} (gg);
 \path [->,very thick] (gg) edge [loop above,looseness=12] node {} (gg);
 \end{tikzpicture}
+\end{figure}
 
+\subsection{Defining stripes}
+
+\subsection{Defining stripes in CTL}
+
+The aim of this section is to define what a ``stripe'' means in the Thomas
+framework as it is instantiated in the SWP tool. % FIXME: name of tool?
+To this end, it is to be noted that CTL (and PCTL) formulas can be filtered by
+the model checker in two different modes, {\tt forAll} (the default mode) and
+{\tt exists}. To understand the difference between these modes, we consider how
+a STG is mapped to a computation tree which is processed by the model
+checker.
+
+\begin{figure}
+\centering 
+\subfigure[A (non-unitary) state transition graph]
+{%
+\begin{tikzpicture}
+[->,>=stealth',shorten >=1pt,
+gene/.style={circle,thick,inner sep=0pt,minimum size=10mm}]
+\node[gene,draw=red,fill=red!20]     at (0,0)     (rr) {\color{red}110};
+\node[gene,draw=blue,fill=blue!20]   at (270:3cm) (bb) {\color{blue}011}; 
+\node[gene,draw=green!50!black,fill=green!20] at (330:3cm) (gg) {\color{green!50!black}001};
+
+\path [->,very thick] (rr) edge node {} (gg);
+\draw[->,very thick] ([xshift= 3pt] rr.south) -- ([xshift= 3pt] bb.north);
+\draw[<-,very thick] ([xshift=-3pt] rr.south) -- ([xshift=-3pt] bb.north);
+\path [->,very thick] (bb) edge node {} (gg);
+\end{tikzpicture}
+}
+\subfigure[The corresponding computation tree]
+{%
+\begin{tikzpicture}
+[->,>=stealth',shorten >=1pt,
+gene/.style={circle,thick,inner sep=0pt,minimum size=10mm}]
+\node[gene,draw=red,fill=red!20]     at (0,0)     (rr) {\color{red}110};
+\node[gene,draw=blue,fill=blue!20]   at (270:3cm) (bb) {\color{blue}011};
+\node[gene,draw=green!50!black,fill=green!20] at (330:3cm) (gg) {\color{green!50!black}001};
+
+\path [->,very thick] (rr) edge node {} (gg);
+\path [->,very thick] (rr) edge node {} (bb);
+\path [-|,very thick] (bb) edge node {} (gg);
+\path [->,very thick] (gg) edge [loop above,looseness=12] node {} (gg);
+\end{tikzpicture}
+}
+\caption{An example of the procedure} \end{figure}
+
+\subsection{Defining stripes in AL}
+
+in AL
+
+\end{flushleft}
 \end{document}

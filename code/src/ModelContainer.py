@@ -810,7 +810,7 @@ class ModelContainer():
         if Type=="transitions":
             com = STGC.compute_commonStg1(tslist)
         elif Type=="SCC":
-            com = STGC.compute_communStg2(tslist)
+            com = STGC.compute_commonStg2(tslist) # FIXME: no effect?
         if com:
             nx.write_gml(com,filename)
 
