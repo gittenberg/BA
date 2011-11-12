@@ -2,13 +2,14 @@
 
 \usepackage{pgf}
 \usepackage{tikz}
-\usetikzlibrary{arrows,automata,decorations.pathmorphing,backgrounds,positioning,fit,petri}
+\usetikzlibrary{arrows}
 \usepackage{subfigure}
 
 \begin{document}
-\begin{flushleft}
+\title{An Atlas of discrete morphogenetic regulatory networks}
+\maketitle
 
-\section{Bachelorarbeit}
+\begin{flushleft}
 
 \subsection{Initial formulation of the problem}
 
@@ -37,7 +38,7 @@ multi-edges or by more than one formal morphogene. E.g. two formal, identical
 morphogenes are able to produce three different states of activity: both
 inactive (low), one active (medium), both active (high).
 
-\subsubsection{From simple to complicated - a research program}
+\subsubsection{Outline of the research program}
 
 \begin{enumerate}
   \item We will investigate one particular network with only 3 nodes (4 or 5
@@ -83,49 +84,86 @@ gene/.style={circle,thick,inner sep=0pt,minimum size=6mm}]
 
 \subsection{Defining stripes}
 
-\subsection{Defining stripes in CTL}
+\subsubsection{Defining stripes in CTL}
 
-The aim of this section is to define what a ``stripe'' means in the Thomas
-framework as it is instantiated in the SWP tool. % FIXME: name of tool?
-To this end, it is to be noted that CTL (and PCTL) formulas can be filtered by
-the model checker in two different modes, {\tt forAll} (the default mode) and
+The aim of this section is to define what is meant by a ``stripe'' in the
+Thomas framework as it is instantiated in the SWP tool. % FIXME: name of tool?
+To this end, it is to be noted that in the SWP tool, CTL (and PCTL) formulas can
+be filtered by the model checker in two different modes, {\tt forAll} (the default mode) and
 {\tt exists}. To understand the difference between these modes, we consider how
 a STG is mapped to a computation tree which is processed by the model
-checker.
+checker. An example is displayed in Fig.~\ref{STG2CT}.
 
-\begin{figure}
+\begin{figure}[h!]
 \centering 
-\subfigure[A (non-unitary) state transition graph]
-{%
+\subfigure[A (non-unitary) state transition graph] {
 \begin{tikzpicture}
 [->,>=stealth',shorten >=1pt,
-gene/.style={circle,thick,inner sep=0pt,minimum size=10mm}]
+gene/.style={circle,thick,inner sep=0pt,minimum size=10mm}] 
 \node[gene,draw=red,fill=red!20]     at (0,0)     (rr) {\color{red}110};
 \node[gene,draw=blue,fill=blue!20]   at (270:3cm) (bb) {\color{blue}011}; 
 \node[gene,draw=green!50!black,fill=green!20] at (330:3cm) (gg) {\color{green!50!black}001};
 
 \path [->,very thick] (rr) edge node {} (gg);
-\draw[->,very thick] ([xshift= 3pt] rr.south) -- ([xshift= 3pt] bb.north);
-\draw[<-,very thick] ([xshift=-3pt] rr.south) -- ([xshift=-3pt] bb.north);
+\draw [->,very thick] ([xshift= 3pt] rr.south) -- ([xshift= 3pt] bb.north);
+\draw [<-,very thick] ([xshift=-3pt] rr.south) -- ([xshift=-3pt] bb.north);
 \path [->,very thick] (bb) edge node {} (gg);
+\path [->,very thick] (gg) edge [loop right,looseness=15] node {} (gg);
 \end{tikzpicture}
-}
-\subfigure[The corresponding computation tree]
-{%
+}\hfill
+\subfigure[One out of three corresponding computation trees]
+{
 \begin{tikzpicture}
 [->,>=stealth',shorten >=1pt,
-gene/.style={circle,thick,inner sep=0pt,minimum size=10mm}]
-\node[gene,draw=red,fill=red!20]     at (0,0)     (rr) {\color{red}110};
-\node[gene,draw=blue,fill=blue!20]   at (270:3cm) (bb) {\color{blue}011};
-\node[gene,draw=green!50!black,fill=green!20] at (330:3cm) (gg) {\color{green!50!black}001};
+gene/.style={circle,thick,inner sep=0pt,minimum size=10mm}] 
+\node[gene,draw=red,fill=red!20]{\color{red}110}[level distance=20mm]
+	child [->,very thick]{node [gene,draw=blue,fill=blue!20]{\color{blue}011}
+		child [->,very thick]{node [gene,draw=red,fill=red!20]{\color{red}110}
+			[level distance=12mm]child [-,dashed,very thick]
+		}
+		child [->,very thick]{node [gene,draw=green!50!black,fill=green!20]{\color{green!50!black}001}
+			[level distance=12mm]child [-,dashed,very thick]
+		}
+	}
+	child [->,very thick]{node [gene,draw=green!50!black,fill=green!20]{\color{green!50!black}001} 
+		child[missing]
+		child [->,very thick]{node [gene,draw=green!50!black,fill=green!20]{\color{green!50!black}001}
+			[level distance=12mm]child [-,dashed,very thick]
+		}
+	};
+\end{tikzpicture}}
+\caption{Mapping from the state transition graph to a computation tree}
+\label{STG2CT}
+\end{figure}
 
-\path [->,very thick] (rr) edge node {} (gg);
-\path [->,very thick] (rr) edge node {} (bb);
-\path [-|,very thick] (bb) edge node {} (gg);
-\path [->,very thick] (gg) edge [loop above,looseness=12] node {} (gg);
-\end{tikzpicture}
-}
-\caption{An example of the procedure} \end{figure}
+We note that in order to convert an STG to a computation tree, the STG must be
+rooted as well as ``expanded''. There are equally many ways to root the STG as
+there are nodes in the STG. What the function {\tt filter\_byCTL(formula, mode)}
+does is, given a CTL formula $\varphi$, 
+\begin{itemize}
+  \item if {\tt mode == 'forAll'}: it rejects all parameter sets for which
+  $\varphi$ evaluates to {\tt False} no matter which state in the STG is used to
+  root the computation tree,
+  \item if {\tt mode == 'exists'}: it rejects all parameter sets for which
+  $\varphi$ evaluates to {\tt False} in at least one computation tree
+  corresponding to the STG (i.e. for at least one choice of root).
+\end{itemize}
+
+Assuming a non-empty STG, the {\tt forAll} mode is stricter than the {\tt
+exists} mode.
+
+It should be noted that in the {\tt exists} mode, there is no way to determine
+the starting state (the root) of the computation tree. However, in a dynamical
+problem like morphogenesis, one would like to control the starting state or
+initial condition of the system. To accomplish this, we use the following
+construction: we work in the stricter {\tt forAll} mode and filter by CTL
+formulas of the structure
+\begin{equation}
+{\tt initial\_condition -> final\_condition}.
+\end{equation}
+??? Reicht das, oder muss zusätzlich initial condition gefordert werden???
+Testen im Programm mit einfacher Parametermenge ob nur die mit initial
+condition übrigbleiben!!!
 
 \subsection{Defining stripes in AL}
 
