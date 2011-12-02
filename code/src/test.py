@@ -1,10 +1,30 @@
 import imp
 import os
+from os.path import join
 import networkx as nx #@UnresolvedImport
+import sqlite3
 
 MC = imp.load_source("MC", os.path.join("ModelContainer.py"))
 
 if __name__=='__main__':
+    # create database
+    path = "C:\Users\MJS\gitprojects_2\BA\code\src"
+    con = sqlite3.connect(join(path, 'filter_results.db'))
+    
+    # setup tables
+    con.execute('''DROP TABLE IF EXISTS iagraphs''')
+    con.execute('''DROP TABLE IF EXISTS edges''')
+
+    # setup objects
+    networks = ['Incoherent type 1 feed-forward']
+
+    # strict, without morphogene
+    interactions = {("rr","gg"):"+", ("rr","bb"):"+", ("bb","gg"):"-", ("gg","gg"):"+"}
+    thresholds = {("rr","gg"):2, ("rr","bb"):1, ("bb","gg"):1, ("gg","gg"):1}
+    edges = interactions.keys()
+    IG = nx.DiGraph()
+    IG.add_edges_from(edges)
+
     # this is graph A in figure 2 of Cotterel/Sharpe
     # including "mm" doubles the number of original parameter sets and the number of filtered parameter sets
     
@@ -18,13 +38,7 @@ if __name__=='__main__':
     #interactions = {("mm","rr"):"+", ("rr","gg"):"+", ("rr","bb"):"+", ("bb","gg"):"-", ("gg","gg"):"+"}
     #thresholds = {("mm","rr"):1, ("rr","gg"):2, ("rr","bb"):1, ("bb","gg"):1, ("gg","gg"):1}
 
-    # strict, without morphogene
-    interactions = {("rr","gg"):"+", ("rr","bb"):"+", ("bb","gg"):"-", ("gg","gg"):"+"}
-    thresholds = {("rr","gg"):2, ("rr","bb"):1, ("bb","gg"):1, ("gg","gg"):1}
-    edges = interactions.keys()
-    IG = nx.DiGraph()
-    IG.add_edges_from(edges)
-
+    '''
     mc = MC.ModelContainer()
     mc._NuSMVpath = r"C:\Progra~2\NuSMV\2.5.2\bin\NuSMV.exe"
     mc.set_IG(IG)
@@ -72,3 +86,4 @@ if __name__=='__main__':
     mc.export_commonSTG(Type="transitions", filename="A_commonSTG_transitions_strict.gml", initialRules=None)
 
     print "Done."
+    '''
