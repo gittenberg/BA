@@ -65,6 +65,11 @@ def insert_contexts(con, nwkey, nodes):
             con.execute(exestring)
     con.commit()
 
+def powerset(iterable):
+    "powerset([1,2,3]) --> () (1,) (2,) (3,) (1,2) (1,3) (2,3) (1,2,3)"
+    s = list(iterable)
+    return chain.from_iterable(combinations(s, r) for r in range(len(s)+1))
+        
 if __name__=='__main__':
     # create database
     con = create_database()
@@ -121,11 +126,6 @@ if __name__=='__main__':
         print "PSC:",len(mc._psc)
         nodes[nwkey] = lpss.keys()
 
-        def powerset(iterable):
-            "powerset([1,2,3]) --> () (1,) (2,) (3,) (1,2) (1,3) (2,3) (1,2,3)"
-            s = list(iterable)
-            return chain.from_iterable(combinations(s, r) for r in range(len(s)+1))
-        
         # write nodes to database
         insert_nodes(con, nwkey, nodes[nwkey])
         
