@@ -2,6 +2,7 @@ import imp
 import os
 from os.path import join
 import networkx as nx #@UnresolvedImport
+from itertools import chain, combinations
 import sqlite3
 
 
@@ -24,8 +25,8 @@ def create_tables(con):
     con.execute("create table nodes(iagraphID INT, node VARCHAR(5), PRIMARY KEY (node), FOREIGN KEY (iagraphID) REFERENCES iagraphs(iagraphID))")
 
     con.execute('''DROP TABLE IF EXISTS contexts''')
-    con.execute("create table contexts(iagraphID INT, node VARCHAR(5), FOREIGN KEY (iagraphID) REFERENCES iagraphs(iagraphID),\
-        FOREIGN KEY (node) REFERENCES nodes(node))")
+    con.execute("create table contexts(iagraphID INT, node VARCHAR(5), contextID INT, context VARCHAR(100),\
+        FOREIGN KEY (iagraphID) REFERENCES iagraphs(iagraphID), FOREIGN KEY (node) REFERENCES nodes(node))")
 
     con.commit()
     
@@ -41,7 +42,7 @@ def insert_edges(con, nwkey, edges, interactions, thresholds):
         # write edge to database
         exestring = "INSERT INTO edges VALUES('%s', '%s', '%s', '%s', '%s')" % (nwkey, edge[0], edge[1], 
             interactions[edge], thresholds[edge])
-        print exestring
+        #print exestring
         con.execute(exestring)
     con.commit()
 
@@ -49,16 +50,19 @@ def insert_nodes(con, nwkey, nodes):
     for node in nodes:
         # write node to database
         exestring = "INSERT INTO nodes VALUES('%s', '%s')" % (nwkey, node)
-        print exestring
+        #print exestring
         con.execute(exestring)
     con.commit()
 
 def insert_contexts(con, nwkey, nodes):
-    for node in nodes:
-        # write node to database
-        exestring = "INSERT INTO contexts VALUES('%s', '%s')" % (nwkey, node)
-        print exestring
-        con.execute(exestring)
+    for node in sorted(nodes):
+        preds = IG.predecessors(node) # TODO: IG uebergeben oder nicht?
+        print "preds: ================="
+        print preds 
+        for contextID, context in enumerate(powerset(sorted(preds))): 
+            exestring = '''INSERT INTO contexts VALUES("%s", "%s", "%s", "%s")''' % (nwkey, node, contextID, context)
+            #print exestring
+            con.execute(exestring)
     con.commit()
 
 if __name__=='__main__':
@@ -116,9 +120,16 @@ if __name__=='__main__':
         lpss = mc._psc._localParameterSets
         print "PSC:",len(mc._psc)
         nodes[nwkey] = lpss.keys()
+
+        def powerset(iterable):
+            "powerset([1,2,3]) --> () (1,) (2,) (3,) (1,2) (1,3) (2,3) (1,2,3)"
+            s = list(iterable)
+            return chain.from_iterable(combinations(s, r) for r in range(len(s)+1))
         
         # write nodes to database
         insert_nodes(con, nwkey, nodes[nwkey])
+        
+        insert_contexts(con, nwkey, nodes[nwkey])        
 
         for gene in lpss:
             print "======="
@@ -126,16 +137,8 @@ if __name__=='__main__':
             print "======="
             for lps in lpss[gene]:
                 print lps
-    
-        # write contexts to database
-        # - for each node
-        # - look at predecessors
-        # - enumerate 2^n subsets of predecessors (= contexts)
-        # - encode in binary, e.g. '010001' means that 1st and 5th predecessor are above threshold
-        # - write binary contextID to DB
-        # - write string to DB that explains which predecessors are active
-        insert_contexts(con, nwkey, nodes[nwkey]) # , further arguments?
 
+        
         # write local parameter sets to database
         # - for each node
         # - for each contextID
