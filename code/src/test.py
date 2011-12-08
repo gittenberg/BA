@@ -13,13 +13,13 @@ def create_database(path="C:\Users\MJS\gitprojects_2\BA\code\src", dbname='filte
 
 def create_tables(con):
     con.execute('''DROP TABLE IF EXISTS iagraphs''')
-    con.execute("create table iagraphs(iagraphID INT, iagraphsName VARCHAR(50))")
+    con.execute("create table iagraphs(iagraphID INT, iagraphsName VARCHAR(50), PRIMARY KEY (iagraphID))")
     
     con.execute('''DROP TABLE IF EXISTS edges''')
-    con.execute("create table edges(iagraphID INT, edgestart VARCHAR(5), edgeend VARCHAR(5), edgelabel VARCHAR(4), threshold INT)")
+    con.execute("create table edges(iagraphID INT, edgestart VARCHAR(5), edgeend VARCHAR(5), edgelabel VARCHAR(4), threshold INT, PRIMARY KEY (edgestart, edgeend))")
     
     con.execute('''DROP TABLE IF EXISTS nodes''')
-    con.execute("create table nodes(iagraphID INT, node VARCHAR(5))")
+    con.execute("create table nodes(iagraphID INT, node VARCHAR(5), PRIMARY KEY (node))")
 
     con.execute('''DROP TABLE IF EXISTS contexts''')
     con.execute("create table contexts(iagraphID INT, node VARCHAR(5))")
