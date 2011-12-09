@@ -56,9 +56,7 @@ def insert_nodes(con, nwkey, nodes):
 
 def insert_contexts(con, nwkey, nodes):
     for node in sorted(nodes):
-        preds = IG.predecessors(node) # TODO: IG uebergeben oder nicht?
-        print "preds: ================="
-        print preds 
+        preds = IG.predecessors(node) # TODO: IG uebergeben oder predecessors?
         for contextID, context in enumerate(powerset(sorted(preds))): 
             exestring = '''INSERT INTO contexts VALUES("%s", "%s", "%s", "%s")''' % (nwkey, node, contextID, context)
             #print exestring
