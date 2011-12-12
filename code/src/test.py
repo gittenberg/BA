@@ -66,14 +66,31 @@ def insert_contexts(con, nwkey, nodes, preds):
             con.execute(exestring)
     con.commit()
 
-def insert_local_parameter_sets(con, nwkey, nodes, lpss):
-    pass
-
+def insert_local_parameter_sets(con, nwkey, nodes, preds, lpss):
+    #print "lpss:", lpss
+    for node in sorted(nodes):
+        for lps in lpss[node]:
+            lpsID = encode_lps(preds[node], lps, base=10)
+            exestring = '''INSERT INTO localparametersets VALUES("%s", "%s", "%s", "%s")''' % (nwkey, node, lpsID, str(lps))
+            #print exestring
+            con.execute(exestring)
+    con.commit()
 
 def powerset(iterable):
     "powerset([1,2,3]) --> () (1,) (2,) (3,) (1,2) (1,3) (2,3) (1,2,3)"
     s = list(iterable)
     return chain.from_iterable(combinations(s, r) for r in range(len(s)+1))
+
+def encode_lps(preds, lps, base=10):
+    ''' Returns the base-ary representation of a local parameter set as an integer.
+        Number of digits is equal to number of contexts (power set of predecessors).
+        Value of k-th digit equals local parameter value in k-th context'''
+    #print preds
+    #print lps
+    code = 0
+    for contextID, context in enumerate(powerset(sorted(preds))):
+        code += lps[context]*pow(base, contextID)
+    return code
         
 
 if __name__=='__main__':
@@ -129,30 +146,27 @@ if __name__=='__main__':
         insert_edges(con, nwkey, edges[nwkey], interactions[nwkey], thresholds[nwkey])
 
         lpss = mc._psc._localParameterSets
-        print "PSC:",len(mc._psc)
+        #print "PSC:",len(mc._psc)
         nodes[nwkey] = lpss.keys()
-
+        preds = dict([(node, IG.predecessors(node)) for node in nodes[nwkey]]) # dict containing node:[preds of node]
+        
         # write nodes to database
         insert_nodes(con, nwkey, nodes[nwkey])
 
-        preds = dict([(node, IG.predecessors(node)) for node in nodes[nwkey]]) # dict containing node:[preds of node]
-        
+        # write contexts to database
         insert_contexts(con, nwkey, nodes[nwkey], preds)        
 
-        for gene in lpss:
-            print "======="
-            print gene
-            print "======="
-            for lps in lpss[gene]:
-                print lps
+        for node in lpss:
+            print "node:", node
+            print "=========="
+            for lps in lpss[node]:
+                print "lps:", lps
+                print "lpsID:", encode_lps(preds[node], lps, base=10)
+                print "========================================="
 
-        insert_local_parameter_sets(con, nwkey, nodes[nwkey], lpss)
-                
         # write local parameter sets to database
-        # - for each node
-        # - for each contextID
-        # - write list of parameter values to BD (length - all or only active ones?)
-        # - or is there a better structure (string, some encoding, etc.)?
+        insert_local_parameter_sets(con, nwkey, nodes[nwkey], preds, lpss)
+                
         '''
         print "============"
         print "Filtering..."

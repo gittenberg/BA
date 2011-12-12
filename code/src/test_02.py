@@ -26,11 +26,11 @@ if __name__=='__main__':
     lpss = mc._psc._localParameterSets
     print "PSC:",len(mc._psc)
     
-    for gene in lpss:
+    for node in lpss:
         print "======="
-        print gene
+        print node
         print "======="
-        for lps in lpss[gene]:
+        for lps in lpss[node]:
             print lps
 
     print "============"
