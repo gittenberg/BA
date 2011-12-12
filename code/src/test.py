@@ -18,22 +18,26 @@ def create_tables(con):
     
     con.execute('''DROP TABLE IF EXISTS edges''')
     con.execute("create table edges(iagraphID INT, edgestart VARCHAR(5), edgeend VARCHAR(5), edgelabel VARCHAR(4), threshold INT,\
-        PRIMARY KEY (edgestart, edgeend), FOREIGN KEY (iagraphID) REFERENCES iagraphs(iagraphID)\
+        PRIMARY KEY (iagraphID, edgestart, edgeend), FOREIGN KEY (iagraphID) REFERENCES iagraphs(iagraphID)\
         FOREIGN KEY (edgestart) REFERENCES nodes(node), FOREIGN KEY (edgeend) REFERENCES nodes(node))")
     
     con.execute('''DROP TABLE IF EXISTS nodes''')
-    con.execute("create table nodes(iagraphID INT, node VARCHAR(5), PRIMARY KEY (node), FOREIGN KEY (iagraphID) REFERENCES iagraphs(iagraphID))")
+    con.execute("create table nodes(iagraphID INT, node VARCHAR(5), PRIMARY KEY (iagraphID, node), FOREIGN KEY (iagraphID) REFERENCES iagraphs(iagraphID))")
 
     con.execute('''DROP TABLE IF EXISTS contexts''')
     con.execute("create table contexts(iagraphID INT, node VARCHAR(5), contextID INT, context VARCHAR(100),\
-        FOREIGN KEY (iagraphID) REFERENCES iagraphs(iagraphID), FOREIGN KEY (node) REFERENCES nodes(node))")
+        PRIMARY KEY (iagraphID, node, contextID), FOREIGN KEY (iagraphID) REFERENCES iagraphs(iagraphID), FOREIGN KEY (iagraphID, node) REFERENCES nodes(iagraphID, node))")
+
+    con.execute('''DROP TABLE IF EXISTS localparametersets''')
+    con.execute("create table localparametersets(iagraphID INT, node VARCHAR(5), lpsID INT, localparameterset VARCHAR(500),\
+        PRIMARY KEY (iagraphID, node, lpsID), FOREIGN KEY (iagraphID) REFERENCES iagraphs(iagraphID), FOREIGN KEY (iagraphID, node) REFERENCES nodes(iagraphID, node))")
 
     con.commit()
     
 def insert_network(con, nwkey, networks):
     # write interaction graph to database
     exestring = "INSERT INTO iagraphs VALUES('%s', '%s')" % (nwkey, networks)
-    print exestring
+    #print exestring
     con.execute(exestring)
     con.commit()
 
@@ -54,20 +58,24 @@ def insert_nodes(con, nwkey, nodes):
         con.execute(exestring)
     con.commit()
 
-def insert_contexts(con, nwkey, nodes):
+def insert_contexts(con, nwkey, nodes, preds):
     for node in sorted(nodes):
-        preds = IG.predecessors(node) # TODO: IG uebergeben oder predecessors?
-        for contextID, context in enumerate(powerset(sorted(preds))): 
+        for contextID, context in enumerate(powerset(sorted(preds[node]))): 
             exestring = '''INSERT INTO contexts VALUES("%s", "%s", "%s", "%s")''' % (nwkey, node, contextID, context)
             #print exestring
             con.execute(exestring)
     con.commit()
+
+def insert_local_parameter_sets(con, nwkey, nodes, lpss):
+    pass
+
 
 def powerset(iterable):
     "powerset([1,2,3]) --> () (1,) (2,) (3,) (1,2) (1,3) (2,3) (1,2,3)"
     s = list(iterable)
     return chain.from_iterable(combinations(s, r) for r in range(len(s)+1))
         
+
 if __name__=='__main__':
     # create database
     con = create_database()
@@ -126,8 +134,10 @@ if __name__=='__main__':
 
         # write nodes to database
         insert_nodes(con, nwkey, nodes[nwkey])
+
+        preds = dict([(node, IG.predecessors(node)) for node in nodes[nwkey]]) # dict containing node:[preds of node]
         
-        insert_contexts(con, nwkey, nodes[nwkey])        
+        insert_contexts(con, nwkey, nodes[nwkey], preds)        
 
         for gene in lpss:
             print "======="
@@ -136,7 +146,8 @@ if __name__=='__main__':
             for lps in lpss[gene]:
                 print lps
 
-        
+        insert_local_parameter_sets(con, nwkey, nodes[nwkey], lpss)
+                
         # write local parameter sets to database
         # - for each node
         # - for each contextID
