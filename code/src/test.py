@@ -32,6 +32,10 @@ def create_tables(con):
     con.execute("create table localparametersets(iagraphID INT, node VARCHAR(5), lpsID INT, localparameterset VARCHAR(500),\
         PRIMARY KEY (iagraphID, node, lpsID), FOREIGN KEY (iagraphID) REFERENCES iagraphs(iagraphID), FOREIGN KEY (iagraphID, node) REFERENCES nodes(iagraphID, node))")
 
+    con.execute('''DROP TABLE IF EXISTS globalparametersets''')
+    con.execute("create table globalparametersets(iagraphID INT, gpsID INT, globalparameterset VARCHAR(500),\
+        PRIMARY KEY (iagraphID, gpsID), FOREIGN KEY (iagraphID) REFERENCES iagraphs(iagraphID))")
+
     con.commit()
     
 def insert_network(con, nwkey, networks):
@@ -65,9 +69,12 @@ def insert_contexts(con, nwkey, nodes, preds):
             #print exestring
             con.execute(exestring)
     con.commit()
+    
+def decode_contextID(preds, contextID):
+    "Converts an integer to the string representation of the corresponding context"
+    return list(powerset(sorted(preds)))[contextID]
 
 def insert_local_parameter_sets(con, nwkey, nodes, preds, lpss):
-    #print "lpss:", lpss
     for node in sorted(nodes):
         for lps in lpss[node]:
             lpsID = encode_lps(preds[node], lps, base=10)
@@ -85,13 +92,19 @@ def encode_lps(preds, lps, base=10):
     ''' Returns the base-ary representation of a local parameter set as an integer.
         Number of digits is equal to number of contexts (power set of predecessors).
         Value of k-th digit equals local parameter value in k-th context'''
-    #print preds
-    #print lps
     code = 0
     for contextID, context in enumerate(powerset(sorted(preds))):
         code += lps[context]*pow(base, contextID)
-    return code
-        
+    return code        
+
+def decode_lps(node, preds, encoding, base=10):
+    "Returns the string representation of an lps encoding - this could be converted into dict using ast.literal_eval"
+    n = 2**len(preds)
+    k = len(str(encoding))
+    encodingstring = (n-k)*'0' + str(encoding)
+    decoding = dict([(context, encodingstring[n-contextID-1]) for contextID, context in enumerate(powerset(sorted(preds)))])
+    return decoding
+
 
 if __name__=='__main__':
     # create database
@@ -162,11 +175,12 @@ if __name__=='__main__':
             for lps in lpss[node]:
                 print "lps:", lps
                 print "lpsID:", encode_lps(preds[node], lps, base=10)
+                print "decoded lpsID:", decode_lps(node, preds[node], encode_lps(preds[node], lps, base=10), base=10)
                 print "========================================="
 
         # write local parameter sets to database
         insert_local_parameter_sets(con, nwkey, nodes[nwkey], preds, lpss)
-                
+
         '''
         print "============"
         print "Filtering..."
