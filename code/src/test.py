@@ -105,6 +105,30 @@ def decode_lps(node, preds, encoding, base=10):
     decoding = dict([(context, encodingstring[n-contextID-1]) for contextID, context in enumerate(powerset(sorted(preds)))])
     return decoding
 
+def encode_gps(gps, base=10):
+    "converts a global parameter set object into an integer representation"
+    gps_encoding = ""
+    nodes = gps.keys()
+    for node in sorted(nodes):
+        # first reverse engineer contexts, predecessors, lps
+        contexts = gps[node].keys()
+        n = len(contexts)
+        preds = sorted(list(set().union(*contexts)))
+        #print "preds:", preds
+        lps = gps[node]
+        #print "lps (from encode_gps):", lps
+        # then encode current lps
+        code = encode_lps(preds, lps, base)
+        # finally shift digits and add
+        k = len(str(code))
+        codestring = (n-k)*'0' + str(code)
+        gps_encoding = codestring + gps_encoding   
+    return long(gps_encoding)
+
+def decode_gps():
+    # TODO:
+    pass
+
 
 if __name__=='__main__':
     # create database
@@ -159,7 +183,11 @@ if __name__=='__main__':
         insert_edges(con, nwkey, edges[nwkey], interactions[nwkey], thresholds[nwkey])
 
         lpss = mc._psc._localParameterSets
-        #print "PSC:",len(mc._psc)
+        for gps in mc._psc.get_parameterSets():
+            print gps
+            print encode_gps(gps, base=10)
+            # TODO: decode_gps
+        
         nodes[nwkey] = lpss.keys()
         preds = dict([(node, IG.predecessors(node)) for node in nodes[nwkey]]) # dict containing node:[preds of node]
         
@@ -169,17 +197,22 @@ if __name__=='__main__':
         # write contexts to database
         insert_contexts(con, nwkey, nodes[nwkey], preds)        
 
+        '''
         for node in lpss:
             print "node:", node
             print "=========="
             for lps in lpss[node]:
                 print "lps:", lps
-                print "lpsID:", encode_lps(preds[node], lps, base=10)
-                print "decoded lpsID:", decode_lps(node, preds[node], encode_lps(preds[node], lps, base=10), base=10)
+                #print "lpsID:", encode_lps(preds[node], lps, base=10)
+                #print "decoded lpsID:", decode_lps(node, preds[node], encode_lps(preds[node], lps, base=10), base=10)
                 print "========================================="
+        '''
 
         # write local parameter sets to database
         insert_local_parameter_sets(con, nwkey, nodes[nwkey], preds, lpss)
+        
+        # TODO:
+        # insert_global_parameters_sets
 
         '''
         print "============"
