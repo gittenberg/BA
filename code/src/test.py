@@ -114,20 +114,20 @@ def encode_gps(gps, base=10):
         contexts = gps[node].keys()
         n = len(contexts)
         preds = sorted(list(set().union(*contexts)))
-        #print "preds:", preds
         lps = gps[node]
         #print "lps (from encode_gps):", lps
         # then encode current lps
         code = encode_lps(preds, lps, base)
-        # finally shift digits and add
+        # finally shift digits and add n-k zeros
         k = len(str(code))
         codestring = (n-k)*'0' + str(code)
         gps_encoding = codestring + gps_encoding   
     return long(gps_encoding)
 
-def decode_gps():
+def decode_gps(encoding, IG, base=10):
+    decoded = dict((key, 666) for key in [1, 2 ,3])
     # TODO:
-    pass
+    return decoded
 
 
 if __name__=='__main__':
@@ -186,6 +186,7 @@ if __name__=='__main__':
         for gps in mc._psc.get_parameterSets():
             print gps
             print encode_gps(gps, base=10)
+            print decode_gps(encode_gps(gps, base=10), IG, base=10)
             # TODO: decode_gps
         
         nodes[nwkey] = lpss.keys()
