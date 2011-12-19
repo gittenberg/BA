@@ -125,7 +125,7 @@ def encode_gps(gps, base=10):
     return long(gps_encoding)
 
 def decode_gps(encoding, IG, base=10):
-    decoded = dict((key, 666) for key in [1, 2 ,3])
+    decoded = dict((key, 666) for key in sorted(IG.nodes()))
     # TODO:
     return decoded
 
