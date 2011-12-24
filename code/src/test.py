@@ -74,6 +74,7 @@ def decode_contextID(preds, contextID):
     "Converts an integer to the string representation of the corresponding context"
     return list(powerset(sorted(preds)))[contextID]
 
+# TODO: geht das auch ohne preds, d.h. kann die Funktion die preds selbst ausrechnen?
 def insert_local_parameter_sets(con, nwkey, nodes, preds, lpss):
     for node in sorted(nodes):
         for lps in lpss[node]:
@@ -81,6 +82,13 @@ def insert_local_parameter_sets(con, nwkey, nodes, preds, lpss):
             exestring = '''INSERT INTO localparametersets VALUES("%s", "%s", "%s", "%s")''' % (nwkey, node, lpsID, str(lps))
             #print exestring
             con.execute(exestring)
+    con.commit()
+
+def insert_global_parameter_sets(con, nwkey, gpss):
+    for gps in gpss:
+        gpsID = encode_gps(gps, base=10)
+        exestring = '''INSERT INTO globalparametersets VALUES("%s", "%s", "%s")''' % (nwkey, gpsID, gps)
+        con.execute(exestring)
     con.commit()
 
 def powerset(iterable):
@@ -116,8 +124,10 @@ def encode_gps(gps, base=10):
         preds = sorted(list(set().union(*contexts)))
         lps = gps[node]
         #print "lps (from encode_gps):", lps
+        
         # then encode current lps
         code = encode_lps(preds, lps, base)
+        
         # finally shift digits and add n-k zeros
         k = len(str(code))
         codestring = (n-k)*'0' + str(code)
@@ -126,7 +136,7 @@ def encode_gps(gps, base=10):
 
 def decode_gps(encoding, IG, base=10):
     decoded = dict()
-    for i, node in enumerate(sorted(IG.nodes())):
+    for node in sorted(IG.nodes()):
         decoded[node] = dict()
         for context in powerset(sorted(IG.predecessors(node))):
             # we iterate through the digits of encoding and shorten it by one digit in each iteration
@@ -189,12 +199,6 @@ if __name__=='__main__':
         insert_edges(con, nwkey, edges[nwkey], interactions[nwkey], thresholds[nwkey])
 
         lpss = mc._psc._localParameterSets
-        for gps in mc._psc.get_parameterSets():
-            print "====================================================================="
-            print gps
-            #print encode_gps(gps, base=10)
-            print decode_gps(encode_gps(gps, base=10), IG, base=10)
-        
         nodes[nwkey] = lpss.keys()
         preds = dict([(node, IG.predecessors(node)) for node in nodes[nwkey]]) # dict containing node:[preds of node]
         
@@ -218,8 +222,17 @@ if __name__=='__main__':
         # write local parameter sets to database
         insert_local_parameter_sets(con, nwkey, nodes[nwkey], preds, lpss)
         
-        # TODO:
-        # insert_global_parameters_sets
+        gpss = mc._psc.get_parameterSets()
+        for gps in gpss:
+            print "====================================================================="
+            print gps
+            #print encode_gps(gps, base=10)
+            #print decode_gps(encode_gps(gps, base=10), IG, base=10)
+        
+        # write global parameter sets to database
+        # need to re-generate since in python generators cannot be rewound
+        gpss = mc._psc.get_parameterSets()
+        insert_global_parameter_sets(con, nwkey, gpss)
 
         '''
         print "============"
