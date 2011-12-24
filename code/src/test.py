@@ -125,8 +125,14 @@ def encode_gps(gps, base=10):
     return long(gps_encoding)
 
 def decode_gps(encoding, IG, base=10):
-    decoded = dict((key, 666) for key in sorted(IG.nodes()))
-    # TODO:
+    decoded = dict()
+    for i, node in enumerate(sorted(IG.nodes())):
+        decoded[node] = dict()
+        for context in powerset(sorted(IG.predecessors(node))):
+            # we iterate through the digits of encoding and shorten it by one digit in each iteration
+            digit = encoding % base
+            encoding = encoding / base
+            decoded[node][context] = int(digit)
     return decoded
 
 
@@ -184,10 +190,10 @@ if __name__=='__main__':
 
         lpss = mc._psc._localParameterSets
         for gps in mc._psc.get_parameterSets():
+            print "====================================================================="
             print gps
-            print encode_gps(gps, base=10)
+            #print encode_gps(gps, base=10)
             print decode_gps(encode_gps(gps, base=10), IG, base=10)
-            # TODO: decode_gps
         
         nodes[nwkey] = lpss.keys()
         preds = dict([(node, IG.predecessors(node)) for node in nodes[nwkey]]) # dict containing node:[preds of node]
