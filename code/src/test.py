@@ -100,10 +100,15 @@ def store_filter(con, nwkey, filterID, filterstring, filtertype, logictype):
     con.execute(exestring)
     con.commit()
 
-def insert_filter_results(con, filterID=1):
+def insert_filter_results(con, gpss, filterID=1):
     filterstring = 'filterID_'
-    exestring = '''ALTER TABLE globalparametersets ADD %s INT DEFAULT -1;''' % (filterstring+str(filterID).zfill(3))
-    con.execute(exestring)
+    header = filterstring+str(filterID).zfill(3)
+    exestring1 = '''ALTER TABLE globalparametersets ADD %s INT DEFAULT 0;''' % header
+    con.execute(exestring1)
+    for gps in gpss:
+        code = encode_gps(gps, base=10)
+        exestring2 = '''UPDATE globalparametersets SET %s = 1 WHERE gpsID = "%s";''' % (header, code)
+        con.execute(exestring2)
     con.commit()
 
 def powerset(iterable):
@@ -239,7 +244,6 @@ if __name__=='__main__':
         
         gpss = mc._psc.get_parameterSets()
         for gps in gpss:
-            print "====================================================================="
             print gps
             #print encode_gps(gps, base=10)
             #print decode_gps(encode_gps(gps, base=10), IG, base=10)
@@ -249,13 +253,20 @@ if __name__=='__main__':
         gpss = mc._psc.get_parameterSets()
         insert_global_parameter_sets(con, nwkey, gpss)
         
-        print "============"
+        print "===================================================================================="
         print "Filtering..."
     
         filterID, CTLformula, CTLsearch = 1, "(rr=2&bb=0&gg=1->EF(AG(gg=0)))&(rr=1&bb=0&gg=1->EF(AG(gg=1)))&(rr=0&bb=0&gg=0->EF(AG(gg=0)))", "forAll" # (left&middle&right), the gg=1 in left and middle is from the drawing on page 5
 
+        # write filter details to database
         store_filter(con, nwkey, filterID, CTLformula, CTLsearch, logictype="CTL")        
-        insert_filter_results(con, filterID)
+        
+        mc.filter_byCTL(CTLformula, search=CTLsearch)
+
+        gpss = mc._psc.get_parameterSets()
+    
+        # write filter results to database
+        insert_filter_results(con, gpss, filterID)
     
         '''
         #CTLformula, CTLsearch = "(rr>0&bb>0&gg>0&EF(gg=0))", "exists" # 190/202 bei thresholds = 1, obs* # Modell fuer linke Region
@@ -266,17 +277,9 @@ if __name__=='__main__':
         #CTLformula, CTLsearch = "EF(rr=0&bb=0&gg=1)", "exists" # 202/202 bei thresholds = 1, obs* # Modell fuer rechte Region
         
         #mc.filter_extremeAttractors('max', 'attrs', True, True)
-        
-        mc.filter_byCTL(CTLformula, search=CTLsearch)
-        '''
-    
 
-        '''
         #ALformula = "?(rand,mitte: rand.frozen(gg)&rand.max(gg)=0&mitte.frozen(gg)&mitte.max(gg)=1)"
         #mc.filter_byAL(ALformula)
-    
-        for parameterSet in mc._psc.get_parameterSets():
-            print parameterSet 
     
         print "============"
         print "Exporting..."
