@@ -36,6 +36,10 @@ def create_tables(con):
     con.execute("create table globalparametersets(iagraphID INT, gpsID INT, globalparameterset VARCHAR(500),\
         PRIMARY KEY (iagraphID, gpsID), FOREIGN KEY (iagraphID) REFERENCES iagraphs(iagraphID))")
 
+    con.execute('''DROP TABLE IF EXISTS filters''')
+    con.execute("create table filters(iagraphID INT, filterID INT, filterstring VARCHAR(500), filtertype VARCHAR(10), logictype VARCHAR(5),\
+        PRIMARY KEY (iagraphID, filterID), FOREIGN KEY (iagraphID) REFERENCES iagraphs(iagraphID))")
+
     con.commit()
     
 def insert_network(con, nwkey, networks):
@@ -89,6 +93,17 @@ def insert_global_parameter_sets(con, nwkey, gpss):
         gpsID = encode_gps(gps, base=10)
         exestring = '''INSERT INTO globalparametersets VALUES("%s", "%s", "%s")''' % (nwkey, gpsID, gps)
         con.execute(exestring)
+    con.commit()
+
+def store_filter(con, nwkey, filterID, filterstring, filtertype, logictype):
+    exestring = '''INSERT INTO filters VALUES("%s", "%s", "%s", "%s", "%s")''' % (nwkey, filterID, filterstring, filtertype, logictype)
+    con.execute(exestring)
+    con.commit()
+
+def insert_filter_results(con, filterID=1):
+    filterstring = 'filterID_'
+    exestring = '''ALTER TABLE globalparametersets ADD %s INT DEFAULT -1;''' % (filterstring+str(filterID).zfill(3))
+    con.execute(exestring)
     con.commit()
 
 def powerset(iterable):
@@ -214,8 +229,8 @@ if __name__=='__main__':
             print "=========="
             for lps in lpss[node]:
                 print "lps:", lps
-                #print "lpsID:", encode_lps(preds[node], lps, base=10)
-                #print "decoded lpsID:", decode_lps(node, preds[node], encode_lps(preds[node], lps, base=10), base=10)
+                print "lpsID:", encode_lps(preds[node], lps, base=10)
+                print "decoded lpsID:", decode_lps(node, preds[node], encode_lps(preds[node], lps, base=10), base=10)
                 print "========================================="
         '''
 
@@ -233,13 +248,16 @@ if __name__=='__main__':
         # need to re-generate since in python generators cannot be rewound
         gpss = mc._psc.get_parameterSets()
         insert_global_parameter_sets(con, nwkey, gpss)
-
-        '''
+        
         print "============"
         print "Filtering..."
     
-        CTLformula, CTLsearch = "(rr=2&bb=0&gg=1->EF(AG(gg=0)))&(rr=1&bb=0&gg=1->EF(AG(gg=1)))&(rr=0&bb=0&gg=0->EF(AG(gg=0)))", "forAll" # (left&middle&right), the gg=1 in left and middle is from the drawing on page 5
+        filterID, CTLformula, CTLsearch = 1, "(rr=2&bb=0&gg=1->EF(AG(gg=0)))&(rr=1&bb=0&gg=1->EF(AG(gg=1)))&(rr=0&bb=0&gg=0->EF(AG(gg=0)))", "forAll" # (left&middle&right), the gg=1 in left and middle is from the drawing on page 5
+
+        store_filter(con, nwkey, filterID, CTLformula, CTLsearch, logictype="CTL")        
+        insert_filter_results(con, filterID)
     
+        '''
         #CTLformula, CTLsearch = "(rr>0&bb>0&gg>0&EF(gg=0))", "exists" # 190/202 bei thresholds = 1, obs* # Modell fuer linke Region
         #CTLformula, CTLsearch = "(rr>0&bb>0&gg>0&AF(gg=0))", "exists" #   0/202 bei thresholds = 1, obs* # Modell fuer linke Region
         #CTLformula, CTLsearch = "(rr>0&bb>0&gg>0&EG(gg=0))", "exists" #   0/202 bei thresholds = 1, obs* # Modell fuer linke Region
@@ -250,7 +268,10 @@ if __name__=='__main__':
         #mc.filter_extremeAttractors('max', 'attrs', True, True)
         
         mc.filter_byCTL(CTLformula, search=CTLsearch)
+        '''
     
+
+        '''
         #ALformula = "?(rand,mitte: rand.frozen(gg)&rand.max(gg)=0&mitte.frozen(gg)&mitte.max(gg)=1)"
         #mc.filter_byAL(ALformula)
     
