@@ -5,7 +5,6 @@ import networkx as nx #@UnresolvedImport
 from itertools import chain, combinations
 import sqlite3
 
-
 MC = imp.load_source("MC", os.path.join("ModelContainer.py"))
 
 def create_database(path="C:\Users\MJS\gitprojects_2\BA\code\src", dbname='filter_results.db'):
@@ -280,11 +279,12 @@ if __name__=='__main__':
 
         #ALformula = "?(rand,mitte: rand.frozen(gg)&rand.max(gg)=0&mitte.frozen(gg)&mitte.max(gg)=1)"
         #mc.filter_byAL(ALformula)
+        '''
     
         print "============"
         print "Exporting..."
         mc.export_commonSTG(Type="transitions", filename="A_commonSTG_transitions_strict.gml", initialRules=None)
-        '''
+
     con.commit()
     con.close()
     print "Done."
