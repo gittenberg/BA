@@ -190,6 +190,21 @@ if __name__=='__main__':
     # example network: strict, without morphogene
     interactions = {1:{("rr","gg"):"+", ("rr","bb"):"+", ("bb","gg"):"-", ("gg","gg"):"+"}}
     thresholds = {1:{("rr","gg"):2, ("rr","bb"):1, ("bb","gg"):1, ("gg","gg"):1}}
+    filters = {1:
+               {1:["?(rand,mitte: rand.frozen(gg)&rand.max(gg)=0&mitte.frozen(gg)&mitte.min(gg)=1)", None, "AL"], # used to be ...&mitte.max(gg)=1 with the same number of results
+                2:["(rr=2&bb=0&gg=1->EF(AG(gg=0)))&(rr=1&bb=0&gg=1->EF(AG(gg=1)))&(rr=0&bb=0&gg=0->EF(AG(gg=0)))", "forAll", "CTL"]
+                #   (left&middle&right), the gg=1 in left and middle is from the drawing on page 5
+                }}
+    '''
+    #CTLformula, CTLsearch = "(rr>0&bb>0&gg>0&EF(gg=0))", "exists" # 190/202 bei thresholds = 1, obs* # Modell fuer linke Region
+    #CTLformula, CTLsearch = "(rr>0&bb>0&gg>0&AF(gg=0))", "exists" #   0/202 bei thresholds = 1, obs* # Modell fuer linke Region
+    #CTLformula, CTLsearch = "(rr>0&bb>0&gg>0&EG(gg=0))", "exists" #   0/202 bei thresholds = 1, obs* # Modell fuer linke Region
+    #CTLformula, CTLsearch = "!(rr>0&bb>0&gg>0&EF(gg=0))", "forAll" #  12/202 bei thresholds = 1, obs* # Negation von Modell fuer linke Region 
+    #CTLformula, CTLsearch = "(rr>0&bb>0&gg>0&EF(gg=1))", "exists" # 202/202 bei thresholds = 1, obs* # Modell fuer mittlere Region
+    #CTLformula, CTLsearch = "EF(rr=0&bb=0&gg=1)", "exists" # 202/202 bei thresholds = 1, obs* # Modell fuer rechte Region
+    
+    #mc.filter_extremeAttractors('max', 'attrs', True, True)
+    '''
     edges = dict(zip(interactions.keys(), [interactions[key].keys() for key in interactions.keys()]))
     nodes = dict() # will be initialized below
 
@@ -260,19 +275,25 @@ if __name__=='__main__':
         insert_global_parameter_sets(con, nwkey, gpss)
         
         print "===================================================================================="
-        print "Filtering..."
+        print "Filtering on resetted parameter set container..."
+        for filterID in filters[nwkey]:
+            mc.initializePSC()
     
-        filterID, CTLformula, CTLsearch = 1, "(rr=2&bb=0&gg=1->EF(AG(gg=0)))&(rr=1&bb=0&gg=1->EF(AG(gg=1)))&(rr=0&bb=0&gg=0->EF(AG(gg=0)))", "forAll" # (left&middle&right), the gg=1 in left and middle is from the drawing on page 5
+            formula, searchtype, logictype = filters[nwkey][filterID]
+    
+            if logictype=="AL":
+                mc.filter_byAL(formula)
+            elif logictype=="CTL":
+                mc.filter_byCTL(formula, search=searchtype)
+                
+            # write filter details to database
+            store_filter(con, nwkey, filterID, formula, searchtype, logictype)        
+            
+            # write filter results to database
+            gpss = mc._psc.get_parameterSets()
+            insert_filter_results(con, gpss, filterID)
 
-        # write filter details to database
-        store_filter(con, nwkey, filterID, CTLformula, CTLsearch, logictype="CTL")        
-        
-        mc.filter_byCTL(CTLformula, search=CTLsearch)
-        
-        # write filter results to database
-        gpss = mc._psc.get_parameterSets()
-        insert_filter_results(con, gpss, filterID)
-
+        '''
         gpss = mc._psc.get_parameterSets()
         for i, gps in enumerate(gpss):
             print gps
@@ -280,19 +301,6 @@ if __name__=='__main__':
             #print decode_gps(encode_gps(gps, base=10), IG, base=10)
             print TS.TransitionSystem(mc, gps)
             export_STG(mc, gps, filename=str(i)+".gml", initialRules=None)
-    
-        '''
-        #CTLformula, CTLsearch = "(rr>0&bb>0&gg>0&EF(gg=0))", "exists" # 190/202 bei thresholds = 1, obs* # Modell fuer linke Region
-        #CTLformula, CTLsearch = "(rr>0&bb>0&gg>0&AF(gg=0))", "exists" #   0/202 bei thresholds = 1, obs* # Modell fuer linke Region
-        #CTLformula, CTLsearch = "(rr>0&bb>0&gg>0&EG(gg=0))", "exists" #   0/202 bei thresholds = 1, obs* # Modell fuer linke Region
-        #CTLformula, CTLsearch = "!(rr>0&bb>0&gg>0&EF(gg=0))", "forAll" #  12/202 bei thresholds = 1, obs* # Negation von Modell fuer linke Region 
-        #CTLformula, CTLsearch = "(rr>0&bb>0&gg>0&EF(gg=1))", "exists" # 202/202 bei thresholds = 1, obs* # Modell fuer mittlere Region
-        #CTLformula, CTLsearch = "EF(rr=0&bb=0&gg=1)", "exists" # 202/202 bei thresholds = 1, obs* # Modell fuer rechte Region
-        
-        #mc.filter_extremeAttractors('max', 'attrs', True, True)
-
-        #ALformula = "?(rand,mitte: rand.frozen(gg)&rand.max(gg)=0&mitte.frozen(gg)&mitte.max(gg)=1)"
-        #mc.filter_byAL(ALformula)
         '''
     
         #mc.export_commonSTG(Type="transitions", filename="A_commonSTG_transitions_strict.gml", initialRules=None)
