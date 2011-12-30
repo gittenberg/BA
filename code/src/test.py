@@ -6,6 +6,7 @@ from itertools import chain, combinations
 import sqlite3
 
 MC = imp.load_source("MC", os.path.join("ModelContainer.py"))
+TS = imp.load_source("TS", os.path.join("TransitionSystem.py"))
 
 def create_database(path="C:\Users\MJS\gitprojects_2\BA\code\src", dbname='filter_results.db'):
     con = sqlite3.connect(join(path, dbname))
@@ -164,6 +165,17 @@ def decode_gps(encoding, IG, base=10):
             decoded[node][context] = int(digit)
     return decoded
 
+def export_STG(mc, gps, filename, initialRules=None):
+    print "============"
+    print "Exporting..."
+    if initialRules:
+        mc.set_initialRules(initialRules)
+    mc.set_initialStates()
+    transsys = TS.TransitionSystem(mc, gps)
+    graph = transsys.stg()
+    if graph:
+        nx.write_gml(graph, filename)
+
 
 if __name__=='__main__':
     # create database
@@ -242,11 +254,6 @@ if __name__=='__main__':
         insert_local_parameter_sets(con, nwkey, nodes[nwkey], preds, lpss)
         
         gpss = mc._psc.get_parameterSets()
-        for gps in gpss:
-            print gps
-            #print encode_gps(gps, base=10)
-            #print decode_gps(encode_gps(gps, base=10), IG, base=10)
-        
         # write global parameter sets to database
         # need to re-generate since in python generators cannot be rewound
         gpss = mc._psc.get_parameterSets()
@@ -261,11 +268,18 @@ if __name__=='__main__':
         store_filter(con, nwkey, filterID, CTLformula, CTLsearch, logictype="CTL")        
         
         mc.filter_byCTL(CTLformula, search=CTLsearch)
+        
+        # write filter results to database
+        gpss = mc._psc.get_parameterSets()
+        insert_filter_results(con, gpss, filterID)
 
         gpss = mc._psc.get_parameterSets()
-    
-        # write filter results to database
-        insert_filter_results(con, gpss, filterID)
+        for i, gps in enumerate(gpss):
+            print gps
+            #print encode_gps(gps, base=10)
+            #print decode_gps(encode_gps(gps, base=10), IG, base=10)
+            print TS.TransitionSystem(mc, gps)
+            export_STG(mc, gps, filename=str(i)+".gml", initialRules=None)
     
         '''
         #CTLformula, CTLsearch = "(rr>0&bb>0&gg>0&EF(gg=0))", "exists" # 190/202 bei thresholds = 1, obs* # Modell fuer linke Region
@@ -281,9 +295,7 @@ if __name__=='__main__':
         #mc.filter_byAL(ALformula)
         '''
     
-        print "============"
-        print "Exporting..."
-        mc.export_commonSTG(Type="transitions", filename="A_commonSTG_transitions_strict.gml", initialRules=None)
+        #mc.export_commonSTG(Type="transitions", filename="A_commonSTG_transitions_strict.gml", initialRules=None)
 
     con.commit()
     con.close()
