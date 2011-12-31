@@ -1,6 +1,7 @@
 import imp
 import os
-from os.path import join
+#from os import rename
+from os.path import join, exists
 import networkx as nx #@UnresolvedImport
 from itertools import chain, combinations
 import sqlite3
@@ -9,7 +10,11 @@ MC = imp.load_source("MC", os.path.join("ModelContainer.py"))
 TS = imp.load_source("TS", os.path.join("TransitionSystem.py"))
 
 def create_database(path="C:\Users\MJS\gitprojects_2\BA\code\src", dbname='filter_results.db'):
-    con = sqlite3.connect(join(path, dbname))
+    # We delete/rename the entire database. Alternatively, one could only DROP the results tables but this was difficult. # TODO:
+    filepath = join(path, dbname)
+    if exists(filepath+"~"): os.remove(filepath+"~")
+    if exists(filepath): os.rename(filepath, filepath+"~")
+    con = sqlite3.connect(filepath)
     return con
 
 def create_tables(con):
@@ -95,20 +100,30 @@ def insert_global_parameter_sets(con, nwkey, gpss):
         con.execute(exestring)
     con.commit()
 
+def drop_results_tables(con, nwkey):
+    pass
+
 def store_filter(con, nwkey, filterID, filterstring, filtertype, logictype):
     exestring = '''INSERT INTO filters VALUES("%s", "%s", "%s", "%s", "%s")''' % (nwkey, filterID, filterstring, filtertype, logictype)
     con.execute(exestring)
     con.commit()
 
-def insert_filter_results(con, gpss, filterID=1):
-    filterstring = 'filterID_'
-    header = filterstring+str(filterID).zfill(3)
-    exestring1 = '''ALTER TABLE globalparametersets ADD %s INT DEFAULT 0;''' % header
+def insert_filter_results(con, nwkey, gpss, filterID=1):
+    tablename = "results_iagraphID_"+str(nwkey).zfill(3)
+
+    # if it does not exist aleady, create table
+    exestring1 = "CREATE TABLE IF NOT EXISTS %s AS SELECT * FROM globalparametersets WHERE iagraphID=%s;" % (tablename, nwkey)
     con.execute(exestring1)
+    
+    # insert filter results
+    columnname = 'filterID_'+str(filterID).zfill(3)
+    #con.execute('''ALTER TABLE %s DROP COLUMN %s''' % (tablename, columnname)) # not allowed in sqlite: http://www.sqlite.org/faq.html#q11
+    exestring2 = '''ALTER TABLE %s ADD %s INT DEFAULT 0;''' % (tablename, columnname)
+    con.execute(exestring2)
     for gps in gpss:
         code = encode_gps(gps, base=10)
-        exestring2 = '''UPDATE globalparametersets SET %s = 1 WHERE gpsID = "%s";''' % (header, code)
-        con.execute(exestring2)
+        exestring3 = '''UPDATE %s SET %s = 1 WHERE gpsID = "%s";''' % (tablename, columnname, code)
+        con.execute(exestring3)
     con.commit()
 
 def powerset(iterable):
@@ -246,16 +261,6 @@ if __name__=='__main__':
 
         mc.set_initialStates()
         mc.initializePSC()
-
-        print "===================================================================================="
-        print "Database operations"
-
-        # write network to database
-        insert_network(con, nwkey, networks[nwkey])
-
-        # write interaction graph to database
-        insert_edges(con, nwkey, edges[nwkey], interactions[nwkey], thresholds[nwkey])
-
         # TODO: replacing the previous by MC.parameterSetup() would allow more flexibility like local constraints etc.
             
         lpss = mc._psc._localParameterSets
@@ -274,6 +279,15 @@ if __name__=='__main__':
                 print "========================================="
         '''
         
+        print "===================================================================================="
+        print "Database operations"
+
+        # write network to database
+        insert_network(con, nwkey, networks[nwkey])
+
+        # write interaction graph to database
+        insert_edges(con, nwkey, edges[nwkey], interactions[nwkey], thresholds[nwkey])
+
         # write nodes to database
         insert_nodes(con, nwkey, nodes[nwkey])
 
@@ -284,28 +298,31 @@ if __name__=='__main__':
         insert_local_parameter_sets(con, nwkey, nodes[nwkey], preds, lpss)
         
         # write global parameter sets to database
-        # need to re-generate since in python generators cannot be rewound
         gpss = mc._psc.get_parameterSets()
         insert_global_parameter_sets(con, nwkey, gpss)
         
+        # drop all old results tables
+        drop_results_tables(con, nwkey)
+        
         print "===================================================================================="
         print "Filtering on resetted parameter set container..."
-        for filterID in filters[nwkey]:
-            mc.initializePSC()
-    
-            formula, searchtype, logictype = filters[nwkey][filterID]
-    
-            if logictype=="AL":
-                mc.filter_byAL(formula)
-            elif logictype=="CTL":
-                mc.filter_byCTL(formula, search=searchtype)
+        if filters.has_key(nwkey):
+            for filterID in filters[nwkey]:
+                mc.initializePSC()
+        
+                formula, searchtype, logictype = filters[nwkey][filterID]
+        
+                if logictype=="AL":
+                    mc.filter_byAL(formula)
+                elif logictype=="CTL":
+                    mc.filter_byCTL(formula, search=searchtype)
+                    
+                # write filter details to database
+                store_filter(con, nwkey, filterID, formula, searchtype, logictype)        
                 
-            # write filter details to database
-            store_filter(con, nwkey, filterID, formula, searchtype, logictype)        
-            
-            # write filter results to database
-            gpss = mc._psc.get_parameterSets()
-            insert_filter_results(con, gpss, filterID)
+                # write filter results to database
+                gpss = mc._psc.get_parameterSets()
+                insert_filter_results(con, nwkey, gpss, filterID)
 
         '''
         gpss = mc._psc.get_parameterSets()
