@@ -34,11 +34,11 @@ def create_tables(con):
         PRIMARY KEY (iagraphID, node, contextID), FOREIGN KEY (iagraphID) REFERENCES iagraphs(iagraphID), FOREIGN KEY (iagraphID, node) REFERENCES nodes(iagraphID, node))")
 
     con.execute('''DROP TABLE IF EXISTS localparametersets''')
-    con.execute("create table localparametersets(iagraphID INT, node VARCHAR(5), lpsID INT, localparameterset VARCHAR(500),\
+    con.execute("create table localparametersets(iagraphID INT, node VARCHAR(5), lpsID VARCHAR(50), localparameterset VARCHAR(500),\
         PRIMARY KEY (iagraphID, node, lpsID), FOREIGN KEY (iagraphID) REFERENCES iagraphs(iagraphID), FOREIGN KEY (iagraphID, node) REFERENCES nodes(iagraphID, node))")
 
     con.execute('''DROP TABLE IF EXISTS globalparametersets''')
-    con.execute("create table globalparametersets(iagraphID INT, gpsID INT, globalparameterset VARCHAR(500),\
+    con.execute("create table globalparametersets(iagraphID INT, gpsID VARCHAR(100), globalparameterset VARCHAR(500),\
         PRIMARY KEY (iagraphID, gpsID), FOREIGN KEY (iagraphID) REFERENCES iagraphs(iagraphID))")
 
     con.execute('''DROP TABLE IF EXISTS filters''')
@@ -100,9 +100,6 @@ def insert_global_parameter_sets(con, nwkey, gpss):
         con.execute(exestring)
     con.commit()
 
-def drop_results_tables(con, nwkey):
-    pass
-
 def store_filter(con, nwkey, filterID, filterstring, filtertype, logictype):
     exestring = '''INSERT INTO filters VALUES("%s", "%s", "%s", "%s", "%s")''' % (nwkey, filterID, filterstring, filtertype, logictype)
     con.execute(exestring)
@@ -138,7 +135,7 @@ def encode_lps(preds, lps, base=10):
     code = 0
     for contextID, context in enumerate(powerset(sorted(preds))):
         code += lps[context]*pow(base, contextID)
-    return code        
+    return str(code).zfill(contextID+1) # we use the last contextID to generate enough leading zeros
 
 def decode_lps(node, preds, encoding, base=10):
     "Returns the string representation of an lps encoding - this could be converted into dict using ast.literal_eval"
@@ -151,6 +148,7 @@ def decode_lps(node, preds, encoding, base=10):
 def encode_gps(gps, base=10):
     "converts a global parameter set object into an integer representation"
     gps_encoding = ""
+    totallength = 0
     nodes = gps.keys()
     for node in sorted(nodes):
         # first reverse engineer contexts, predecessors, lps
@@ -167,7 +165,9 @@ def encode_gps(gps, base=10):
         k = len(str(code))
         codestring = (n-k)*'0' + str(code)
         gps_encoding = codestring + gps_encoding   
-    return long(gps_encoding)
+        totallength += n
+    #return long(gps_encoding)
+    return gps_encoding.zfill(totallength)
 
 def decode_gps(encoding, IG, base=10):
     decoded = dict()
@@ -276,7 +276,6 @@ if __name__=='__main__':
                 print "lps:", lps
                 print "lpsID:", encode_lps(preds[node], lps, base=10)
                 print "decoded lpsID:", decode_lps(node, preds[node], encode_lps(preds[node], lps, base=10), base=10)
-                print "========================================="
         '''
         
         print "===================================================================================="
@@ -301,9 +300,6 @@ if __name__=='__main__':
         gpss = mc._psc.get_parameterSets()
         insert_global_parameter_sets(con, nwkey, gpss)
         
-        # drop all old results tables
-        drop_results_tables(con, nwkey)
-        
         print "===================================================================================="
         print "Filtering on resetted parameter set container..."
         if filters.has_key(nwkey):
@@ -324,15 +320,15 @@ if __name__=='__main__':
                 gpss = mc._psc.get_parameterSets()
                 insert_filter_results(con, nwkey, gpss, filterID)
 
-        '''
+        print "===================================================================================="
+        print "Exporting .gml..."
         gpss = mc._psc.get_parameterSets()
-        for i, gps in enumerate(gpss):
+        for gps in gpss:
             print gps
             #print encode_gps(gps, base=10)
             #print decode_gps(encode_gps(gps, base=10), IG, base=10)
-            print TS.TransitionSystem(mc, gps)
-            export_STG(mc, gps, filename=str(i)+".gml", initialRules=None)
-        '''
+            #print TS.TransitionSystem(mc, gps)
+            export_STG(mc, gps, filename=str(nwkey).zfill(3)+"_"+encode_gps(gps, base=10)+".gml", initialRules=None)
     
         #mc.export_commonSTG(Type="transitions", filename="A_commonSTG_transitions_strict.gml", initialRules=None)
 
