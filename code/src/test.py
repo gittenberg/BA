@@ -48,34 +48,34 @@ def create_tables(con):
     
 def insert_network(con, nwkey, networks):
     # write interaction graph to database
-    exestring = "INSERT INTO iagraphs VALUES('%s', '%s')" % (nwkey, networks)
-    #print exestring
-    con.execute(exestring)
+    querystring = "INSERT INTO iagraphs VALUES('%s', '%s')" % (nwkey, networks)
+    #print querystring
+    con.execute(querystring)
     con.commit()
 
 def insert_edges(con, nwkey, edges, interactions, thresholds):
     for edge in edges:
         # write edge to database
-        exestring = "INSERT INTO edges VALUES('%s', '%s', '%s', '%s', '%s')" % (nwkey, edge[0], edge[1], 
+        querystring = "INSERT INTO edges VALUES('%s', '%s', '%s', '%s', '%s')" % (nwkey, edge[0], edge[1], 
             interactions[edge], thresholds[edge])
-        #print exestring
-        con.execute(exestring)
+        #print querystring
+        con.execute(querystring)
     con.commit()
 
 def insert_nodes(con, nwkey, nodes):
     for node in nodes:
         # write node to database
-        exestring = "INSERT INTO nodes VALUES('%s', '%s')" % (nwkey, node)
-        #print exestring
-        con.execute(exestring)
+        querystring = "INSERT INTO nodes VALUES('%s', '%s')" % (nwkey, node)
+        #print querystring
+        con.execute(querystring)
     con.commit()
 
 def insert_contexts(con, nwkey, nodes, preds):
     for node in sorted(nodes):
         for contextID, context in enumerate(powerset(sorted(preds[node]))): 
-            exestring = '''INSERT INTO contexts VALUES("%s", "%s", "%s", "%s")''' % (nwkey, node, contextID, context)
-            #print exestring
-            con.execute(exestring)
+            querystring = '''INSERT INTO contexts VALUES("%s", "%s", "%s", "%s")''' % (nwkey, node, contextID, context)
+            #print querystring
+            con.execute(querystring)
     con.commit()
     
 def decode_contextID(preds, contextID):
@@ -87,39 +87,39 @@ def insert_local_parameter_sets(con, nwkey, nodes, preds, lpss):
     for node in sorted(nodes):
         for lps in lpss[node]:
             lpsID = encode_lps(preds[node], lps, base=10)
-            exestring = '''INSERT INTO localparametersets VALUES("%s", "%s", "%s", "%s")''' % (nwkey, node, lpsID, str(lps))
-            #print exestring
-            con.execute(exestring)
+            querystring = '''INSERT INTO localparametersets VALUES("%s", "%s", "%s", "%s")''' % (nwkey, node, lpsID, str(lps))
+            #print querystring
+            con.execute(querystring)
     con.commit()
 
 def insert_global_parameter_sets(con, nwkey, gpss):
     for gps in gpss:
         gpsID = encode_gps(gps, base=10)
-        exestring = '''INSERT INTO globalparametersets VALUES("%s", "%s", "%s")''' % (nwkey, gpsID, gps)
-        con.execute(exestring)
+        querystring = '''INSERT INTO globalparametersets VALUES("%s", "%s", "%s")''' % (nwkey, gpsID, gps)
+        con.execute(querystring)
     con.commit()
 
 def store_filter(con, nwkey, filterID, filterstring, filtertype, logictype):
-    exestring = '''INSERT INTO filters VALUES("%s", "%s", "%s", "%s", "%s")''' % (nwkey, filterID, filterstring, filtertype, logictype)
-    con.execute(exestring)
+    querystring = '''INSERT INTO filters VALUES("%s", "%s", "%s", "%s", "%s")''' % (nwkey, filterID, filterstring, filtertype, logictype)
+    con.execute(querystring)
     con.commit()
 
 def insert_filter_results(con, nwkey, gpss, filterID=1):
     tablename = "results_iagraphID_"+str(nwkey).zfill(3)
 
     # if it does not exist aleady, create table
-    exestring1 = "CREATE TABLE IF NOT EXISTS %s AS SELECT * FROM globalparametersets WHERE iagraphID=%s;" % (tablename, nwkey)
-    con.execute(exestring1)
+    querystring1 = "CREATE TABLE IF NOT EXISTS %s AS SELECT * FROM globalparametersets WHERE iagraphID=%s;" % (tablename, nwkey)
+    con.execute(querystring1)
     
     # insert filter results
     columnname = 'filterID_'+str(filterID).zfill(3)
     #con.execute('''ALTER TABLE %s DROP COLUMN %s''' % (tablename, columnname)) # not allowed in sqlite: http://www.sqlite.org/faq.html#q11
-    exestring2 = '''ALTER TABLE %s ADD %s INT DEFAULT 0;''' % (tablename, columnname)
-    con.execute(exestring2)
+    querystring2 = '''ALTER TABLE %s ADD %s INT DEFAULT 0;''' % (tablename, columnname)
+    con.execute(querystring2)
     for gps in gpss:
         code = encode_gps(gps, base=10)
-        exestring3 = '''UPDATE %s SET %s = 1 WHERE gpsID = "%s";''' % (tablename, columnname, code)
-        con.execute(exestring3)
+        querystring3 = '''UPDATE %s SET %s = 1 WHERE gpsID = "%s";''' % (tablename, columnname, code)
+        con.execute(querystring3)
     con.commit()
 
 def powerset(iterable):

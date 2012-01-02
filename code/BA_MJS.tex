@@ -11,9 +11,9 @@
 
 \begin{flushleft}
 
-\subsection{Initial formulation of the problem}
+\section{Initial formulation of the problem}
 
-\subsubsection{Open questions and degress of freedom}
+\subsection{Open questions and degress of freedom}
 
 \begin{enumerate}
   \item How to set the maximum thresholds of the network: in the Thomas
@@ -38,7 +38,7 @@ multi-edges or by more than one formal morphogene. E.g. two formal, identical
 morphogenes are able to produce three different states of activity: both
 inactive (low), one active (medium), both active (high).
 
-\subsubsection{Outline of the research program}
+\subsection{Outline of the research program}
 
 \begin{enumerate}
   \item We will investigate one particular network with only 3 nodes (4 or 5
@@ -82,9 +82,9 @@ gene/.style={circle,thick,inner sep=0pt,minimum size=6mm}]
 \end{tikzpicture}
 \end{figure}
 
-\subsection{Defining stripes}
+\section{Defining stripes}
 
-\subsubsection{Defining stripes in CTL}
+\subsection{Defining stripes in CTL}
 
 The aim of this section is to define what is meant by a ``stripe'' in the
 Thomas framework as it is instantiated in the SWP tool. % FIXME: name of tool?
@@ -161,13 +161,25 @@ formulas of the structure
 \begin{equation}
 {\tt initial\_condition -> final\_condition}.
 \end{equation}
-??? Reicht das, oder muss zusätzlich initial condition gefordert werden???
-Testen im Programm mit einfacher Parametermenge ob nur die mit initial
-condition übrigbleiben!!!
+
+On the structure of final condition and biological interpretation\ldots
 
 \subsection{Defining stripes in AL}
 
 in AL
+
+\subsection{The Database}
+
+\subsubsection{Database structure}
+
+\begin{figure}[h!]
+\centering 
+\includegraphics[width=10cm]{ERDiagramRegNetTool.png}
+\end{figure}
+
+Check: are diagram and implementation consistent???
+
+\subsubsection{Encoding and Decoding Contexts and Parameter Sets}
 
 \end{flushleft}
 \end{document}
