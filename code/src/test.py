@@ -1,6 +1,5 @@
 import imp
 import os
-#from os import rename
 from os.path import join, exists
 import networkx as nx #@UnresolvedImport
 from itertools import chain, combinations
@@ -181,8 +180,6 @@ def decode_gps(encoding, IG, base=10):
     return decoded
 
 def export_STG(mc, gps, filename, initialRules=None):
-    print "============"
-    print "Exporting..."
     if initialRules:
         mc.set_initialRules(initialRules)
     mc.set_initialStates()
@@ -235,6 +232,11 @@ if __name__=='__main__':
     interactions[2] = {("X1","X2"):"+", ("X2","X1"):"-"}
     thresholds[2] = {("X1","X2"):1, ("X2","X1"):1}
     filters[2] = {1:["TRUE", "forAll", "CTL"]}
+
+    networks[3] = 'Two-element positive circuit'
+    interactions[3] = {("X1","X2"):"-", ("X2","X1"):"-"}
+    thresholds[3] = {("X1","X2"):1, ("X2","X1"):1}
+    filters[3] = {1:["(X1=0&X2=1)->EF(AG(X1=0))", "forAll", "CTL"]}
 
     edges = dict(zip(interactions.keys(), [interactions[key].keys() for key in interactions.keys()]))
     nodes = dict() # will be initialized below
