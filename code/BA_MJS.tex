@@ -162,7 +162,41 @@ formulas of the structure
 {\tt initial\_condition -> final\_condition}.
 \end{equation}
 
-On the structure of final condition and biological interpretation\ldots
+In this formula, {\tt initial\_condition} specifies the initial state, e.g. the
+activity values of all genes in the network. A longitudinal axis is assumed
+along which the morphogen concentration varies. While we work without cell-cell
+interaction, each cell can be considered independently irrespective of its
+localisation along this axis. The morphogene concentration (which is not
+modelled explicitely) then directly translates into the input gene activity. In
+our consideration, the input gene will always be called the {\it red gene}. The
+red gene activity will therefore be high where the morphogene concentration is
+high and low where the morphogene concentration is low.
+
+The final condition needs to be able to express a ``stripe'' pattern in the
+output gene (corresponding to the {\it gap gene} in biological literature)
+expression, i.e. it needs to display a temporally stable low--high--low pattern,
+depending on its inputs. In the following, the output gene will be called the
+{\it green gene}. We are now going to formulate the stripe condition in CTL
+language.
+
+Recall that our dynamics is described by a non-deterministic automaton which,
+together with a starting state is translated into a computation tree. Hence,
+requiring that for all nodes eventually the green gene take on a certain
+constant value would impose too strong a condition on the network, as it
+basically removes all flexibility from the output gene.
+
+So we require the green gene to take on a certain value $x$
+{\it globally in the future} but only for all paths starting at a certain
+(undetermined) node in the computation tree. This condition allows for other
+values $y\neq x$ to be assumed under other conditions.
+
+The CTL representation of this requirement reads
+\begin{equation}
+{\tt initial\_condition  -> EF(AG(gg=}x{\tt ))}.
+\end{equation}
+In plain language, we require some future paths to exist on which
+eventually the output gene takes on value $x$. 
+
 
 \subsection{Defining stripes in AL}
 
