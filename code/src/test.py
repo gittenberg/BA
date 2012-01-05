@@ -203,15 +203,27 @@ if __name__=='__main__':
     filters = dict()
     
     # example network: graph A in figure 2 of Cotterel/Sharpe
-    # strict edge labels, without morphogene
+    # strict edge labels, without morphogene, blue earlier activated than green
+    # I inserted a rr-rr activation to make the gene 'stable'. Maybe an explicit morphogene is required?
     networks[1] = 'Incoherent type 1 feed-forward, strict edge labels'
-    interactions[1] = {("rr","gg"):"+", ("rr","bb"):"+", ("bb","gg"):"-", ("gg","gg"):"+"}
-    thresholds[1] = {("rr","gg"):2, ("rr","bb"):1, ("bb","gg"):1, ("gg","gg"):1}
+    interactions[1] = {("rr","rr"):"+", ("rr","gg"):"+", ("rr","bb"):"+", ("bb","gg"):"-", ("gg","gg"):"+"}
+    thresholds[1] = {("rr","rr"):1, ("rr","gg"):2, ("rr","bb"):1, ("bb","gg"):1, ("gg","gg"):1}
     filters[1] = {1:["?(rand,mitte: rand.frozen(gg)&rand.max(gg)=0&mitte.frozen(gg)&mitte.min(gg)=1)", None, "AL"], # used to be ...&mitte.max(gg)=1 with the same number of results
                   2:["(rr=2&bb=0&gg=1->EF(AG(gg=0)))&(rr=1&bb=0&gg=1->EF(AG(gg=1)))&(rr=0&bb=0&gg=0->EF(AG(gg=0)))", "forAll", "CTL"]
                   #   (left&middle&right), the gg=1 in left and middle is from the drawing on page 5
                   }
 
+    # strict edge labels, without morphogene, green earlier activated than blue
+    # I inserted a rr-rr activation to make the gene 'stable'. Maybe an explicit morphogene is required?
+    networks[2] = 'Incoherent type 1 feed-forward, strict edge labels, different thresholds'
+    interactions[2] = {("rr","rr"):"+", ("rr","gg"):"+", ("rr","bb"):"+", ("bb","gg"):"-", ("gg","gg"):"+"}
+    thresholds[2] = {("rr","rr"):1, ("rr","gg"):1, ("rr","bb"):2, ("bb","gg"):1, ("gg","gg"):1}
+    filters[2] = {1:["?(rand,mitte: rand.frozen(gg)&rand.max(gg)=0&mitte.frozen(gg)&mitte.min(gg)=1)", None, "AL"], # used to be ...&mitte.max(gg)=1 with the same number of results
+                  2:["(rr=2&bb=0&gg=1->EF(AG(gg=0)))&(rr=1&bb=0&gg=1->EF(AG(gg=1)))&(rr=0&bb=0&gg=0->EF(AG(gg=0)))", "forAll", "CTL"]
+                  #   (left&middle&right), the gg=1 in left and middle is from the drawing on page 5
+                  }
+
+    '''
     # non-strict edge labels, without morphogene
     networks[2] = 'Incoherent type 1 feed-forward, non-strict edge labels'
     interactions[2] = {("rr","gg"):"obs+", ("rr","bb"):"obs+", ("bb","gg"):"obs-", ("gg","gg"):"obs+"}
@@ -220,6 +232,7 @@ if __name__=='__main__':
                   2:["(rr=2&bb=0&gg=1->EF(AG(gg=0)))&(rr=1&bb=0&gg=1->EF(AG(gg=1)))&(rr=0&bb=0&gg=0->EF(AG(gg=0)))", "forAll", "CTL"]
                   #   (left&middle&right), the gg=1 in left and middle is from the drawing on page 5
                   }
+    '''
     
     #CTLformula, CTLsearch = "(rr>0&bb>0&gg>0&EF(gg=0))", "exists" # 190/202 bei thresholds = 1, obs* # Modell fuer linke Region
     #CTLformula, CTLsearch = "(rr>0&bb>0&gg>0&AF(gg=0))", "exists" #   0/202 bei thresholds = 1, obs* # Modell fuer linke Region
@@ -339,7 +352,7 @@ if __name__=='__main__':
             #print decode_gps(encode_gps(gps, base=10), IG, base=10)
             #print TS.TransitionSystem(mc, gps)
             export_STG(mc, gps, filename=str(nwkey).zfill(3)+"_"+encode_gps(gps, base=10)+".gml", initialRules=None)
-    
+
         #mc.export_commonSTG(Type="transitions", filename="A_commonSTG_transitions_strict.gml", initialRules=None)
 
     con.commit()
