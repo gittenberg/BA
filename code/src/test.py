@@ -213,7 +213,7 @@ if __name__=='__main__':
                   #   (left&middle&right), the gg=1 in left and middle is from the drawing on page 5
                   }
 
-    # strict edge labels, without morphogene, green earlier activated than blue
+    # strict edge labels, without morphogene, green activated earlier than blue
     # I inserted a rr-rr activation to make the gene 'stable'. Maybe an explicit morphogene is required?
     networks[2] = 'Incoherent type 1 feed-forward, strict edge labels, different thresholds'
     interactions[2] = {("rr","rr"):"+", ("rr","gg"):"+", ("rr","bb"):"+", ("bb","gg"):"-", ("gg","gg"):"+"}
@@ -223,16 +223,32 @@ if __name__=='__main__':
                   #   (left&middle&right), the gg=1 in left and middle is from the drawing on page 5
                   }
 
-    '''
-    # non-strict edge labels, without morphogene
-    networks[2] = 'Incoherent type 1 feed-forward, non-strict edge labels'
-    interactions[2] = {("rr","gg"):"obs+", ("rr","bb"):"obs+", ("bb","gg"):"obs-", ("gg","gg"):"obs+"}
-    thresholds[2] = {("rr","gg"):2, ("rr","bb"):1, ("bb","gg"):1, ("gg","gg"):1}
-    filters[2] = {1:["?(rand,mitte: rand.frozen(gg)&rand.max(gg)=0&mitte.frozen(gg)&mitte.min(gg)=1)", None, "AL"], # used to be ...&mitte.max(gg)=1 with the same number of results
+    # strict edge labels, with 1 morphogene, green activated earlier than blue
+    networks[3] = 'Incoherent type 1 feed-forward, strict edge labels, different thresholds, with morphogene'
+    interactions[3] = {("mm","mm"):"+", ("mm","rr"):"+", ("rr","gg"):"+", ("rr","bb"):"+", ("bb","gg"):"-", ("gg","gg"):"+"}
+    thresholds[3] = {("mm","mm"):1, ("mm","rr"):0, ("rr","gg"):1, ("rr","bb"):2, ("bb","gg"):1, ("gg","gg"):1}
+    filters[3] = {1:["?(rand,mitte: rand.frozen(gg)&rand.max(gg)=0&mitte.frozen(gg)&mitte.min(gg)=1)", None, "AL"], # used to be ...&mitte.max(gg)=1 with the same number of results
+                  2:["(rr=2&bb=0&gg=1->EF(AG(gg=0)))&(rr=1&bb=0&gg=1->EF(AG(gg=1)))&(rr=0&bb=0&gg=0->EF(AG(gg=0)))", "forAll", "CTL"]
+                  #   (left&middle&right), the gg=1 in left and middle is from the drawing on page 5
+                  }
+
+    # strict edge labels, with 2 morphogenes, green activated earlier than blue
+    networks[4] = 'Incoherent type 1 feed-forward, strict edge labels, different thresholds, with 2 morphogenes'
+    interactions[4] = {("aa1","aa1"):"+", ("aa2","aa2"):"+", ("aa1","rr"):"+", ("aa2","rr"):"+", ("rr","gg"):"+", ("rr","bb"):"+", ("bb","gg"):"-", ("gg","gg"):"+"}
+    thresholds[4] = {("aa1","aa1"):1, ("aa2","aa2"):1, ("aa1","rr"):1, ("aa2","rr"):2, ("rr","gg"):1, ("rr","bb"):2, ("bb","gg"):1, ("gg","gg"):1}
+    filters[4] = {1:["?(rand,mitte: rand.frozen(gg)&rand.max(gg)=0&mitte.frozen(gg)&mitte.min(gg)=1)", None, "AL"], # used to be ...&mitte.max(gg)=1 with the same number of results
                   2:["(rr=2&bb=0&gg=1->EF(AG(gg=0)))&(rr=1&bb=0&gg=1->EF(AG(gg=1)))&(rr=0&bb=0&gg=0->EF(AG(gg=0)))", "forAll", "CTL"]
                   #   (left&middle&right), the gg=1 in left and middle is from the drawing on page 5
                   }
     '''
+    # strict edge labels, without morphogene, green earlier activated than blue, no rr-rr activation
+    networks[4] = 'Incoherent type 1 feed-forward, strict edge labels, different thresholds, no rr-rr activation'
+    interactions[4] = {("rr","gg"):"+", ("rr","bb"):"+", ("bb","gg"):"-", ("gg","gg"):"+"}
+    thresholds[4] = {("rr","gg"):1, ("rr","bb"):2, ("bb","gg"):1, ("gg","gg"):1}
+    filters[4] = {1:["?(rand,mitte: rand.frozen(gg)&rand.max(gg)=0&mitte.frozen(gg)&mitte.min(gg)=1)", None, "AL"], # used to be ...&mitte.max(gg)=1 with the same number of results
+                  2:["(rr=2&bb=0&gg=1->EF(AG(gg=0)))&(rr=1&bb=0&gg=1->EF(AG(gg=1)))&(rr=0&bb=0&gg=0->EF(AG(gg=0)))", "forAll", "CTL"]
+                  #   (left&middle&right), the gg=1 in left and middle is from the drawing on page 5
+                  }
     
     #CTLformula, CTLsearch = "(rr>0&bb>0&gg>0&EF(gg=0))", "exists" # 190/202 bei thresholds = 1, obs* # Modell fuer linke Region
     #CTLformula, CTLsearch = "(rr>0&bb>0&gg>0&AF(gg=0))", "exists" #   0/202 bei thresholds = 1, obs* # Modell fuer linke Region
@@ -243,22 +259,23 @@ if __name__=='__main__':
     
     #mc.filter_extremeAttractors('max', 'attrs', True, True)
 
-    networks[3] = 'Two-element positive circuit'
-    interactions[3] = {("X1","X2"):"-", ("X2","X1"):"-"}
-    thresholds[3] = {("X1","X2"):1, ("X2","X1"):1}
-    filters[3] = {1:["(X1=0&X2=1)->EF(AG(X1=0))", "forAll", "CTL"]}
-
-    networks[4] = 'Lecture example p. 25'
-    interactions[4] = {("X1","X2"):"+", ("X2","X1"):"-", ("X2","X2"):"+"}
-    thresholds[4] = {("X1","X2"):1, ("X2","X1"):1, ("X2","X2"):2}
-    filters[4] = {1:["#F=2", None, "AL"], 
-                  2:["#F=1&#C=1", None, "AL"]}
-
     networks[5] = 'Two-element negative circuit'
     interactions[5] = {("X1","X2"):"+", ("X2","X1"):"-"}
     thresholds[5] = {("X1","X2"):1, ("X2","X1"):1}
     filters[5] = {1:["TRUE", "forAll", "CTL"]}
 
+    networks[6] = 'Two-element positive circuit'
+    interactions[6] = {("X1","X2"):"-", ("X2","X1"):"-"}
+    thresholds[6] = {("X1","X2"):1, ("X2","X1"):1}
+    filters[6] = {1:["(X1=0&X2=1)->EF(AG(X1=0))", "forAll", "CTL"]}
+
+    networks[7] = 'Lecture example p. 25'
+    interactions[7] = {("X1","X2"):"+", ("X2","X1"):"-", ("X2","X2"):"+"}
+    thresholds[7] = {("X1","X2"):1, ("X2","X1"):1, ("X2","X2"):2}
+    filters[7] = {1:["#F=2", None, "AL"], 
+                  2:["#F=1&#C=1", None, "AL"]}
+    '''
+    
     edges = dict(zip(interactions.keys(), [interactions[key].keys() for key in interactions.keys()]))
     nodes = dict() # will be initialized below
     
@@ -345,6 +362,7 @@ if __name__=='__main__':
 
         print "===================================================================================="
         print "Exporting .gml..."
+        mc.initializePSC()
         gpss = mc._psc.get_parameterSets()
         for gps in gpss:
             print gps
