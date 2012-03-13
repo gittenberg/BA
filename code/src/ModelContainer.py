@@ -389,7 +389,7 @@ class ModelContainer():
             if not var in varnames:
                 self.message("MC: %s is not in network. Skipped."%var,"error")
                 continue
-            self._valueConstraints[var] = list(valueConstraints[var])
+            self._valueConstraints[var] = valueConstraints[var] # removed a probably buggy list() here (Martin, 13/03/12)
                          
 
     def edgeLabel(self, (var1, var2)):
