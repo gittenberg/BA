@@ -212,9 +212,12 @@ if __name__=='__main__':
     interactions[1] = {("rr","rr"):"+", ("rr","gg"):"+", ("rr","bb"):"+", ("bb","gg"):"-", ("gg","gg"):"+"}
     thresholds[1] = {("rr","rr"):1, ("rr","gg"):2, ("rr","bb"):1, ("bb","gg"):1, ("gg","gg"):1}
     filters[1] = {1:["?(rand,mitte: rand.frozen(gg)&rand.max(gg)=0&mitte.frozen(gg)&mitte.min(gg)=1)", None, "AL"], # used to be ...&mitte.max(gg)=1 with the same number of results
-                  2:["((rr=2&bb=0&gg=1)->EF(AG(gg=0)))&((rr=1&bb=0&gg=1)->EF(AG(gg=1)))&((rr=0&bb=0&gg=0)->EF(AG(gg=0)))", "forAll", "CTL"]
-                  #   (anterior&middle&posterior), the gg=1 in anterior and middle is from the drawing on page 5
+                  2:["((rr=2&bb=0&gg=1)->EF(AG(gg=0)))&((rr=1&bb=0&gg=1)->EF(AG(gg=1)))&((rr=0&bb=0&gg=0)->EF(AG(gg=0)))", "forAll", "CTL"], 
+                  #   (anterior&medial&posterior), the gg=1 in anterior and medial is from the drawing on page 5
+                  3:["((rr=2&bb=0&gg=1)->EF(AG(gg=0)))&((rr=1&bb=0&gg=1)->EF(AG(gg=1)))&((rr=0&bb=0&gg=0)->EF(AG(gg=0)))", "forAll", "CTL"]
                   }
+
+    '''
     # example network: graph A in figure 2 of Cotterel/Sharpe
     # strict edge labels, without morphogene, green activated earlier than blue
     # I inserted a rr-rr activation to make the gene 'stable'. Maybe an explicit morphogene is required?
@@ -222,17 +225,19 @@ if __name__=='__main__':
     interactions[2] = {("rr","rr"):"+", ("rr","gg"):"+", ("rr","bb"):"+", ("bb","gg"):"-", ("gg","gg"):"+"}
     thresholds[2] = {("rr","rr"):1, ("rr","gg"):1, ("rr","bb"):2, ("bb","gg"):1, ("gg","gg"):1}
     filters[2] = {1:["?(rand,mitte: rand.frozen(gg)&rand.max(gg)=0&mitte.frozen(gg)&mitte.min(gg)=1)", None, "AL"], # used to be ...&mitte.max(gg)=1 with the same number of results
-                  2:["((rr=2&bb=0&gg=1)->EF(AG(gg=0)))&((rr=1&bb=0&gg=1)->EF(AG(gg=1)))&((rr=0&bb=0&gg=0)->EF(AG(gg=0)))", "forAll", "CTL"]
-                  #   (anterior&middle&posterior), the gg=1 in anterior and middle is from the drawing on page 5
+                  2:["((rr=2&bb=0&gg=1)->EF(AG(gg=0)))&((rr=1&bb=0&gg=1)->EF(AG(gg=1)))&((rr=0&bb=0&gg=0)->EF(AG(gg=0)))", "forAll", "CTL"],
+                  #   (anterior&medial&posterior), the gg=1 in anterior and medial is from the drawing on page 5
+                  3:["((rr=2&bb=0&gg=1)->EF(AG(gg=0&rr=2)))&((rr=1&bb=0&gg=1)->EF(AG(gg=1&rr=1)))&((rr=0&bb=0&gg=0)->EF(AG(gg=0&rr=0)))", "forAll", "CTL"]
                   }
 
+    '''
     # strict edge labels, with 1 morphogene, green activated earlier than blue
     networks[3] = '(A) Incoherent type 1 feed-forward, strict edge labels, different thresholds, with morphogene'
     interactions[3] = {("mm","mm"):"+", ("mm","rr"):"+", ("rr","gg"):"+", ("rr","bb"):"+", ("bb","gg"):"-", ("gg","gg"):"+"}
     thresholds[3] = {("mm","mm"):1, ("mm","rr"):0, ("rr","gg"):1, ("rr","bb"):2, ("bb","gg"):1, ("gg","gg"):1}
     filters[3] = {1:["?(rand,mitte: rand.frozen(gg)&rand.max(gg)=0&mitte.frozen(gg)&mitte.min(gg)=1)", None, "AL"], # used to be ...&mitte.max(gg)=1 with the same number of results
                   2:["(rr=2&bb=0&gg=1->EF(AG(gg=0)))&(rr=1&bb=0&gg=1->EF(AG(gg=1)))&(rr=0&bb=0&gg=0->EF(AG(gg=0)))", "forAll", "CTL"]
-                  #   (anterior&middle&posterior), the gg=1 in anterior and middle is from the drawing on page 5
+                  #   (anterior&medial&posterior), the gg=1 in anterior and medial is from the drawing on page 5
                   }
     # strict edge labels, with 2 morphogenes, green activated earlier than blue
     networks[4] = '(A) Incoherent type 1 feed-forward, strict edge labels, different thresholds, with 2 morphogenes'
@@ -240,7 +245,7 @@ if __name__=='__main__':
     thresholds[4] = {("aa1","aa1"):1, ("aa2","aa2"):1, ("aa1","rr"):1, ("aa2","rr"):2, ("rr","gg"):1, ("rr","bb"):2, ("bb","gg"):1, ("gg","gg"):1}
     filters[4] = {1:["?(rand,mitte: rand.frozen(gg)&rand.max(gg)=0&mitte.frozen(gg)&mitte.min(gg)=1)", None, "AL"], # used to be ...&mitte.max(gg)=1 with the same number of results
                   2:["(rr=2&bb=0&gg=1->EF(AG(gg=0)))&(rr=1&bb=0&gg=1->EF(AG(gg=1)))&(rr=0&bb=0&gg=0->EF(AG(gg=0)))", "forAll", "CTL"]
-                  #   (anterior&middle&posterior), the gg=1 in anterior and middle is from the drawing on page 5
+                  #   (anterior&medial&posterior), the gg=1 in anterior and medial is from the drawing on page 5
                   }
 
     # strict edge labels, without morphogene, green activated earlier than blue, no rr-rr activation
@@ -250,7 +255,7 @@ if __name__=='__main__':
     valueConstraints[5] = {'rr':{():[0, 1, 2]}} # TODO: this should admit more than one set of valueConstraints
     filters[5] = {1:["?(rand,mitte: rand.frozen(gg)&rand.max(gg)=0&mitte.frozen(gg)&mitte.min(gg)=1)", None, "AL"], # used to be ...&mitte.max(gg)=1 with the same number of results
                   2:["(rr=2&bb=0&gg=1->EF(AG(gg=0)))&(rr=1&bb=0&gg=1->EF(AG(gg=1)))&(rr=0&bb=0&gg=0->EF(AG(gg=0)))", "forAll", "CTL"]
-                  #   (anterior&middle&posterior), the gg=1 in anterior and middle is from the drawing on page 5
+                  #   (anterior&medial&posterior), the gg=1 in anterior and medial is from the drawing on page 5
                   }
     '''
 
@@ -262,7 +267,7 @@ if __name__=='__main__':
     valueConstraints[6] = {'rr':{():[0, 1, 2]}} # TODO: this should admit more than one set of valueConstraints
     filters[6] = {1:["?(rand,mitte: rand.frozen(gg)&rand.max(gg)=0&mitte.frozen(gg)&mitte.min(gg)=1)", None, "AL"], # TODO: check (new network!!)
                   2:["(rr=2&bb=1&gg=1->EF(AG(gg=0)))&(rr=1&bb=1&gg=1->EF(AG(gg=1)))&(rr=0&bb=1&gg=0->EF(AG(gg=0)))", "forAll", "CTL"]
-                  #   (anterior&middle&posterior), the gg=1 in anterior and middle is from the drawing on page 5
+                  #   (anterior&medial&posterior), the gg=1 in anterior and medial is from the drawing on page 5
                   }
     dynamics[6] = "asynchronous"
     
@@ -311,10 +316,10 @@ if __name__=='__main__':
 
         mc.set_initialStates()
         
-        if valueConstraints[nwkey]:
+        if valueConstraints.has_key(nwkey):
             mc.set_valueConstraints(valueConstraints[nwkey])
 
-        if dynamics[nwkey]:
+        if dynamics.has_key(nwkey):
             mc.set_dynamics(dynamics[nwkey])
         else:
             mc.set_dynamics("asynchronous")
