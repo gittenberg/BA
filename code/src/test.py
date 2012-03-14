@@ -201,64 +201,73 @@ if __name__=='__main__':
     interactions = dict()
     thresholds = dict()
     filters = dict()
+    valueConstraints = dict()
+    dynamics = dict()
     
     '''
     # example network: graph A in figure 2 of Cotterel/Sharpe
-    # strict edge labels, without morphogene, blue earlier activated than green (WRONG!!!)
+    # strict edge labels, without morphogene, blue activated earlier than green (WRONG!!!)
     # I inserted a rr-rr activation to make the gene 'stable'. Maybe an explicit morphogene is required?
-    networks[1] = 'Incoherent type 1 feed-forward, strict edge labels'
+    networks[1] = '(A) Incoherent type 1 feed-forward, strict edge labels'
     interactions[1] = {("rr","rr"):"+", ("rr","gg"):"+", ("rr","bb"):"+", ("bb","gg"):"-", ("gg","gg"):"+"}
     thresholds[1] = {("rr","rr"):1, ("rr","gg"):2, ("rr","bb"):1, ("bb","gg"):1, ("gg","gg"):1}
     filters[1] = {1:["?(rand,mitte: rand.frozen(gg)&rand.max(gg)=0&mitte.frozen(gg)&mitte.min(gg)=1)", None, "AL"], # used to be ...&mitte.max(gg)=1 with the same number of results
                   2:["((rr=2&bb=0&gg=1)->EF(AG(gg=0)))&((rr=1&bb=0&gg=1)->EF(AG(gg=1)))&((rr=0&bb=0&gg=0)->EF(AG(gg=0)))", "forAll", "CTL"]
-                  #   (left&middle&right), the gg=1 in left and middle is from the drawing on page 5
+                  #   (anterior&middle&posterior), the gg=1 in anterior and middle is from the drawing on page 5
                   }
     # example network: graph A in figure 2 of Cotterel/Sharpe
     # strict edge labels, without morphogene, green activated earlier than blue
     # I inserted a rr-rr activation to make the gene 'stable'. Maybe an explicit morphogene is required?
-    networks[2] = 'Incoherent type 1 feed-forward, strict edge labels, different thresholds'
+    networks[2] = '(A) Incoherent type 1 feed-forward, strict edge labels, different thresholds'
     interactions[2] = {("rr","rr"):"+", ("rr","gg"):"+", ("rr","bb"):"+", ("bb","gg"):"-", ("gg","gg"):"+"}
     thresholds[2] = {("rr","rr"):1, ("rr","gg"):1, ("rr","bb"):2, ("bb","gg"):1, ("gg","gg"):1}
     filters[2] = {1:["?(rand,mitte: rand.frozen(gg)&rand.max(gg)=0&mitte.frozen(gg)&mitte.min(gg)=1)", None, "AL"], # used to be ...&mitte.max(gg)=1 with the same number of results
                   2:["((rr=2&bb=0&gg=1)->EF(AG(gg=0)))&((rr=1&bb=0&gg=1)->EF(AG(gg=1)))&((rr=0&bb=0&gg=0)->EF(AG(gg=0)))", "forAll", "CTL"]
-                  #   (left&middle&right), the gg=1 in left and middle is from the drawing on page 5
+                  #   (anterior&middle&posterior), the gg=1 in anterior and middle is from the drawing on page 5
                   }
 
     # strict edge labels, with 1 morphogene, green activated earlier than blue
-    networks[3] = 'Incoherent type 1 feed-forward, strict edge labels, different thresholds, with morphogene'
+    networks[3] = '(A) Incoherent type 1 feed-forward, strict edge labels, different thresholds, with morphogene'
     interactions[3] = {("mm","mm"):"+", ("mm","rr"):"+", ("rr","gg"):"+", ("rr","bb"):"+", ("bb","gg"):"-", ("gg","gg"):"+"}
     thresholds[3] = {("mm","mm"):1, ("mm","rr"):0, ("rr","gg"):1, ("rr","bb"):2, ("bb","gg"):1, ("gg","gg"):1}
     filters[3] = {1:["?(rand,mitte: rand.frozen(gg)&rand.max(gg)=0&mitte.frozen(gg)&mitte.min(gg)=1)", None, "AL"], # used to be ...&mitte.max(gg)=1 with the same number of results
                   2:["(rr=2&bb=0&gg=1->EF(AG(gg=0)))&(rr=1&bb=0&gg=1->EF(AG(gg=1)))&(rr=0&bb=0&gg=0->EF(AG(gg=0)))", "forAll", "CTL"]
-                  #   (left&middle&right), the gg=1 in left and middle is from the drawing on page 5
+                  #   (anterior&middle&posterior), the gg=1 in anterior and middle is from the drawing on page 5
                   }
     # strict edge labels, with 2 morphogenes, green activated earlier than blue
-    networks[4] = 'Incoherent type 1 feed-forward, strict edge labels, different thresholds, with 2 morphogenes'
+    networks[4] = '(A) Incoherent type 1 feed-forward, strict edge labels, different thresholds, with 2 morphogenes'
     interactions[4] = {("aa1","aa1"):"+", ("aa2","aa2"):"+", ("aa1","rr"):"+", ("aa2","rr"):"+", ("rr","gg"):"+", ("rr","bb"):"+", ("bb","gg"):"-", ("gg","gg"):"+"}
     thresholds[4] = {("aa1","aa1"):1, ("aa2","aa2"):1, ("aa1","rr"):1, ("aa2","rr"):2, ("rr","gg"):1, ("rr","bb"):2, ("bb","gg"):1, ("gg","gg"):1}
     filters[4] = {1:["?(rand,mitte: rand.frozen(gg)&rand.max(gg)=0&mitte.frozen(gg)&mitte.min(gg)=1)", None, "AL"], # used to be ...&mitte.max(gg)=1 with the same number of results
                   2:["(rr=2&bb=0&gg=1->EF(AG(gg=0)))&(rr=1&bb=0&gg=1->EF(AG(gg=1)))&(rr=0&bb=0&gg=0->EF(AG(gg=0)))", "forAll", "CTL"]
-                  #   (left&middle&right), the gg=1 in left and middle is from the drawing on page 5
+                  #   (anterior&middle&posterior), the gg=1 in anterior and middle is from the drawing on page 5
                   }
 
-    '''
-    # strict edge labels, without morphogene, green earlier activated than blue, no rr-rr activation
-    networks[5] = 'Incoherent type 1 feed-forward, strict edge labels, different thresholds, no rr-rr activation'
+    # strict edge labels, without morphogene, green activated earlier than blue, no rr-rr activation
+    networks[5] = '(A) Incoherent type 1 feed-forward, strict edge labels, different thresholds, no rr-rr activation'
     interactions[5] = {("rr","gg"):"+", ("rr","bb"):"+", ("bb","gg"):"-", ("gg","gg"):"+"}
     thresholds[5] = {("rr","gg"):1, ("rr","bb"):2, ("bb","gg"):1, ("gg","gg"):1}
+    valueConstraints[5] = {'rr':{():[0, 1, 2]}} # TODO: this should admit more than one set of valueConstraints
     filters[5] = {1:["?(rand,mitte: rand.frozen(gg)&rand.max(gg)=0&mitte.frozen(gg)&mitte.min(gg)=1)", None, "AL"], # used to be ...&mitte.max(gg)=1 with the same number of results
                   2:["(rr=2&bb=0&gg=1->EF(AG(gg=0)))&(rr=1&bb=0&gg=1->EF(AG(gg=1)))&(rr=0&bb=0&gg=0->EF(AG(gg=0)))", "forAll", "CTL"]
-                  #   (left&middle&right), the gg=1 in left and middle is from the drawing on page 5
+                  #   (anterior&middle&posterior), the gg=1 in anterior and middle is from the drawing on page 5
                   }
-    
+    '''
 
+    # example network: graph B in figure 2 of Cotterel/Sharpe
+    # strict edge labels, without morphogene, green activated earlier than blue, no rr-rr activation
+    networks[6] = '(B) Mutual inhibition, strict edge labels, no rr-rr activation'
+    interactions[6] = {("rr","gg"):"+", ("rr","bb"):"+", ("bb","gg"):"-", ("gg","bb"):"-"}
+    thresholds[6] = {("rr","gg"):1, ("rr","bb"):2, ("bb","gg"):1, ("gg","bb"):1}
+    valueConstraints[6] = {'rr':{():[0, 1, 2]}} # TODO: this should admit more than one set of valueConstraints
+    filters[6] = {1:["?(rand,mitte: rand.frozen(gg)&rand.max(gg)=0&mitte.frozen(gg)&mitte.min(gg)=1)", None, "AL"], # TODO: check (new network!!)
+                  2:["(rr=2&bb=1&gg=1->EF(AG(gg=0)))&(rr=1&bb=1&gg=1->EF(AG(gg=1)))&(rr=0&bb=1&gg=0->EF(AG(gg=0)))", "forAll", "CTL"]
+                  #   (anterior&middle&posterior), the gg=1 in anterior and middle is from the drawing on page 5
+                  }
+    dynamics[6] = "asynchronous"
+    
     '''
     #mc.filter_extremeAttractors('max', 'attrs', True, True)
-
-    networks[6] = 'Two-element positive circuit'
-    interactions[6] = {("X1","X2"):"-", ("X2","X1"):"-"}
-    thresholds[6] = {("X1","X2"):1, ("X2","X1"):1}
-    filters[6] = {1:["(X1=0&X2=1)->EF(AG(X1=0))", "forAll", "CTL"]}
 
     networks[7] = 'Lecture example p. 25'
     interactions[7] = {("X1","X2"):"+", ("X2","X1"):"-", ("X2","X2"):"+"}
@@ -270,6 +279,11 @@ if __name__=='__main__':
     interactions[8] = {("X1","X2"):"+", ("X2","X1"):"-"}
     thresholds[8] = {("X1","X2"):1, ("X2","X1"):1}
     filters[8] = {1:["TRUE", "forAll", "CTL"]}
+
+    networks[9] = 'Two-element positive circuit'
+    interactions[9] = {("X1","X2"):"-", ("X2","X1"):"-"}
+    thresholds[9] = {("X1","X2"):1, ("X2","X1"):1}
+    filters[9] = {1:["(X1=0&X2=1)->EF(AG(X1=0))", "forAll", "CTL"]}
     '''
     
     edges = dict(zip(interactions.keys(), [interactions[key].keys() for key in interactions.keys()]))
@@ -297,10 +311,15 @@ if __name__=='__main__':
 
         mc.set_initialStates()
         
-        valueConstraints = {'rr':{():[0, 2]}} # FIXME: this needs to be moved out to the definitions section
-        mc.set_valueConstraints(valueConstraints)
+        if valueConstraints[nwkey]:
+            mc.set_valueConstraints(valueConstraints[nwkey])
+
+        if dynamics[nwkey]:
+            mc.set_dynamics(dynamics[nwkey])
+        else:
+            mc.set_dynamics("asynchronous")
+        
         mc.initializePSC()
-        # TODO: replacing the previous by MC.parameterSetup() would allow more flexibility like local constraints etc.
             
         lpss = mc._psc._localParameterSets
         #print len(mc._psc)

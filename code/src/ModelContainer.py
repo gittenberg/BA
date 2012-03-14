@@ -307,7 +307,7 @@ class ModelContainer():
     def get_initialStates(self):
         return self._initialStates
 
-    def _generate_initialStates(self) :
+    def _generate_initialStates(self):
         """
         Compute the initial states, following the rules given by self.initialRule().
         """
@@ -317,7 +317,7 @@ class ModelContainer():
             try:
                 min, max = self.initialRule(var)
                 valuesRange.append(range(min, max+1))
-            except :
+            except:
                 valuesRange.append(range(self.varMax(var)+1))
         
         # compute initial states
