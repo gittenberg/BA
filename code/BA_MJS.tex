@@ -1,7 +1,8 @@
 \documentclass{article}
 
-\usepackage{xltxtra}% this will automatically pull two necessary packages: fontspec and xunicode
-\setmainfont[Mapping=tex-text]{Adobe Jenson Pro}
+%\usepackage{xltxtra}% this will automatically pull two necessary packages:
+%fontspec and xunicode
+%\setmainfont[Mapping=tex-text]{Adobe Jenson Pro}
     
 \usepackage{pgf}
 \usepackage{tikz}
@@ -30,9 +31,39 @@ Insert standard introduction into the formalism here\ldots
 
 Reproduce the 9710 networks\ldots
 
+\begin{enumerate}
+  \item Describe the connection between the quasi-continous formalism and the
+  Thomas formalism
+  \item Enumerate all possible (connected) networks in Python
+  \item We will investigate one particular network with only 3 nodes (4 or 5
+  including morphogene).
+  \item We will apply the strictest possible edge labels ({\tt +} and {\tt -}
+  initially).
+  \item We will try out all possible values for thresholds and record the
+  results for each set.
+  \item Later: The dynamics are to be investigated in particular using
+  Cytoscape.
+  \item Results are to be recorded for CTL filtering, for AL filtering and for
+  the combination of CTL filtering and AL filtering.
+  \item Next the edge label strictness can be relaxed. Again, all results are to
+  be recorded.
+  \item Afterwards, this procedure is to be applied for all simple
+  stripe-generating networks with three nodes (diffusion to be left out initially).
+  \item Finally, networks with more nodes can be investigated.
+\end{enumerate}
+
 \subsection{Database structure}
 
-TBD: will we store the networks in the database?
+\begin{figure}[h!]
+\centering 
+\includegraphics[width=10cm]{ERDiagramRegNetTool.png}
+\end{figure}
+
+Check: are diagram and implementation consistent???
+
+TBD: will we store the networks in the database???
+
+\subsubsection{Encoding and Decoding Contexts and Parameter Sets}
 
 \section{Mathematical formulation of the French flag problem}
 
@@ -53,71 +84,18 @@ TBD: will we store the networks in the database?
   investigated. Are the same parameter sets filtered by AL and CTL? I.e., is a
   stripe under CTL the same as a stripe in AL? If not, is one approach more
   comprehensive than the other?
-\end{enumerate}
-
-\subsection{Pattern definition in CTL}
-
-\subsection{Pattern definition in AL}
-
-\section{Filtering pattern-forming networks}
-
-\section{Analysis of the dynamics of pattern formation}
-
-Maybe change section header to include ``visualisation'' or ``mapping to the ODE
-framework''.
-
-\section{Summary, conclusions and outlook}
-
-
-\section{Initial formulation of the problem}
-
-\subsection{Outline of the research program}
-
-\begin{enumerate}
-  \item We will investigate one particular network with only 3 nodes (4 or 5
-  with morphogene).
-  \item We will apply the strictest possible edge labels ({\tt +} and {\tt -}
-  initially).
-  \item The dynamics are to be investigated in particular using Cytoscape.
-  \item We will try out all possible values for thresholds and record the
-  results for each set.
   \item Results are to be recorded for CTL filtering, for AL filtering and for
   the combination of CTL filtering and AL filtering.
   \item Next the edge label strictness can be relaxed. Again, all results are to
   be recorded.
   \item Afterwards, this procedure is to be applied for all simple
   stripe-generating networks with three nodes (diffusion to be left out initially).
+  \item The dynamics are to be investigated in particular using
+  Cytoscape.
   \item Finally, networks with more nodes can be investigated.
 \end{enumerate}
 
-\subsection{Other To Dos}
-
-\begin{enumerate}
-  \item Describe the connection between the quasi-continous formalism and the
-  Thomas formalism
-  \item Enumerate all possible (connected) networks in Python
-\end{enumerate}
-
-\begin{figure}
-\begin{tikzpicture}
-[->,>=stealth',shorten >=1pt,
-gene/.style={circle,thick,inner sep=0pt,minimum size=6mm}]
-\node[gene,draw=black,fill=white]    at (90:1.5cm)  (mm) {M};
-\node[gene,draw=red,fill=red!50]     at (0,0)     (rr) {};
-\node[gene,draw=blue,fill=blue!50]   at (300:2cm) (bb) {};
-\node[gene,draw=green,fill=green!50] at (0:2cm)   (gg) {};
-
-\path [->,very thick] (mm) edge node {} (rr);
-\path [->,very thick] (rr) edge node {} (gg);
-\path [->,very thick] (rr) edge node {} (bb);
-\path [-|,very thick] (bb) edge node {} (gg);
-\path [->,very thick] (gg) edge [loop above,looseness=12] node {} (gg);
-\end{tikzpicture}
-\end{figure}
-
-\section{Defining stripes}
-
-\subsection{Defining stripes in CTL}
+\subsection{Pattern definition in CTL}
 
 The aim of this section is to define what is meant by a ``stripe'' in the
 Thomas framework as it is instantiated in the SWP tool. % FIXME: name of tool?
@@ -126,48 +104,6 @@ be filtered by the model checker in two different modes, {\tt forAll} (the defau
 {\tt exists}. To understand the difference between these modes, we consider how
 a STG is mapped to a computation tree which is processed by the model
 checker. An example is displayed in Fig.~\ref{STG2CT}.
-
-\begin{figure}[h!]
-\centering 
-\subfigure[A (non-unitary) state transition graph] {
-\begin{tikzpicture}
-[->,>=stealth',shorten >=1pt,
-gene/.style={circle,thick,inner sep=0pt,minimum size=10mm}] 
-\node[gene,draw=red,fill=red!20]     at (0,0)     (rr) {\color{red}110};
-\node[gene,draw=blue,fill=blue!20]   at (270:3cm) (bb) {\color{blue}011}; 
-\node[gene,draw=green!50!black,fill=green!20] at (330:3cm) (gg) {\color{green!50!black}001};
-
-\path [->,very thick] (rr) edge node {} (gg);
-\draw [->,very thick] ([xshift= 3pt] rr.south) -- ([xshift= 3pt] bb.north);
-\draw [<-,very thick] ([xshift=-3pt] rr.south) -- ([xshift=-3pt] bb.north);
-\path [->,very thick] (bb) edge node {} (gg);
-\path [->,very thick] (gg) edge [loop right,looseness=15] node {} (gg);
-\end{tikzpicture}
-}\hfill
-\subfigure[One out of three corresponding computation trees]
-{
-\begin{tikzpicture}
-[->,>=stealth',shorten >=1pt,
-gene/.style={circle,thick,inner sep=0pt,minimum size=10mm}] 
-\node[gene,draw=red,fill=red!20]{\color{red}110}[level distance=20mm]
-	child [->,very thick]{node [gene,draw=blue,fill=blue!20]{\color{blue}011}
-		child [->,very thick]{node [gene,draw=red,fill=red!20]{\color{red}110}
-			[level distance=12mm]child [-,dashed,very thick]
-		}
-		child [->,very thick]{node [gene,draw=green!50!black,fill=green!20]{\color{green!50!black}001}
-			[level distance=12mm]child [-,dashed,very thick]
-		}
-	}
-	child [->,very thick]{node [gene,draw=green!50!black,fill=green!20]{\color{green!50!black}001} 
-		child[missing]
-		child [->,very thick]{node [gene,draw=green!50!black,fill=green!20]{\color{green!50!black}001}
-			[level distance=12mm]child [-,dashed,very thick]
-		}
-	};
-\end{tikzpicture}}
-\caption{Mapping from the state transition graph to a computation tree}
-\label{STG2CT}
-\end{figure}
 
 We note that in order to convert an STG to a computation tree, the STG must be
 rooted as well as ``expanded''. There are equally many ways to root the STG as
@@ -230,23 +166,78 @@ The CTL representation of this requirement reads
 In plain language, we require some future paths to exist on which
 eventually the output gene takes on value $x$. 
 
+\subsection{Pattern definition in AL}
 
-\subsection{Defining stripes in AL}
+\ldots in AL
 
-in AL
+\section{Filtering pattern-forming networks}
 
-\subsection{The Database}
+\section{Analysis of the dynamics of pattern formation}
 
-\subsubsection{Database structure}
+Maybe change section header to include ``visualisation'' or ``mapping to the ODE
+framework''.
+
+\section{Summary, conclusions and outlook}
+
+
+\begin{figure}
+\begin{tikzpicture}
+[->,>=stealth',shorten >=1pt,
+gene/.style={circle,thick,inner sep=0pt,minimum size=6mm}]
+\node[gene,draw=black,fill=white]    at (90:1.5cm)  (mm) {M};
+\node[gene,draw=red,fill=red!50]     at (0,0)     (rr) {};
+\node[gene,draw=blue,fill=blue!50]   at (300:2cm) (bb) {};
+\node[gene,draw=green,fill=green!50] at (0:2cm)   (gg) {};
+
+\path [->,very thick] (mm) edge node {} (rr);
+\path [->,very thick] (rr) edge node {} (gg);
+\path [->,very thick] (rr) edge node {} (bb);
+\path [-|,very thick] (bb) edge node {} (gg);
+\path [->,very thick] (gg) edge [loop above,looseness=12] node {} (gg);
+\end{tikzpicture}
+\end{figure}
 
 \begin{figure}[h!]
 \centering 
-\includegraphics[width=10cm]{ERDiagramRegNetTool.png}
+\subfigure[A (non-unitary) state transition graph] {
+\begin{tikzpicture}
+[->,>=stealth',shorten >=1pt,
+gene/.style={circle,thick,inner sep=0pt,minimum size=10mm}] 
+\node[gene,draw=red,fill=red!20]     at (0,0)     (rr) {\color{red}110};
+\node[gene,draw=blue,fill=blue!20]   at (270:3cm) (bb) {\color{blue}011}; 
+\node[gene,draw=green!50!black,fill=green!20] at (330:3cm) (gg) {\color{green!50!black}001};
+
+\path [->,very thick] (rr) edge node {} (gg);
+\draw [->,very thick] ([xshift= 3pt] rr.south) -- ([xshift= 3pt] bb.north);
+\draw [<-,very thick] ([xshift=-3pt] rr.south) -- ([xshift=-3pt] bb.north);
+\path [->,very thick] (bb) edge node {} (gg);
+\path [->,very thick] (gg) edge [loop right,looseness=15] node {} (gg);
+\end{tikzpicture}
+}\hfill
+\subfigure[One out of three corresponding computation trees]
+{
+\begin{tikzpicture}
+[->,>=stealth',shorten >=1pt,
+gene/.style={circle,thick,inner sep=0pt,minimum size=10mm}] 
+\node[gene,draw=red,fill=red!20]{\color{red}110}[level distance=20mm]
+	child [->,very thick]{node [gene,draw=blue,fill=blue!20]{\color{blue}011}
+		child [->,very thick]{node [gene,draw=red,fill=red!20]{\color{red}110}
+			[level distance=12mm]child [-,dashed,very thick]
+		}
+		child [->,very thick]{node [gene,draw=green!50!black,fill=green!20]{\color{green!50!black}001}
+			[level distance=12mm]child [-,dashed,very thick]
+		}
+	}
+	child [->,very thick]{node [gene,draw=green!50!black,fill=green!20]{\color{green!50!black}001} 
+		child[missing]
+		child [->,very thick]{node [gene,draw=green!50!black,fill=green!20]{\color{green!50!black}001}
+			[level distance=12mm]child [-,dashed,very thick]
+		}
+	};
+\end{tikzpicture}}
+\caption{Mapping from the state transition graph to a computation tree}
+\label{STG2CT}
 \end{figure}
-
-Check: are diagram and implementation consistent???
-
-\subsubsection{Encoding and Decoding Contexts and Parameter Sets}
 
 \end{flushleft}
 \end{document}
