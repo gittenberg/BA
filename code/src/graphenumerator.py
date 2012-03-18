@@ -32,6 +32,6 @@ print network_matrix_representation(nodes, example_network)
 
 # pickle for later use
 ######################################################################
-pickle.dump(networks, file("allnetworks.py", "w" ))
-filecontent = pickle.load(file("allnetworks.py"))
+pickle.dump(networks, file("allnetworks.txt", "w" ))
+#filecontent = pickle.load(file("allnetworks.txt"))
 #print filecontent
