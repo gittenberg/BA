@@ -305,8 +305,8 @@ if __name__=='__main__':
             IG.add_edges_from(edges[nwkey])
                     
         mc = MC.ModelContainer()
-        mc._NuSMVpath = r"C:\NuSMV\2.5.4\bin\NuSMV.exe"
-        #mc._NuSMVpath = "C:\Progra~2\NuSMV\2.5.4\bin\NuSMV.exe"
+        mc._NuSMVpath = r"C:\NuSMV\2.5.4\bin\NuSMV.exe"             # Samsung laptop
+        #mc._NuSMVpath = "C:\Progra~2\NuSMV\2.5.4\bin\NuSMV.exe"    # Acer laptop
 
         mc.set_IG(IG)
         if interactions.has_key(nwkey):
