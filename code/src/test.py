@@ -8,7 +8,7 @@ import sqlite3
 MC = imp.load_source("MC", os.path.join("ModelContainer.py"))
 TS = imp.load_source("TS", os.path.join("TransitionSystem.py"))
 
-def create_database(path="C:\Users\MJS\gitprojects_2\BA\code\src", dbname='filter_results.db'):
+def create_database(path="C:\Users\MJS\git\BA\code\src", dbname='filter_results.db'):
     # We delete/rename the entire database. Alternatively, one could only DROP the results tables but this was difficult. # TODO:
     filepath = join(path, dbname)
     if exists(filepath+"~"): os.remove(filepath+"~")
@@ -305,7 +305,8 @@ if __name__=='__main__':
             IG.add_edges_from(edges[nwkey])
                     
         mc = MC.ModelContainer()
-        mc._NuSMVpath = r"C:\Progra~2\NuSMV\2.5.2\bin\NuSMV.exe"
+        mc._NuSMVpath = r"C:\NuSMV\2.5.4\bin\NuSMV.exe"
+        #mc._NuSMVpath = "C:\Progra~2\NuSMV\2.5.4\bin\NuSMV.exe"
 
         mc.set_IG(IG)
         if interactions.has_key(nwkey):
