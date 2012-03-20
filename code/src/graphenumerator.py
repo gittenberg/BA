@@ -12,7 +12,7 @@ networks = [dict(zip(edges, labelcombination)) for labelcombination in labelcomb
 
 #for i in range(10):
 #    print networks[i]
-#print len(networks)
+#print len(networks) # 3^9 = 19683
 
 
 # check for isomorphism
@@ -23,14 +23,22 @@ def network_matrix_representation(nodelist=None, network=None):
     for mi, m in enumerate(nodelist):
         for nj, n in enumerate(nodelist):
             nwmatrep[mi, nj] = labels.index(network[(m, n)]) - 1
-            # in this the ordering of labels matters
+            # here the ordering of labels matters
     return np.asmatrix(nwmatrep)
 
-example_network = networks[19000]
-print network_matrix_representation(nodes, example_network)
+def permute_array(MM, perm):
+    tempMM0 = np.asarray(MM)
+    tempMM1 = np.asarray([tempMM0[i, :] for i in perm])
+    tempMM2 = np.asarray([tempMM1[:, i] for i in perm])
+    return tempMM2
 
-for perm in itertools.permutations(range(len(nodes)-1)):
-    print perm
+# Later: loop over all networks and remove equivalent ones; recount
+
+example_network = networks[19000]
+nmr = network_matrix_representation(nodes, example_network)
+
+for perm in itertools.permutations(range(len(nodes))):
+    print permute_array(nmr, perm)
 
 # pickle for later use
 ######################################################################

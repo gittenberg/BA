@@ -8,10 +8,10 @@ matrix = [[1, 2, 3],
 
 permutation = [1, 0, 2]
 
-MM = np.asarray(matrix)
+def permute_array(MM, perm):
+    tempMM0 = np.asarray(MM)
+    tempMM1 = np.asarray([tempMM0[i, :] for i in perm])
+    tempMM2 = np.asarray([tempMM1[:, i] for i in perm])
+    return tempMM2
 
-result1 = np.asarray([MM[i, :] for i in permutation])
-print result1
-
-result2 = np.asarray([result1[:, i] for i in permutation])
-print result2
+print permute_array(matrix, permutation)
