@@ -1,7 +1,5 @@
 import numpy as np
 
-#nodeindices = [0, 1, 2]
-
 #print list(itertools.permutations([1, 2, 3]))
 
 matrix = [[1, 2, 3],
