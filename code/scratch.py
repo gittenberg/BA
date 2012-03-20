@@ -42,7 +42,11 @@ def is_isomorphic(network1, network2):
         nmr2 = network_matrix_representation(nodes, network2)
         shuffle = permute_array(nmr2, perm)
         if np.all(shuffle == nmr1): # the shuffle of network2 equals network1
-            print shuffle - nmr1
+            print network1
+            print network2
+            print nmr1
+            print nmr2
+            print shuffle
             return True
     return False
 
