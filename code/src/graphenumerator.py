@@ -29,6 +29,8 @@ def network_matrix_representation(nodelist=None, network=None):
 example_network = networks[19000]
 print network_matrix_representation(nodes, example_network)
 
+for perm in itertools.permutations(range(len(nodes)-1)):
+    print perm
 
 # pickle for later use
 ######################################################################
