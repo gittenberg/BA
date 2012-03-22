@@ -61,3 +61,5 @@ for num1, net1 in enumerate(nets):
     
 tend = datetime.now()
 print tend-tstart
+
+# test
