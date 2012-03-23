@@ -13,7 +13,7 @@ nets = pickle.load(file("allnetworks.txt"))
 #nets = pickle.load(file("unique_networks.txt"))
 #print len(nets) # 2889 - check what this means!!
 
-nets = nets[100:110]
+nets = nets[100:500]
 unique_nets = copy.copy(nets)
 
 nodes = ["bb", "gg", "rr"]
@@ -23,11 +23,17 @@ labels = ["-", "0", "+"]
 G = dict() # dictionary of digraphs
 for netID, net in enumerate(nets):
     G[netID] = nx.DiGraph()
-    print net
     for edge in net:
         G[netID].add_edge(edge[0], edge[1], label=net[edge])
-        print edge[0], edge[1], G[netID][edge[0]][edge[1]]
-    
+        #print edge[0], edge[1], G[netID][edge[0]][edge[1]]
+
+def label_match(label1, label2):
+    return label1==label2
+
+for netID1 in range(len(nets)):
+    for netID2 in range(netID1+1, len(nets)):
+        if nx.is_isomorphic(G[netID1], G[netID2], node_match=None, edge_match=label_match):
+            print netID1, "is isomorphic to", netID2
 
 def network_matrix_representation(nodelist=None, network=None):
     '''Returns (node x node) matrix with +1 for activation, -1 for inhibition, 0 for no interaction'''
