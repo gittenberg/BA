@@ -56,7 +56,7 @@ for count1, network1 in enumerate(networks):
                     if np.all(shuffle == nmr1): # the shuffle of network2 equals network1
                         try:
                             unique_networks.remove(network2)
-                            networks.remove(network2)
+                            #networks.remove(network2)
                         except:
                             pass
                         print "network", count2, "is isomorphic to network", count1

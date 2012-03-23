@@ -8,6 +8,10 @@ import itertools
 import numpy as np
 
 nets = pickle.load(file("allnetworks.txt"))
+print len(nets) # should be 3^9=19683
+#nets = pickle.load(file("unique_networks.txt"))
+#print len(nets) # 2889 - check what this means!!
+
 nets = nets[0:400]
 unique_nets = copy.copy(nets)
 
@@ -61,5 +65,4 @@ for num1, net1 in enumerate(nets):
     
 tend = datetime.now()
 print tend-tstart
-
 # test
