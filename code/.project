@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>BA</name>
+	<name>BA2</name>
 	<comment></comment>
 	<projects>
 	</projects>
 	<buildSpec>
 		<buildCommand>
-			<name>net.sourceforge.texlipse.builder.TexlipseBuilder</name>
+			<name>org.python.pydev.PyDevBuilder</name>
 			<arguments>
 			</arguments>
 		</buildCommand>
 		<buildCommand>
-			<name>org.python.pydev.PyDevBuilder</name>
+			<name>net.sourceforge.texlipse.builder.TexlipseBuilder</name>
 			<arguments>
 			</arguments>
 		</buildCommand>

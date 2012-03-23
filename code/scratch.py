@@ -6,17 +6,28 @@ import pickle
 import copy
 import itertools
 import numpy as np
+import networkx as nx
 
 nets = pickle.load(file("allnetworks.txt"))
-print len(nets) # should be 3^9=19683
+#print len(nets) # should be 3^9=19683
 #nets = pickle.load(file("unique_networks.txt"))
 #print len(nets) # 2889 - check what this means!!
 
-nets = nets[0:400]
+nets = nets[100:110]
 unique_nets = copy.copy(nets)
 
 nodes = ["bb", "gg", "rr"]
 labels = ["-", "0", "+"]
+
+# create digraph with labels from dictionary
+G = dict() # dictionary of digraphs
+for netID, net in enumerate(nets):
+    G[netID] = nx.DiGraph()
+    print net
+    for edge in net:
+        G[netID].add_edge(edge[0], edge[1], label=net[edge])
+        print edge[0], edge[1], G[netID][edge[0]][edge[1]]
+    
 
 def network_matrix_representation(nodelist=None, network=None):
     '''Returns (node x node) matrix with +1 for activation, -1 for inhibition, 0 for no interaction'''
@@ -54,6 +65,7 @@ def is_isomorphic(network1, network2):
             return True
     return False
 
+'''
 for num1, net1 in enumerate(nets):
     for num2, net2 in enumerate(nets):
         if num2 > num1:
@@ -62,7 +74,7 @@ for num1, net1 in enumerate(nets):
                 #print len([edge for edge in net if net[edge]=='+'])    
                 #print len([edge for edge in net if net[edge]=='0'])
                 #print len([edge for edge in net if net[edge]=='-'])
+'''
     
 tend = datetime.now()
-print tend-tstart
-# test
+print "Total execution time:", tend-tstart
