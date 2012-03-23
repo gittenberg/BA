@@ -13,7 +13,7 @@ nets = pickle.load(file("allnetworks.txt"))
 #nets = pickle.load(file("unique_networks.txt"))
 #print len(nets) # 2889 - check what this means!!
 
-nets = nets[100:500]
+#nets = nets[:250]
 unique_nets = copy.copy(nets)
 
 nodes = ["bb", "gg", "rr"]
@@ -30,10 +30,36 @@ for netID, net in enumerate(nets):
 def label_match(label1, label2):
     return label1==label2
 
+skiplist = []
+isomorphy_classes = {}
 for netID1 in range(len(nets)):
+    isomorphy_classes[netID1] = []
     for netID2 in range(netID1+1, len(nets)):
-        if nx.is_isomorphic(G[netID1], G[netID2], node_match=None, edge_match=label_match):
-            print netID1, "is isomorphic to", netID2
+        if netID2 not in skiplist:
+            if nx.is_isomorphic(G[netID1], G[netID2], node_match=None, edge_match=label_match):
+                try:
+                    unique_nets.remove(nets[netID2])
+                    skiplist.append(netID2)
+                    isomorphy_classes[netID1].append(netID2)
+                except:
+                    pass
+                print netID1, "is isomorphic to", netID2
+    print "isomorphy_classes[", netID1, "] =", isomorphy_classes[netID1]
+    tend = datetime.now()
+    print "Total execution time:", tend-tstart
+
+print "Pickling", len(unique_nets), "unique networks."
+pickle.dump(unique_nets, file("unique_networks.txt", "w"))
+print "Pickling", len(isomorphy_classes), "isomorphy classes."
+pickle.dump(isomorphy_classes, file("isomorphy_classes.txt", "w"))
+ic = pickle.load(file("isomorphy_classes.txt"))
+print ic
+
+tend = datetime.now()
+print "Total execution time:", tend-tstart
+
+# obsolete functions
+####################################################################################
 
 def network_matrix_representation(nodelist=None, network=None):
     '''Returns (node x node) matrix with +1 for activation, -1 for inhibition, 0 for no interaction'''
@@ -70,17 +96,3 @@ def is_isomorphic(network1, network2):
             print shuffle
             return True
     return False
-
-'''
-for num1, net1 in enumerate(nets):
-    for num2, net2 in enumerate(nets):
-        if num2 > num1:
-            if is_isomorphic(net1, net2):
-                print "isomorphic:", num1, num2
-                #print len([edge for edge in net if net[edge]=='+'])    
-                #print len([edge for edge in net if net[edge]=='0'])
-                #print len([edge for edge in net if net[edge]=='-'])
-'''
-    
-tend = datetime.now()
-print "Total execution time:", tend-tstart
