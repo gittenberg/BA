@@ -1,18 +1,16 @@
 import pickle
+from graphenumerator import convert_dict_to_graphs
 
 ic = pickle.load(file("isomorphy_classes.txt"))
-print ic
 print len(ic)
 
-un = pickle.load(file("unique_networks.txt"))
-print un
-print len(un)
+unique_networks = pickle.load(file("unique_networks.txt"))
+print len(unique_networks)
 
-networks = pickle.load(file("allnetworks.txt"))
-print len(networks)
+G = convert_dict_to_graphs(unique_networks)
 
-print networks[8]
-print networks[20]
-print networks[216]
 
-# these are indeed isomorphic, I checked 2 examples
+
+
+#count[label] = len([edge for edge in network1 if network1[edge]==label])
+
