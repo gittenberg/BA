@@ -1,6 +1,10 @@
+from datetime import datetime
+
+tstart = datetime.now()
+
 import itertools
 import copy
-import numpy as np
+import networkx as nx
 import pickle
 
 # generate all 3^9 = 19683 combinations of networks
@@ -13,57 +17,48 @@ networks = [dict(zip(edges, labelcombination)) for labelcombination in labelcomb
 
 #for i in range(10):
 #    print networks[i]
-#print len(networks) # 3^9 = 19683
-
+print len(networks) # 3^9 = 19683
+pickle.dump(networks, file("allnetworks.txt", "w" ))
+networks = pickle.load(file("allnetworks.txt"))
+#networks = networks[:500] # enable for quick check
 
 # check for isomorphism
 ######################################################################
-def network_matrix_representation(nodelist=None, network=None):
-    '''Returns (node x node) matrix with +1 for activation, -1 for inhibition, 0 for no interaction'''
-    nwmatrep = np.zeros((len(nodelist),len(nodelist)))
-    for mi, m in enumerate(nodelist):
-        for nj, n in enumerate(nodelist):
-            nwmatrep[mi, nj] = labels.index(network[(m, n)]) - 1
-            # here the ordering of labels matters
-    return np.asmatrix(nwmatrep)
+# create digraph with labels from dictionary
+G = dict() # dictionary of digraphs
+for netID, net in enumerate(networks):
+    G[netID] = nx.DiGraph()
+    for edge in net:
+        G[netID].add_edge(edge[0], edge[1], label=net[edge])
+        #print edge[0], edge[1], G[netID][edge[0]][edge[1]]
 
-def permute_array(MM, perm):
-    tempMM0 = np.asarray(MM)
-    tempMM1 = np.asarray([tempMM0[i, :] for i in perm])
-    tempMM2 = np.asarray([tempMM1[:, i] for i in perm])
-    return tempMM2
+def label_match(label1, label2):
+    return label1==label2
 
-def is_isomorphic(network1, network2):
-    return True
+# loop through all pairs of networks and check for isomorphy
+unique_networks = copy.copy(networks)
+skiplist = []
+isomorphy_classes = {}
+for netID1 in range(len(networks)):
+    if netID1 not in skiplist:
+        isomorphy_classes[netID1] = [netID1]
+        for netID2 in range(netID1+1, len(networks)):
+            if netID2 not in skiplist:
+                if nx.is_isomorphic(G[netID1], G[netID2], node_match=None, edge_match=label_match):
+                    try:
+                        unique_networks.remove(networks[netID2])
+                        skiplist.append(netID2)
+                        isomorphy_classes[netID1].append(netID2)
+                    except:
+                        pass
+        print "isomorphy_classes[", netID1, "] =", isomorphy_classes[netID1]
+    tend = datetime.now()
+    print "Total execution time:", tend-tstart
 
-comparematrix = np.asarray([[1., -1.,  1.], [1., -1., -1.], [1.,  0.,  0.]])
-unique_networks = copy.copy(networks) # to be reduced
+print "Pickling", len(unique_networks), "unique networks."
+pickle.dump(unique_networks, file("unique_networks.txt", "w"))
+print "Pickling", len(isomorphy_classes), "isomorphy classes."
+pickle.dump(isomorphy_classes, file("isomorphy_classes.txt", "w"))
 
-for count1, network1 in enumerate(networks):
-    print "considering network no.", count1
-    nmr1 = network_matrix_representation(nodes, network1)
-    for count2, network2 in enumerate(networks):
-        if count2 > count1:
-            eplus1 = len([edge for edge in network1 if network1[edge]=='+'])
-            eplus2 = len([edge for edge in network2 if network2[edge]=='+'])
-            ezero1 = len([edge for edge in network1 if network1[edge]=='0'])
-            ezero2 = len([edge for edge in network2 if network2[edge]=='0'])
-            if eplus1 == eplus2 and ezero1 == ezero2:
-                for perm in itertools.permutations(range(len(nodes))):
-                    # shuffle matrix belonging to network2 and compare to network1
-                    nmr2 = network_matrix_representation(nodes, network2)
-                    shuffle = permute_array(nmr2, perm)
-                    if np.all(shuffle == nmr1): # the shuffle of network2 equals network1
-                        try:
-                            unique_networks.remove(network2)
-                            #networks.remove(network2)
-                        except:
-                            pass
-                        print "network", count2, "is isomorphic to network", count1
-
-# pickle for later use
-######################################################################
-pickle.dump(networks, file("allnetworks.txt", "w" ))
-pickle.dump(unique_networks, file("unique_networks.txt", "w" ))
-#filecontent = pickle.load(file("allnetworks.txt"))
-#print filecontent
+tend = datetime.now()
+print "Total execution time:", tend-tstart
