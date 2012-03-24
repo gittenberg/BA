@@ -19,15 +19,16 @@ def generate_all_networks():
     pickle.dump(networks, file("allnetworks.txt", "w" ))
     print "done."
 
-def convert_dict_to_graphs(networks):
+def convert_dict_to_graphs(networks, addzeros=True):
     # create digraph with labels from dictionary
     print "converting dictionaries to graphs...",
     G = dict() # dictionary of digraphs
     for netID, net in enumerate(networks):
         G[netID] = nx.DiGraph()
         for edge in net:
-            G[netID].add_edge(edge[0], edge[1], label=net[edge])
-            #print edge[0], edge[1], G[netID][edge[0]][edge[1]]
+            if net[edge]!='0' or addzeros:
+                G[netID].add_edge(edge[0], edge[1], label=net[edge])
+                #print edge[0], edge[1], G[netID][edge[0]][edge[1]]
     print "done."
     return G
     
@@ -36,6 +37,7 @@ def check_isomorphism(networks):
     ######################################################################
     print "checking networks for isomorphism..."
     G = convert_dict_to_graphs(networks)
+    
     def label_match(label1, label2):
         return label1==label2
     
