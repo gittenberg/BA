@@ -18,6 +18,9 @@ def generate_all_networks():
     labelcombinations = itertools.product(labels, repeat=len(edges)) # all combinations of len(edges) labels
     networks = [dict(zip(edges, labelcombination)) for labelcombination in labelcombinations]
     pickle.dump(networks, file("allnetworks.txt", "w" ))
+
+    tend = datetime.now()
+    print "total execution time:", tend-tstart
     print "done."
 
 def convert_dict_to_graphs(networks, addzeros=True):
@@ -99,6 +102,9 @@ def filter_disconnected(unique_networks):
                 unique_networks.remove(network_to_remove)
             except:
                 pass
+    
+    tend = datetime.now()
+    print "total execution time:", tend-tstart
     pickle.dump(unique_networks, file("filtered_unique_networks.txt", "w"))
     print "done."
 
