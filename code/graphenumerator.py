@@ -50,7 +50,7 @@ def convert_graph_to_dict(G, addzeros=False):
                 ls.append('0')
     return dict(zip(es, ls))
 
-def check_isomorphism(networks):
+def check_isomorphism(networks, node_match=None):
     # check for isomorphism
     # loop through all pairs of networks and check for isomorphy
     # takes about 6 hrs
@@ -69,7 +69,7 @@ def check_isomorphism(networks):
             isomorphy_classes[netID1] = [netID1]
             for netID2 in range(netID1+1, len(networks)):
                 if netID2 not in skiplist:
-                    if nx.is_isomorphic(G[netID1], G[netID2], node_match=None, edge_match=label_match):
+                    if nx.is_isomorphic(G[netID1], G[netID2], node_match, edge_match=label_match):
                         try:
                             unique_networks.remove(networks[netID2])
                             skiplist.append(netID2)
