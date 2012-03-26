@@ -6,7 +6,6 @@ import itertools
 import copy
 import networkx as nx
 import pickle
-import shelve
 
 nodes = ["bb", "gg", "rr"]
 labels = ["-", "0", "+"]

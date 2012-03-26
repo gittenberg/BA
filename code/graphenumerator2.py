@@ -41,16 +41,25 @@ def convert_dict_to_graphs(networks, addzeros=True):
     return G
     
 
-def check_isomorphism(networks, node_match=None):
+def label_match(label1, label2):
+    return label1==label2
+    
+    
+def check_isomorphism(networks, outfile_tag="_without_morphogene", tag_input_gene=False):
     ''' check for isomorphism:
     loop through all pairs of networks and check for isomorphy
     (takes about 6 hrs on the full set)'''
-    
-    # TODO: fully implement shelving
+    print "checking networks for isomorphism..."
     G = convert_dict_to_graphs(networks, addzeros=False)
-    
-    def label_match(label1, label2):
-        return label1==label2
+    if tag_input_gene:
+        # label 'rr' gene differently than others
+        print "labelling input genes in graphs...",
+        for graph in G.values():
+            graph.node['rr'] = 'input gene'
+        node_match = label_match
+        print 'done.'
+    else:
+        node_match = None
     
     skiplist = []
     isomorphy_classes = {}
@@ -71,19 +80,21 @@ def check_isomorphism(networks, node_match=None):
         tend = datetime.now()
         print "total execution time:", tend-tstart
     print "pickling", len(networks), "unique networks."
-    cPickle.dump(networks, file("unique_networks_without_morphogene.db", "w"))
+    cPickle.dump(networks, file("unique_networks"+outfile_tag+".db", "w"))
     print "pickling", len(isomorphy_classes), "isomorphy classes."
-    cPickle.dump(isomorphy_classes, file("isomorphy_classes_without_morphogene.db", "w"))
+    cPickle.dump(isomorphy_classes, file("isomorphy_classes"+outfile_tag+".db", "w"))
     
     tend = datetime.now()
     print "total execution time:", tend-tstart
-    print "done."
+    print "done checking networks for isomorphism."
 
 
 if __name__ == '__main__':
     #generate_all_networks()
     networks = cPickle.load(file("all_networks.db"))
-    #networks = dict((k, networks[k]) for k in range(500)) # enable for quick check
+    networks = dict((k, networks[k]) for k in range(500)) # enable for quick check
     print "found", len(networks), "networks." # 3^9 = 19683 if unconstrained
     #print networks[1]
-    check_isomorphism(networks) # takes 6 hrs
+    #check_isomorphism(networks, outfile_tag="_without_morphogene", tag_input_gene=False) # takes 6 hrs
+    #check_isomorphism(networks, outfile_tag="_with_morphogene", tag_input_gene=True) # takes how many hrs?
+    
