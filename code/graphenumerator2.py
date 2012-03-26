@@ -56,10 +56,10 @@ def check_isomorphism(networks, outfile_tag="_without_morphogene", tag_input_gen
         print "labelling input genes in graphs...",
         for graph in G.values():
             graph.node['rr'] = 'input gene'
-        node_match = label_match
+        match_fct = label_match
         print 'done.'
     else:
-        node_match = None
+        match_fct = None
     
     skiplist = []
     isomorphy_classes = {}
@@ -69,7 +69,7 @@ def check_isomorphism(networks, outfile_tag="_without_morphogene", tag_input_gen
             isomorphy_classes[netID1] = [netID1]
             for netID2 in range(netID1+1, maxiter):
                 if netID2 not in skiplist:
-                    if nx.is_isomorphic(G[netID1], G[netID2], node_match, edge_match=label_match):
+                    if nx.is_isomorphic(G[netID1], G[netID2], node_match=match_fct, edge_match=label_match):
                         try:
                             del networks[netID2]
                             skiplist.append(netID2)
