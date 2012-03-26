@@ -95,6 +95,6 @@ if __name__ == '__main__':
     networks = dict((k, networks[k]) for k in range(500)) # enable for quick check
     print "found", len(networks), "networks." # 3^9 = 19683 if unconstrained
     #print networks[1]
-    #check_isomorphism(networks, outfile_tag="_without_morphogene", tag_input_gene=False) # takes 6 hrs
+    check_isomorphism(networks, outfile_tag="_without_morphogene", tag_input_gene=False) # takes 6 hrs
     #check_isomorphism(networks, outfile_tag="_with_morphogene", tag_input_gene=True) # takes how many hrs?
     
