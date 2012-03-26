@@ -6,6 +6,7 @@ import itertools
 import copy
 import networkx as nx
 import pickle
+import shelve
 
 nodes = ["bb", "gg", "rr"]
 labels = ["-", "0", "+"]
@@ -28,7 +29,7 @@ def convert_dict_to_graphs(networks, addzeros=True):
     ################################################################################
     print "converting dictionaries to graphs...",
     G = dict() # dictionary of digraphs
-    for netID, net in enumerate(networks):
+    for netID, net in enumerate(networks): # FIXME: with shelve, unique_networks is a dict
         G[netID] = nx.DiGraph()
         for edge in net:
             if net[edge]!='0' or addzeros:
@@ -50,7 +51,7 @@ def convert_graph_to_dict(G, addzeros=False):
                 ls.append('0')
     return dict(zip(es, ls))
 
-def check_isomorphism(networks, node_match=None):
+def check_isomorphism_OLD(networks, node_match=None):
     # check for isomorphism
     # loop through all pairs of networks and check for isomorphy
     # takes about 6 hrs
@@ -88,6 +89,46 @@ def check_isomorphism(networks, node_match=None):
     print "total execution time:", tend-tstart
     print "done."
 
+def check_isomorphism(networks, node_match=None):
+    # check for isomorphism
+    # loop through all pairs of networks and check for isomorphy
+    # takes about 6 hrs
+    ################################################################################
+    print "checking networks for isomorphism..."
+    G = convert_dict_to_graphs(networks)
+    
+    def label_match(label1, label2):
+        return label1==label2
+    
+    unique_networks = copy.copy(networks) # make this a dict for shelving
+    skiplist = []
+    isomorphy_classes = {}
+    for netID1 in range(len(networks)):
+        # shelve any n*100 networks
+        if netID1 not in skiplist:
+            isomorphy_classes[netID1] = [netID1]
+            for netID2 in range(netID1+1, len(networks)):
+                if netID2 not in skiplist:
+                    if nx.is_isomorphic(G[netID1], G[netID2], node_match, edge_match=label_match):
+                        try:
+                            unique_networks.remove(networks[netID2]) # this will be a del
+                            skiplist.append(netID2)
+                            isomorphy_classes[netID1].append(netID2)
+                        except:
+                            pass
+            print "isomorphy_classes[", netID1, "] =", isomorphy_classes[netID1]
+        tend = datetime.now()
+        print "total execution time:", tend-tstart
+    #shelve again
+    print "pickling", len(unique_networks), "unique networks."
+    pickle.dump(unique_networks, file("unique_networks.txt", "w"))
+    print "pickling", len(isomorphy_classes), "isomorphy classes."
+    pickle.dump(isomorphy_classes, file("isomorphy_classes.txt", "w"))
+    
+    tend = datetime.now()
+    print "total execution time:", tend-tstart
+    print "done."
+
 def filter_disconnected(unique_networks):
     # remove networks with > 1 connected component
     ################################################################################
@@ -99,7 +140,7 @@ def filter_disconnected(unique_networks):
             network_to_remove = convert_graph_to_dict(G[netID], addzeros=True)
             #print network_to_remove
             try:
-                unique_networks.remove(network_to_remove)
+                unique_networks.remove(network_to_remove) # FIXME: with shelve, unique_networks is a dict
             except:
                 pass
     
@@ -113,7 +154,7 @@ if __name__ == '__main__':
     #networks = pickle.load(file("allnetworks.txt"))
     #networks = networks[:500] # enable for quick check
     #print "found", len(networks), "networks." # 3^9 = 19683 if unconstrained
-    #check_isomorphism(networks) # takes 6 hrs
+    #check_isomorphism_OLD(networks) # takes 6 hrs
     unique_networks = pickle.load(file("unique_networks.txt"))
     filter_disconnected(unique_networks)
     filtered_unique_networks = pickle.load(file("filtered_unique_networks.txt"))
