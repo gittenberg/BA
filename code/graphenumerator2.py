@@ -55,7 +55,7 @@ def check_isomorphism(networks, outfile_tag="_without_morphogene", tag_input_gen
         # label 'rr' gene differently than others
         print "labelling input genes in graphs...",
         for graph in G.values():
-            graph.node['rr'] = 'input gene'
+            graph.node['rr'] = 'input'
         match_fct = label_match
         print 'done.'
     else:
@@ -71,16 +71,21 @@ def check_isomorphism(networks, outfile_tag="_without_morphogene", tag_input_gen
                 if netID2 not in skiplist:
                     if nx.is_isomorphic(G[netID1], G[netID2], node_match=match_fct, edge_match=label_match):
                         try:
-                            del networks[netID2]
+                            #del networks[netID2]
                             skiplist.append(netID2)
                             isomorphy_classes[netID1].append(netID2)
                         except:
                             pass
+            skiplist = list(set(skiplist)) # remove double entries
             print "isomorphy_classes[", netID1, "] =", isomorphy_classes[netID1]
         tend = datetime.now()
         print "total execution time:", tend-tstart
-    print "pickling", len(networks), "unique networks."
-    cPickle.dump(networks, file("unique_networks"+outfile_tag+".db", "w"))
+    unique_networks = dict()
+    for netID in networks.keys():
+        if isomorphy_classes.has_key(netID):
+            unique_networks[netID] = networks[netID]
+    print "pickling", len(unique_networks), "unique networks."
+    cPickle.dump(unique_networks, file("unique_networks"+outfile_tag+".db", "w"))
     print "pickling", len(isomorphy_classes), "isomorphy classes."
     cPickle.dump(isomorphy_classes, file("isomorphy_classes"+outfile_tag+".db", "w"))
     
@@ -92,9 +97,9 @@ def check_isomorphism(networks, outfile_tag="_without_morphogene", tag_input_gen
 if __name__ == '__main__':
     #generate_all_networks()
     networks = cPickle.load(file("all_networks.db"))
-    networks = dict((k, networks[k]) for k in range(500)) # enable for quick check
+    #networks = dict((k, networks[k]) for k in range(500)) # enable for quick check
     print "found", len(networks), "networks." # 3^9 = 19683 if unconstrained
     #print networks[1]
-    check_isomorphism(networks, outfile_tag="_without_morphogene", tag_input_gene=False) # takes 6 hrs
-    #check_isomorphism(networks, outfile_tag="_with_morphogene", tag_input_gene=True) # takes how many hrs?
+    #check_isomorphism(networks, outfile_tag="_without_morphogene", tag_input_gene=False) # takes 6 hrs
+    check_isomorphism(networks, outfile_tag="_with_morphogene", tag_input_gene=True) # takes how many hrs?
     
