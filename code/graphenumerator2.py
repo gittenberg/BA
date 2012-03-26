@@ -3,9 +3,8 @@ from datetime import datetime
 tstart = datetime.now()
 
 import itertools
-import copy
 import networkx as nx
-import pickle
+import cPickle
 import shelve
 
 nodes = ["bb", "gg", "rr"]
@@ -18,7 +17,7 @@ def generate_all_networks():
     edges = [(node1, node2) for node1 in nodes for node2 in nodes]
     labelcombinations = itertools.product(labels, repeat=len(edges)) # all combinations of len(edges) labels
     networks = dict(enumerate(dict(zip(edges, labelcombination)) for labelcombination in labelcombinations))
-    pickle.dump(networks, file("all_networks.db", "w" ))
+    cPickle.dump(networks, file("all_networks.db", "w" ))
     print "found", len(networks), "networks." # 3^9 = 19683 if unconstrained
 
     tend = datetime.now()
@@ -48,26 +47,22 @@ def check_isomorphism(networks, node_match=None):
     (takes about 6 hrs on the full set)'''
     
     # TODO: fully implement shelving
-    # TODO: fully implement in place deletion of networks
     G = convert_dict_to_graphs(networks, addzeros=False)
     
     def label_match(label1, label2):
         return label1==label2
     
-    unique_networks = copy.copy(networks) # make this a dict for shelving
     skiplist = []
     isomorphy_classes = {}
-    #undb = shelve.open('unique_networks_without_morphogene.db')
-    #icdb = shelve.open('isomorphy_classes_without_morphogene.db')
+    maxiter = len(networks)
     for netID1 in networks.keys():
-        # shelve any n*100 networks
         if netID1 not in skiplist:
             isomorphy_classes[netID1] = [netID1]
-            for netID2 in range(netID1+1, len(networks)):
+            for netID2 in range(netID1+1, maxiter):
                 if netID2 not in skiplist:
                     if nx.is_isomorphic(G[netID1], G[netID2], node_match, edge_match=label_match):
                         try:
-                            del unique_networks[netID2]
+                            del networks[netID2]
                             skiplist.append(netID2)
                             isomorphy_classes[netID1].append(netID2)
                         except:
@@ -75,11 +70,10 @@ def check_isomorphism(networks, node_match=None):
             print "isomorphy_classes[", netID1, "] =", isomorphy_classes[netID1]
         tend = datetime.now()
         print "total execution time:", tend-tstart
-    #shelve again
-    print "shelving/pickling", len(unique_networks), "unique networks."
-    pickle.dump(unique_networks, file("unique_networks_without_morphogene.db", "w"))
-    print "shelving/pickling", len(isomorphy_classes), "isomorphy classes."
-    pickle.dump(isomorphy_classes, file("isomorphy_classes_without_morphogene.db", "w"))
+    print "pickling", len(networks), "unique networks."
+    cPickle.dump(networks, file("unique_networks_without_morphogene.db", "w"))
+    print "pickling", len(isomorphy_classes), "isomorphy classes."
+    cPickle.dump(isomorphy_classes, file("isomorphy_classes_without_morphogene.db", "w"))
     
     tend = datetime.now()
     print "total execution time:", tend-tstart
@@ -88,8 +82,8 @@ def check_isomorphism(networks, node_match=None):
 
 if __name__ == '__main__':
     #generate_all_networks()
-    networks = pickle.load(file("all_networks.db"))
-    networks = dict((k, networks[k]) for k in range(500)) # enable for quick check
+    networks = cPickle.load(file("all_networks.db"))
+    #networks = dict((k, networks[k]) for k in range(500)) # enable for quick check
     print "found", len(networks), "networks." # 3^9 = 19683 if unconstrained
-    print networks[1]
+    #print networks[1]
     check_isomorphism(networks) # takes 6 hrs
