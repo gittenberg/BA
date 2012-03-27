@@ -114,12 +114,15 @@ def filter_disconnected(unique_networks, outfile_tag="_with_morphogene"):
     print "filtering disconnected networks..."
     G = convert_dict_to_graphs(unique_networks, addzeros=False)
     for netID in G:
-        #print G[netID].edges()
         if not G[netID] or not nx.is_connected(G[netID].to_undirected()):
-            #network_to_remove = convert_graph_to_dict(G[netID], addzeros=True)
-            #print network_to_remove
             try:
                 del unique_networks[netID]
+            except:
+                pass
+        if not 'rr' in G[netID].nodes():
+            try:
+                del unique_networks[netID]
+                print netID, "does not contain the input node: removing."
             except:
                 pass
     
