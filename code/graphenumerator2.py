@@ -5,7 +5,7 @@ tstart = datetime.now()
 import itertools
 import networkx as nx
 import cPickle
-import shelve
+#import shelve
 
 nodes = ["bb", "gg", "rr"]
 labels = ["-", "0", "+"]
@@ -94,12 +94,52 @@ def check_isomorphism(networks, outfile_tag="_without_morphogene", tag_input_gen
     print "done checking networks for isomorphism."
 
 
+def convert_graph_to_dict(G, addzeros=False):
+    # given a graph, create dictionary with edge:label
+    ################################################################################
+    es = G.edges()
+    ls = [G[edge[0]][edge[1]]['label'] for edge in G.edges()]
+    if addzeros:
+        alledges = [(node1, node2) for node1 in nodes for node2 in nodes]
+        for edge in alledges:
+            if edge not in es:
+                es.append(edge)
+                ls.append('0')
+    return dict(zip(es, ls))
+
+
+def filter_disconnected(unique_networks):
+    # remove networks with > 1 connected component
+    ################################################################################
+    print "filtering disconnected networks..."
+    G = convert_dict_to_graphs(unique_networks, addzeros=False)
+    for netID in G:
+        #print G[netID].edges()
+        if not G[netID] or not nx.is_connected(G[netID].to_undirected()):
+            #network_to_remove = convert_graph_to_dict(G[netID], addzeros=True)
+            #print network_to_remove
+            try:
+                del unique_networks[netID]
+                #unique_networks.remove(network_to_remove) # FIXME: with shelve, unique_networks is a dict
+            except:
+                pass
+    
+    tend = datetime.now()
+    print "total execution time:", tend-tstart
+    cPickle.dump(unique_networks, file("filtered_unique_networks.db", "w"))
+    print "done."
+
+
 if __name__ == '__main__':
     #generate_all_networks()
-    networks = cPickle.load(file("all_networks.db"))
+    #networks = cPickle.load(file("all_networks.db"))
     #networks = dict((k, networks[k]) for k in range(500)) # enable for quick check
-    print "found", len(networks), "networks." # 3^9 = 19683 if unconstrained
+    #print "found", len(networks), "networks." # 3^9 = 19683 if unconstrained
     #print networks[1]
     #check_isomorphism(networks, outfile_tag="_without_morphogene", tag_input_gene=False) # takes 6 hrs
-    check_isomorphism(networks, outfile_tag="_with_morphogene", tag_input_gene=True) # takes how many hrs?
-    
+    #check_isomorphism(networks, outfile_tag="_with_morphogene", tag_input_gene=True) # takes how many hrs?
+    unique_networks = cPickle.load(file("unique_networks_without_morphogene.db"))
+    #print len(unique_networks)
+    filter_disconnected(unique_networks)
+    filtered_unique_networks = cPickle.load(file("filtered_unique_networks.db"))
+    print len(filtered_unique_networks)
