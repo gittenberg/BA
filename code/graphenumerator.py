@@ -145,7 +145,7 @@ def filter_disconnected(unique_networks):
     
     tend = datetime.now()
     print "total execution time:", tend-tstart
-    pickle.dump(unique_networks, file("filtered_unique_networks.txt", "w"))
+    pickle.dump(unique_networks, file("connected_unique_networks.txt", "w"))
     print "done."
 
 if __name__ == '__main__':
@@ -156,6 +156,6 @@ if __name__ == '__main__':
     #check_isomorphism_OLD(networks) # takes 6 hrs
     unique_networks = pickle.load(file("unique_networks.txt"))
     filter_disconnected(unique_networks)
-    filtered_unique_networks = pickle.load(file("filtered_unique_networks.txt"))
-    print len(filtered_unique_networks)
+    connected_unique_networks = pickle.load(file("connected_unique_networks.txt"))
+    print len(connected_unique_networks)
     

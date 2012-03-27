@@ -1,14 +1,14 @@
 import imp
 import os
 from os.path import join, exists
-import networkx as nx #@UnresolvedImport
+import networkx as nx
 from itertools import chain, combinations
 import sqlite3
 
 MC = imp.load_source("MC", os.path.join("ModelContainer.py"))
 TS = imp.load_source("TS", os.path.join("TransitionSystem.py"))
 
-def create_database(path="C:\Users\MJS\git\BA\code\src", dbname='filter_results.db'):
+def create_database(path="C:\Users\MJS\git\BA2\code", dbname='filter_results.db'):
     # We delete/rename the entire database. Alternatively, one could only DROP the results tables but this was difficult. # TODO:
     filepath = join(path, dbname)
     if exists(filepath+"~"): os.remove(filepath+"~")

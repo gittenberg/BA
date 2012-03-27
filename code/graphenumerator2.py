@@ -108,7 +108,7 @@ def convert_graph_to_dict(G, addzeros=False):
     return dict(zip(es, ls))
 
 
-def filter_disconnected(unique_networks):
+def filter_disconnected(unique_networks, outfile_tag="_with_morphogene"):
     # remove networks with > 1 connected component
     ################################################################################
     print "filtering disconnected networks..."
@@ -120,13 +120,13 @@ def filter_disconnected(unique_networks):
             #print network_to_remove
             try:
                 del unique_networks[netID]
-                #unique_networks.remove(network_to_remove) # FIXME: with shelve, unique_networks is a dict
             except:
                 pass
     
-    tend = datetime.now()
-    print "total execution time:", tend-tstart
-    cPickle.dump(unique_networks, file("filtered_unique_networks.db", "w"))
+    #tend = datetime.now()
+    #print "total execution time:", tend-tstart
+    print "pickling", len(unique_networks), "connected unique networks."
+    cPickle.dump(unique_networks, file("connected_unique_networks"+outfile_tag+".db", "w"))
     print "done."
 
 
@@ -138,8 +138,7 @@ if __name__ == '__main__':
     #print networks[1]
     #check_isomorphism(networks, outfile_tag="_without_morphogene", tag_input_gene=False) # takes 6 hrs
     #check_isomorphism(networks, outfile_tag="_with_morphogene", tag_input_gene=True) # takes how many hrs?
-    unique_networks = cPickle.load(file("unique_networks_without_morphogene.db"))
-    #print len(unique_networks)
-    filter_disconnected(unique_networks)
-    filtered_unique_networks = cPickle.load(file("filtered_unique_networks.db"))
-    print len(filtered_unique_networks)
+    unique_networks = cPickle.load(file("unique_networks_with_morphogene.db"))
+    print "found", len(unique_networks), "unique networks." 
+    filter_disconnected(unique_networks, outfile_tag="_with_morphogene")
+    connected_unique_networks = cPickle.load(file("connected_unique_networks_with_morphogene.db"))
