@@ -52,7 +52,7 @@ def check_isomorphism(networks, outfile_tag="_without_morphogene", tag_input_gen
     print "checking networks for isomorphism..."
     G = convert_dict_to_graphs(networks, addzeros=False)
     if tag_input_gene:
-        # label 'rr' gene differently than others
+        # treat label 'rr' gene differently than others (input gene)
         print "labelling input genes in graphs...",
         for graph in G.values():
             graph.node['rr'] = 'input'
@@ -80,6 +80,7 @@ def check_isomorphism(networks, outfile_tag="_without_morphogene", tag_input_gen
             print "isomorphy_classes[", netID1, "] =", isomorphy_classes[netID1]
         tend = datetime.now()
         print "total execution time:", tend-tstart
+
     unique_networks = dict()
     for netID in networks.keys():
         if isomorphy_classes.has_key(netID):
@@ -95,8 +96,7 @@ def check_isomorphism(networks, outfile_tag="_without_morphogene", tag_input_gen
 
 
 def convert_graph_to_dict(G, addzeros=False):
-    # given a graph, create dictionary with edge:label
-    ################################################################################
+    ''' given a graph, create dictionary with edge:label '''
     es = G.edges()
     ls = [G[edge[0]][edge[1]]['label'] for edge in G.edges()]
     if addzeros:
@@ -109,8 +109,8 @@ def convert_graph_to_dict(G, addzeros=False):
 
 
 def filter_disconnected(unique_networks, outfile_tag="_with_morphogene"):
-    # remove networks with > 1 connected component
-    ################################################################################
+    ''' remove networks with > 1 connected component '''
+    ''' remove networks that do not contain node rr '''
     print "filtering disconnected networks..."
     G = convert_dict_to_graphs(unique_networks, addzeros=False)
     for netID in G:
@@ -121,13 +121,11 @@ def filter_disconnected(unique_networks, outfile_tag="_with_morphogene"):
                 pass
         if not 'rr' in G[netID].nodes():
             try:
-                del unique_networks[netID]
                 print netID, "does not contain the input node: removing."
+                del unique_networks[netID]
             except:
                 pass
     
-    #tend = datetime.now()
-    #print "total execution time:", tend-tstart
     print "pickling", len(unique_networks), "connected unique networks."
     cPickle.dump(unique_networks, file("connected_unique_networks"+outfile_tag+".db", "w"))
     print "done."
@@ -140,7 +138,7 @@ if __name__ == '__main__':
     #print "found", len(networks), "networks." # 3^9 = 19683 if unconstrained
     #print networks[1]
     #check_isomorphism(networks, outfile_tag="_without_morphogene", tag_input_gene=False) # takes 6 hrs
-    #check_isomorphism(networks, outfile_tag="_with_morphogene", tag_input_gene=True) # takes how many hrs?
+    #check_isomorphism(networks, outfile_tag="_with_morphogene", tag_input_gene=True) # takes 15 hrs
     unique_networks = cPickle.load(file("unique_networks_with_morphogene.db"))
     print "found", len(unique_networks), "unique networks." 
     filter_disconnected(unique_networks, outfile_tag="_with_morphogene")
