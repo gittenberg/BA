@@ -132,14 +132,14 @@ def filter_disconnected(unique_networks, outfile_tag="_with_morphogene"):
 
 
 if __name__ == '__main__':
-    #generate_all_networks()
-    #networks = cPickle.load(file("all_networks.db"))
+    generate_all_networks()
+    networks = cPickle.load(file("all_networks.db"))
     #networks = dict((k, networks[k]) for k in range(500)) # enable for quick check
-    #print "found", len(networks), "networks." # 3^9 = 19683 if unconstrained
+    print "found", len(networks), "networks." # 3^9 = 19683 if unconstrained
     #print networks[1]
-    #check_isomorphism(networks, outfile_tag="_without_morphogene", tag_input_gene=False) # takes 6 hrs
+    check_isomorphism(networks, outfile_tag="_without_morphogene", tag_input_gene=False) # takes 6 hrs
     #check_isomorphism(networks, outfile_tag="_with_morphogene", tag_input_gene=True) # takes 15 hrs
-    unique_networks = cPickle.load(file("unique_networks_with_morphogene.db"))
+    unique_networks = cPickle.load(file("unique_networks_without_morphogene.db"))
     print "found", len(unique_networks), "unique networks." 
     filter_disconnected(unique_networks, outfile_tag="_with_morphogene")
     connected_unique_networks = cPickle.load(file("connected_unique_networks_with_morphogene.db"))

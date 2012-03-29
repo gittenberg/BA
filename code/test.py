@@ -226,7 +226,7 @@ if __name__=='__main__':
                   2:["((rr=2&bb=0&gg=1)->EF(AG(gg=0)))&((rr=1&bb=0&gg=1)->EF(AG(gg=1)))&((rr=0&bb=0&gg=0)->EF(AG(gg=0)))", "forAll", "CTL"],
                   #   (anterior&medial&posterior), the gg=1 in anterior and medial is from the drawing on page 5
                   3:["((rr=2&bb=0&gg=1)->EF(AG(gg=0&rr=2)))&((rr=1&bb=0&gg=1)->EF(AG(gg=1&rr=1)))&((rr=0&bb=0&gg=0)->EF(AG(gg=0&rr=0)))", "forAll", "CTL"],
-                  4:["((rr=2)->EF(AG(gg=0))&((rr=1)->EF(AG(gg=1)))&((rr=0)->EF(AG(gg=0))", "forAll", "CTL"]
+                  4:["((rr=2)&EF(AG(gg=0)))&((rr=1)&EF(AG(gg=1)))&((rr=0)&EF(AG(gg=0))", "forAll", "CTL"]
                   }
 
     '''
@@ -304,8 +304,14 @@ if __name__=='__main__':
             IG.add_edges_from(edges[nwkey])
                     
         mc = MC.ModelContainer()
-        mc._NuSMVpath = r"C:\NuSMV\2.5.4\bin\NuSMV.exe"             # Samsung laptop
-        #mc._NuSMVpath = "C:\Progra~2\NuSMV\2.5.4\bin\NuSMV.exe"    # Acer laptop
+
+        if os.name != 'nt':
+            print "running on linux."
+            mc._NuSMVpath = r"~/NuSMV-2.5.4-i686-redhat-linux-gnu/bin/NuSMV"    # andorra (untested)
+        elif os.name == 'nt':
+            print "running on windows."
+            mc._NuSMVpath = r"C:\NuSMV\2.5.4\bin\NuSMV.exe"                     # Samsung laptop
+            #mc._NuSMVpath = "C:\Progra~2\NuSMV\2.5.4\bin\NuSMV.exe"            # Acer laptop
 
         mc.set_IG(IG)
         if interactions.has_key(nwkey):
