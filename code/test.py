@@ -195,7 +195,7 @@ if __name__=='__main__':
     if os.name != 'nt':
         print "running on linux."
         path="/home/bude/mjseeger/git/BA/code"
-        nusmvpath = r"~/NuSMV-2.5.4-i686-redhat-linux-gnu/bin/NuSMV"    # Linux computer
+        nusmvpath = r"~/NuSMV-2.5.4-i386-redhat-linux-gnu/bin/NuSMV"    # Linux computer
     elif os.name == 'nt':
         print "running on windows."
         path="C:\Users\MJS\git\BA\code"
