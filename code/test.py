@@ -8,7 +8,7 @@ import sqlite3
 MC = imp.load_source("MC", os.path.join("ModelContainer.py"))
 TS = imp.load_source("TS", os.path.join("TransitionSystem.py"))
 
-def create_database(path="C:\Users\MJS\git\BA2\code", dbname='filter_results.db'):
+def create_database(path="C:\Users\MJS\git\BA\code", dbname='filter_results.db'):
     # test
     # We delete/rename the entire database. Alternatively, one could only DROP the results tables but this was difficult. # TODO:
     filepath = join(path, dbname)
@@ -191,8 +191,19 @@ def export_STG(mc, gps, filename, initialRules=None):
 
 
 if __name__=='__main__':
+
+    if os.name != 'nt':
+        print "running on linux."
+        path="~\git\BA\code"
+        nusmvpath = r"~/NuSMV-2.5.4-i686-redhat-linux-gnu/bin/NuSMV"    # Linux computer
+    elif os.name == 'nt':
+        print "running on windows."
+        path="C:\Users\MJS\git\BA\code"
+        nusmvpath = r"C:\NuSMV\2.5.4\bin\NuSMV.exe"                     # Samsung laptop
+        #nusmvpath = "C:\Progra~2\NuSMV\2.5.4\bin\NuSMV.exe"            # Acer laptop
+
     # create database
-    con = create_database()
+    con = create_database(path, dbname='filter_results.db')
     
     # create tables
     create_tables(con)
@@ -306,13 +317,7 @@ if __name__=='__main__':
                     
         mc = MC.ModelContainer()
 
-        if os.name != 'nt':
-            print "running on linux."
-            mc._NuSMVpath = r"~/NuSMV-2.5.4-i686-redhat-linux-gnu/bin/NuSMV"    # andorra (untested)
-        elif os.name == 'nt':
-            print "running on windows."
-            mc._NuSMVpath = r"C:\NuSMV\2.5.4\bin\NuSMV.exe"                     # Samsung laptop
-            #mc._NuSMVpath = "C:\Progra~2\NuSMV\2.5.4\bin\NuSMV.exe"            # Acer laptop
+        mc._NuSMVpath = nusmvpath
 
         mc.set_IG(IG)
         if interactions.has_key(nwkey):
