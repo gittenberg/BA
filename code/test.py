@@ -238,7 +238,8 @@ if __name__=='__main__':
                   2:["((rr=2&bb=0&gg=1)->EF(AG(gg=0)))&((rr=1&bb=0&gg=1)->EF(AG(gg=1)))&((rr=0&bb=0&gg=0)->EF(AG(gg=0)))", "forAll", "CTL"],
                   #   (anterior&medial&posterior), the gg=1 in anterior and medial is from the drawing on page 5
                   3:["((rr=2&bb=0&gg=1)->EF(AG(gg=0&rr=2)))&((rr=1&bb=0&gg=1)->EF(AG(gg=1&rr=1)))&((rr=0&bb=0&gg=0)->EF(AG(gg=0&rr=0)))", "forAll", "CTL"],
-                  4:["((rr=2)&EF(AG(gg=0)))&((rr=1)&EF(AG(gg=1)))&((rr=0)&EF(AG(gg=0))", "forAll", "CTL"]
+                  4:["((rr=2)&EF(AG(gg=0)))&((rr=1)&EF(AG(gg=1)))&((rr=0)&EF(AG(gg=0))", "forAll", "CTL"],
+                  5:["((rr=2)->AF(AG(gg=0)))&((rr=1)->AF(AG(gg=1)))&((rr=0)->AF(AG(gg=0)))", "exists", "CTL"]
                   }
 
     '''

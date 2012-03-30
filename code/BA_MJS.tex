@@ -170,7 +170,16 @@ The CTL representation of this requirement reads
 {\tt A(initial\_condition  -> EF(AG(gg=}x{\tt )))}.
 \end{equation}
 In plain language, we require some future paths to exist on which
-eventually the output gene takes on value $x$. 
+eventually the output gene takes on value $x$. \\
+
+TODOs:
+\begin{enumerate}
+\item Introduction to CTL (see .pdfs)
+\item The issues with forall eventually forall globally (not expressible in LTL for example)
+\item The issues with forAll states vs. there exists a state (tree with initial state vs. tree where all states are considered initial states). 
+Exists is plausible but it only makes sense if there are non-trivial results (e.g. networks that do NOT produce stripes).
+\item Any of these could be evaluated and compared in a big table.
+\end{enumerate}
 
 \subsection{Pattern definition in AL}
 
