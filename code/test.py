@@ -213,64 +213,65 @@ if __name__=='__main__':
     interactions = dict()
     thresholds = dict()
     filters = dict()
-    nw_specific_filters = dict()
     valueConstraints = dict()
     dynamics = dict()
     
-    nw_specific_filters['A'] = {
-                                0:["?(rand,mitte: rand.frozen(gg)&rand.max(gg)=0&mitte.frozen(gg)&mitte.min(gg)=1)", None, "AL"], # used to be ...&mitte.max(gg)=1 with the same number of results
-                                1:["((rr=2&bb=0&gg=1)->EF(AG(gg=0)))&((rr=1&bb=0&gg=1)->EF(AG(gg=1)))&((rr=0&bb=0&gg=0)->EF(AG(gg=0)))", "forAll", "CTL"],
-                                # tight BCs, forAll, EFAG, with rr decay
-                                2:["((rr=2&bb=0&gg=1)->EF(AG(gg=0&rr=2)))&((rr=1&bb=0&gg=1)->EF(AG(gg=1&rr=1)))&((rr=0&bb=0&gg=0)->EF(AG(gg=0&rr=0)))", "forAll", "CTL"],
-                                # tight BCs, forAll, EFAG, without rr decay
-                                3:["((rr=2&bb=0&gg=1)->AF(AG(gg=0)))&((rr=1&bb=0&gg=1)->AF(AG(gg=1)))&((rr=0&bb=0&gg=0)->AF(AG(gg=0)))", "forAll", "CTL"],
-                                # tight BCs, forAll, AFAG, with rr decay
-                                4:["((rr=2&bb=0&gg=1)->AF(AG(gg=0&rr=2)))&((rr=1&bb=0&gg=1)->AF(AG(gg=1&rr=1)))&((rr=0&bb=0&gg=0)->AF(AG(gg=0&rr=0)))", "forAll", "CTL"],
-                                # tight BCs, forAll, AFAG, without rr decay
-                                5:["((rr=2&bb=0&gg=1)->EF(AG(gg=0)))&((rr=1&bb=0&gg=1)->EF(AG(gg=1)))&((rr=0&bb=0&gg=0)->EF(AG(gg=0)))", "exists", "CTL"],
-                                # tight BCs, exists, EFAG, with rr decay
-                                6:["((rr=2&bb=0&gg=1)->EF(AG(gg=0&rr=2)))&((rr=1&bb=0&gg=1)->EF(AG(gg=1&rr=1)))&((rr=0&bb=0&gg=0)->EF(AG(gg=0&rr=0)))", "exists", "CTL"],
-                                # tight BCs, exists, EFAG, without rr decay
-                                7:["((rr=2&bb=0&gg=1)->AF(AG(gg=0)))&((rr=1&bb=0&gg=1)->AF(AG(gg=1)))&((rr=0&bb=0&gg=0)->AF(AG(gg=0)))", "exists", "CTL"],
-                                # tight BCs, exists, AFAG, with rr decay
-                                8:["((rr=2&bb=0&gg=1)->AF(AG(gg=0&rr=2)))&((rr=1&bb=0&gg=1)->AF(AG(gg=1&rr=1)))&((rr=0&bb=0&gg=0)->AF(AG(gg=0&rr=0)))", "exists", "CTL"],
-                                # tight BCs, exists, AFAG, without rr decay
-                                9:["((rr=2)->EF(AG(gg=0)))&((rr=1)->EF(AG(gg=1)))&((rr=0)->EF(AG(gg=0)))", "forAll", "CTL"],
-                                # loose BCs, forAll, EFAG, with rr decay
-                                10:["((rr=2)->EF(AG(gg=0&rr=2)))&((rr=1)->EF(AG(gg=1&rr=1)))&((rr=0)->EF(AG(gg=0&rr=0)))", "forAll", "CTL"],
-                                # loose BCs, forAll, EFAG, without rr decay
-                                11:["((rr=2)->AF(AG(gg=0)))&((rr=1)->AF(AG(gg=1)))&((rr=0)->AF(AG(gg=0)))", "forAll", "CTL"],
-                                # loose BCs, forAll, AFAG, with rr decay
-                                12:["((rr=2)->AF(AG(gg=0&rr=2)))&((rr=1)->AF(AG(gg=1&rr=1)))&((rr=0)->AF(AG(gg=0&rr=0)))", "forAll", "CTL"],
-                                # loose BCs, forAll, AFAG, without rr decay
-                                13:["((rr=2)->EF(AG(gg=0)))&((rr=1)->EF(AG(gg=1)))&((rr=0)->EF(AG(gg=0)))", "exists", "CTL"],
-                                # loose BCs, exists, EFAG, with rr decay
-                                14:["((rr=2)->EF(AG(gg=0&rr=2)))&((rr=11)->EF(AG(gg=1&rr=1)))&((rr=0)->EF(AG(gg=0&rr=0)))", "exists", "CTL"],
-                                # loose BCs, exists, EFAG, without rr decay
-                                15:["((rr=2)->AF(AG(gg=0)))&((rr=1)->AF(AG(gg=1)))&((rr=0)->AF(AG(gg=0)))", "exists", "CTL"],
-                                # loose BCs, exists, AFAG, with rr decay
-                                16:["((rr=2)->AF(AG(gg=0&rr=2)))&((rr=1)->AF(AG(gg=1&rr=1)))&((rr=0)->AF(AG(gg=0&rr=0)))", "exists", "CTL"]
-                                # loose BCs, exists, AFAG, without rr decay
-                              }
-    '''
-    # example network: graph A in figure 2 of Cotterel/Sharpe
-    # strict edge labels, without morphogene, blue activated earlier than green (WRONG!!!)
-    networks[1] = '(A) Incoherent type 1 feed-forward, strict edge labels'
-    interactions[1] = {("rr","rr"):"+", ("rr","gg"):"+", ("rr","bb"):"+", ("bb","gg"):"-", ("gg","gg"):"+"}
-    thresholds[1] = {("rr","rr"):1, ("rr","gg"):2, ("rr","bb"):1, ("bb","gg"):1, ("gg","gg"):1}
-    filters[1] = {1:["?(rand,mitte: rand.frozen(gg)&rand.max(gg)=0&mitte.frozen(gg)&mitte.min(gg)=1)", None, "AL"], # used to be ...&mitte.max(gg)=1 with the same number of results
-                  2:["((rr=2&bb=0&gg=1)->EF(AG(gg=0)))&((rr=1&bb=0&gg=1)->EF(AG(gg=1)))&((rr=0&bb=0&gg=0)->EF(AG(gg=0)))", "forAll", "CTL"], 
-                  #   (anterior&medial&posterior), the gg=1 in anterior and medial is from the drawing on page 5
-                  3:["((rr=2&bb=0&gg=1)->EF(AG(gg=0)))&((rr=1&bb=0&gg=1)->EF(AG(gg=1)))&((rr=0&bb=0&gg=0)->EF(AG(gg=0)))", "forAll", "CTL"]
-                  }
+    nw_specific_filters = {
+                            0:["?(rand,mitte: rand.frozen(gg)&rand.max(gg)=0&mitte.frozen(gg)&mitte.min(gg)=1)", None, "AL"], # used to be ...&mitte.max(gg)=1 with the same number of results
+                            1:["((rr=2&bb=0&gg=1)->EF(AG(gg=0)))&((rr=1&bb=0&gg=1)->EF(AG(gg=1)))&((rr=0&bb=0&gg=0)->EF(AG(gg=0)))", "forAll", "CTL"],
+                            # tight BCs, forAll, EFAG, with rr decay
+                            #2:["((rr=2&bb=0&gg=1)->EF(AG(gg=0&rr=2)))&((rr=1&bb=0&gg=1)->EF(AG(gg=1&rr=1)))&((rr=0&bb=0&gg=0)->EF(AG(gg=0&rr=0)))", "forAll", "CTL"],
+                            # tight BCs, forAll, EFAG, without rr decay
+                            3:["((rr=2&bb=0&gg=1)->AF(AG(gg=0)))&((rr=1&bb=0&gg=1)->AF(AG(gg=1)))&((rr=0&bb=0&gg=0)->AF(AG(gg=0)))", "forAll", "CTL"],
+                            # tight BCs, forAll, AFAG, with rr decay
+                            #4:["((rr=2&bb=0&gg=1)->AF(AG(gg=0&rr=2)))&((rr=1&bb=0&gg=1)->AF(AG(gg=1&rr=1)))&((rr=0&bb=0&gg=0)->AF(AG(gg=0&rr=0)))", "forAll", "CTL"],
+                            # tight BCs, forAll, AFAG, without rr decay
+                            5:["((rr=2&bb=0&gg=1)->EF(AG(gg=0)))&((rr=1&bb=0&gg=1)->EF(AG(gg=1)))&((rr=0&bb=0&gg=0)->EF(AG(gg=0)))", "exists", "CTL"],
+                            # tight BCs, exists, EFAG, with rr decay
+                            #6:["((rr=2&bb=0&gg=1)->EF(AG(gg=0&rr=2)))&((rr=1&bb=0&gg=1)->EF(AG(gg=1&rr=1)))&((rr=0&bb=0&gg=0)->EF(AG(gg=0&rr=0)))", "exists", "CTL"],
+                            # tight BCs, exists, EFAG, without rr decay
+                            7:["((rr=2&bb=0&gg=1)->AF(AG(gg=0)))&((rr=1&bb=0&gg=1)->AF(AG(gg=1)))&((rr=0&bb=0&gg=0)->AF(AG(gg=0)))", "exists", "CTL"],
+                            # tight BCs, exists, AFAG, with rr decay
+                            #8:["((rr=2&bb=0&gg=1)->AF(AG(gg=0&rr=2)))&((rr=1&bb=0&gg=1)->AF(AG(gg=1&rr=1)))&((rr=0&bb=0&gg=0)->AF(AG(gg=0&rr=0)))", "exists", "CTL"],
+                            # tight BCs, exists, AFAG, without rr decay
+                            9:["((rr=2)->EF(AG(gg=0)))&((rr=1)->EF(AG(gg=1)))&((rr=0)->EF(AG(gg=0)))", "forAll", "CTL"],
+                            # loose BCs, forAll, EFAG, with rr decay
+                            #10:["((rr=2)->EF(AG(gg=0&rr=2)))&((rr=1)->EF(AG(gg=1&rr=1)))&((rr=0)->EF(AG(gg=0&rr=0)))", "forAll", "CTL"],
+                            # loose BCs, forAll, EFAG, without rr decay
+                            11:["((rr=2)->AF(AG(gg=0)))&((rr=1)->AF(AG(gg=1)))&((rr=0)->AF(AG(gg=0)))", "forAll", "CTL"],
+                            # loose BCs, forAll, AFAG, with rr decay
+                            #12:["((rr=2)->AF(AG(gg=0&rr=2)))&((rr=1)->AF(AG(gg=1&rr=1)))&((rr=0)->AF(AG(gg=0&rr=0)))", "forAll", "CTL"],
+                            # loose BCs, forAll, AFAG, without rr decay
+                            13:["((rr=2)->EF(AG(gg=0)))&((rr=1)->EF(AG(gg=1)))&((rr=0)->EF(AG(gg=0)))", "exists", "CTL"],
+                            # loose BCs, exists, EFAG, with rr decay
+                            #14:["((rr=2)->EF(AG(gg=0&rr=2)))&((rr=11)->EF(AG(gg=1&rr=1)))&((rr=0)->EF(AG(gg=0&rr=0)))", "exists", "CTL"],
+                            # loose BCs, exists, EFAG, without rr decay
+                            15:["((rr=2)->AF(AG(gg=0)))&((rr=1)->AF(AG(gg=1)))&((rr=0)->AF(AG(gg=0)))", "exists", "CTL"]
+                            # loose BCs, exists, AFAG, with rr decay
+                            #16:["((rr=2)->AF(AG(gg=0&rr=2)))&((rr=1)->AF(AG(gg=1&rr=1)))&((rr=0)->AF(AG(gg=0&rr=0)))", "exists", "CTL"]
+                            # loose BCs, exists, AFAG, without rr decay
+                          }
 
-    '''
     # example network: graph A in figure 2 of Cotterel/Sharpe
     # strict edge labels, without morphogene, green activated earlier than blue
-    networks[2] = '(A) Incoherent type 1 feed-forward, with self-loop on rr @ threshold = 1'
+    networks[1] = '(A) Incoherent type 1 feed-forward, with self-loop on rr @ threshold = 1'
+    interactions[1] = {("rr","rr"):"+", ("rr","gg"):"+", ("rr","bb"):"+", ("bb","gg"):"-", ("gg","gg"):"+"}
+    thresholds[1] = {("rr","rr"):1, ("rr","gg"):1, ("rr","bb"):2, ("bb","gg"):1, ("gg","gg"):1}
+    filters[1] = nw_specific_filters
+
+    # example network: graph A in figure 2 of Cotterel/Sharpe
+    # strict edge labels, without morphogene, green activated earlier than blue
+    networks[2] = '(A) Incoherent type 1 feed-forward, with self-loop on rr @ threshold = 2'
     interactions[2] = {("rr","rr"):"+", ("rr","gg"):"+", ("rr","bb"):"+", ("bb","gg"):"-", ("gg","gg"):"+"}
     thresholds[2] = {("rr","rr"):1, ("rr","gg"):1, ("rr","bb"):2, ("bb","gg"):1, ("gg","gg"):1}
-    filters[2] = nw_specific_filters['A']
+    filters[2] = nw_specific_filters
+
+    # example network: graph A in figure 2 of Cotterel/Sharpe
+    # strict edge labels, without morphogene, green activated earlier than blue
+    networks[3] = '(A) Incoherent type 1 feed-forward, with self-loop on rr @ threshold = 2'
+    interactions[3] = {("rr","gg"):"+", ("rr","bb"):"+", ("bb","gg"):"-", ("gg","gg"):"+"}
+    thresholds[3] = {("rr","gg"):1, ("rr","bb"):2, ("bb","gg"):1, ("gg","gg"):1}
+    filters[3] = nw_specific_filters
 
     '''
     # strict edge labels, with 1 morphogene, green activated earlier than blue

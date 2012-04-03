@@ -45,10 +45,8 @@ def label_match(label1, label2):
     return label1==label2
     
     
-def check_isomorphism(networks, outfile_tag="_without_morphogene", tag_input_gene=False):
-    ''' check for isomorphism:
-    loop through all pairs of networks and check for isomorphy
-    (takes about 6 hrs on the full set)'''
+def check_isomorphism_OLD(networks, outfile_tag="_without_morphogene", tag_input_gene=False):
+    ''' check for isomorphism: loop through all pairs of networks and check for isomorphy'''
     print "checking networks for isomorphism..."
     G = convert_dict_to_graphs(networks, addzeros=False)
     if tag_input_gene:
@@ -134,13 +132,14 @@ def filter_disconnected(unique_networks, outfile_tag="_with_morphogene"):
 if __name__ == '__main__':
     generate_all_networks()
     networks = cPickle.load(file("all_networks.db"))
-    #networks = dict((k, networks[k]) for k in range(500)) # enable for quick check
+    networks = dict((k, networks[k]) for k in range(500)) # enable for quick check
     print "found", len(networks), "networks." # 3^9 = 19683 if unconstrained
-    #print networks[1]
-    #check_isomorphism(networks, outfile_tag="_without_morphogene", tag_input_gene=False) # takes 6 hrs
-    check_isomorphism(networks, outfile_tag="_with_morphogene", tag_input_gene=True) # takes 15 hrs
-    #unique_networks = cPickle.load(file("unique_networks_without_morphogene.db"))
-    unique_networks = cPickle.load(file("unique_networks_with_morphogene.db"))
+
+    outfile_tag, tag_input_gene = "_without_morphogene", False # >3000
+    #outfile_tag, tag_input_gene = "_with_morphogene",    True  # >9000
+
+    check_isomorphism(networks, outfile_tag, tag_input_gene) 
+    unique_networks = cPickle.load(file("unique_networks"+outfile_tag+".db"))
     print "found", len(unique_networks), "unique networks." 
-    filter_disconnected(unique_networks, outfile_tag="_with_morphogene")
-    connected_unique_networks = cPickle.load(file("connected_unique_networks_with_morphogene.db"))
+    filter_disconnected(unique_networks, outfile_tag)
+    connected_unique_networks = cPickle.load(file("connected_unique_networks"+outfile_tag+".db"))
