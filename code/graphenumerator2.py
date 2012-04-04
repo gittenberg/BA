@@ -108,33 +108,27 @@ def check_isomorphism(networks, outfile_tag="_without_morphogene", tag_input_gen
     else:
         match_fct = None
     
-    skiplist = []
+    #skiplist = []
     isomorphy_classes = {}
     maxiter = len(networks)
-    for netID1 in networks.keys():
-        if netID1 not in skiplist:
-            isomorphy_classes[netID1] = [netID1]
-            for netID2 in range(netID1+1, maxiter):
-                if netID2 not in skiplist:
-                    if nx.is_isomorphic(G[netID1], G[netID2], node_match=match_fct, edge_match=label_match):
-                        try:
-                            #del networks[netID2]
-                            skiplist.append(netID2)
-                            isomorphy_classes[netID1].append(netID2)
-                        except:
-                            pass
-            skiplist = list(set(skiplist)) # remove double entries
-            print "isomorphy_classes[", netID1, "] =", isomorphy_classes[netID1]
-        tend = datetime.now()
-        print "total execution time:", tend-tstart
+    for netID in networks.keys():
+        for isomorphy_class in isomorphy_classes.values():
+            if nx.is_isomorphic(G[netID], G[isomorphy_class[0]], node_match=match_fct, edge_match=label_match): # we found an isomorphism
+                isomorphy_classes[isomorphy_class[0]].append(netID)
+                break # quit looping over isomorphy classes, continue with networks
+        else: # if break was not hit
+            isomorphy_classes[netID] = [netID] # create new isomorphy class
+            print "creating new isomorphy class for netID:", netID, "."
+    tend = datetime.now()
+    print "total execution time:", tend-tstart
 
     unique_networks = dict()
     for netID in networks.keys():
         if isomorphy_classes.has_key(netID):
             unique_networks[netID] = networks[netID]
-    print "pickling", len(unique_networks), "unique networks."
+    print "pickling", len(unique_networks), "unique networks to unique_networks"+outfile_tag+".db."
     cPickle.dump(unique_networks, file("unique_networks"+outfile_tag+".db", "w"))
-    print "pickling", len(isomorphy_classes), "isomorphy classes."
+    print "pickling", len(isomorphy_classes), "isomorphy classes to isomorphy_classes"+outfile_tag+".db."
     cPickle.dump(isomorphy_classes, file("isomorphy_classes"+outfile_tag+".db", "w"))
     
     tend = datetime.now()
@@ -173,7 +167,7 @@ def filter_disconnected(unique_networks, outfile_tag="_with_morphogene"):
             except:
                 pass
     
-    print "pickling", len(unique_networks), "connected unique networks."
+    print "pickling", len(unique_networks), "connected unique networks to connected_unique_networks"+outfile_tag+".db."
     cPickle.dump(unique_networks, file("connected_unique_networks"+outfile_tag+".db", "w"))
     print "done."
 
@@ -181,11 +175,11 @@ def filter_disconnected(unique_networks, outfile_tag="_with_morphogene"):
 if __name__ == '__main__':
     generate_all_networks()
     networks = cPickle.load(file("all_networks.db"))
-    networks = dict((k, networks[k]) for k in range(500)) # enable for quick check
+    #networks = dict((k, networks[k]) for k in range(500)) # enable for quick check
     print "found", len(networks), "networks." # 3^9 = 19683 if unconstrained
 
-    outfile_tag, tag_input_gene = "_without_morphogene", False # >3000
-    #outfile_tag, tag_input_gene = "_with_morphogene",    True  # >9000
+    #outfile_tag, tag_input_gene = "_without_morphogene", False # >3000
+    outfile_tag, tag_input_gene = "_with_morphogene",    True  # >9000
 
     check_isomorphism(networks, outfile_tag, tag_input_gene) 
     unique_networks = cPickle.load(file("unique_networks"+outfile_tag+".db"))
