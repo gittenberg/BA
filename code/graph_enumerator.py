@@ -1,15 +1,22 @@
 from datetime import datetime
-
 tstart = datetime.now()
 
 import itertools
 import networkx as nx
 import cPickle
-#import shelve
+from os import rename, remove
+from os.path import exists
 
 nodes = ["bb", "gg", "rr"]
 labels = ["-", "0", "+"]
 
+
+def backup(filename):
+    print "backing up", filename, "...",
+    if exists(filename+".bak"): remove(filename+".bak")
+    if exists(filename): rename(filename, filename+".bak")
+    print "done."
+    
 
 def generate_all_networks():
     ''' generate all 3^9 = 19683 combinations of networks '''
@@ -17,15 +24,19 @@ def generate_all_networks():
     edges = [(node1, node2) for node1 in nodes for node2 in nodes]
     labelcombinations = itertools.product(labels, repeat=len(edges)) # all combinations of len(edges) labels
     networks = dict(enumerate(dict(zip(edges, labelcombination)) for labelcombination in labelcombinations))
-    cPickle.dump(networks, file("all_networks.db", "w" ))
+
     print "found", len(networks), "networks." # 3^9 = 19683 if unconstrained
+    picklename = "all_networks.db"
+    backup(picklename)
+    print "pickling", len(networks), "networks to", picklename, "."
+    cPickle.dump(networks, file(picklename, "w" ))
 
     tend = datetime.now()
     print "total execution time:", tend-tstart
     print "done."
 
 
-def convert_dict_to_graphs(networks, addzeros=True):
+def convert_dict_to_graphs(networks, addzeros=False):
     ''' given a dictionary, create digraph with labels
     assumption: networks is dict(netID:dict(edge:label)) '''
     print "converting dictionaries to graphs...",
@@ -34,7 +45,7 @@ def convert_dict_to_graphs(networks, addzeros=True):
         G[netID] = nx.DiGraph()
         net = networks[netID]
         for edge in net:
-            if net[edge]!='0' or addzeros:
+            if addzeros or net[edge]!='0':
                 G[netID].add_edge(edge[0], edge[1], label=net[edge])
                 #print edge[0], edge[1], G[netID][edge[0]][edge[1]]
     print "done."
@@ -83,10 +94,15 @@ def check_isomorphism_OLD(networks, outfile_tag="_without_morphogene", tag_input
     for netID in networks.keys():
         if isomorphy_classes.has_key(netID):
             unique_networks[netID] = networks[netID]
-    print "pickling", len(unique_networks), "unique networks."
-    cPickle.dump(unique_networks, file("unique_networks"+outfile_tag+".db", "w"))
-    print "pickling", len(isomorphy_classes), "isomorphy classes."
-    cPickle.dump(isomorphy_classes, file("isomorphy_classes"+outfile_tag+".db", "w"))
+
+    picklename1 = "unique_networks" + outfile_tag + ".db"
+    picklename2 = "isomorphy_classes" + outfile_tag + ".db"
+    backup(picklename1)
+    backup(picklename2)
+    print "pickling", len(unique_networks), "unique networks to", picklename1, "."
+    print "pickling", len(isomorphy_classes), "isomorphy classes to", picklename2, "."
+    cPickle.dump(unique_networks, file(picklename1, "w"))
+    cPickle.dump(isomorphy_classes, file(picklename2, "w"))
     
     tend = datetime.now()
     print "total execution time:", tend-tstart
@@ -95,7 +111,7 @@ def check_isomorphism_OLD(networks, outfile_tag="_without_morphogene", tag_input
 
 def check_isomorphism(networks, outfile_tag="_without_morphogene", tag_input_gene=False):
     ''' check for isomorphism: loop through all pairs of networks and check for isomorphy '''
-    ''' new version which might be faster '''
+    ''' new, faster version'''
     print "checking networks for isomorphism..."
     G = convert_dict_to_graphs(networks, addzeros=False)
     if tag_input_gene:
@@ -108,15 +124,13 @@ def check_isomorphism(networks, outfile_tag="_without_morphogene", tag_input_gen
     else:
         match_fct = None
     
-    #skiplist = []
     isomorphy_classes = {}
-    maxiter = len(networks)
     for netID in networks.keys():
         for isomorphy_class in isomorphy_classes.values():
             if nx.is_isomorphic(G[netID], G[isomorphy_class[0]], node_match=match_fct, edge_match=label_match): # we found an isomorphism
                 isomorphy_classes[isomorphy_class[0]].append(netID)
                 break # quit looping over isomorphy classes, continue with networks
-        else: # if break was not hit
+        else: # if break was not hit, we found no isomorphy class
             isomorphy_classes[netID] = [netID] # create new isomorphy class
             print "creating new isomorphy class for netID:", netID, "."
     tend = datetime.now()
@@ -126,10 +140,15 @@ def check_isomorphism(networks, outfile_tag="_without_morphogene", tag_input_gen
     for netID in networks.keys():
         if isomorphy_classes.has_key(netID):
             unique_networks[netID] = networks[netID]
-    print "pickling", len(unique_networks), "unique networks to unique_networks"+outfile_tag+".db."
-    cPickle.dump(unique_networks, file("unique_networks"+outfile_tag+".db", "w"))
-    print "pickling", len(isomorphy_classes), "isomorphy classes to isomorphy_classes"+outfile_tag+".db."
-    cPickle.dump(isomorphy_classes, file("isomorphy_classes"+outfile_tag+".db", "w"))
+
+    picklename1 = "unique_networks" + outfile_tag + ".db"
+    picklename2 = "isomorphy_classes" + outfile_tag + ".db"
+    backup(picklename1)
+    backup(picklename2)
+    print "pickling", len(unique_networks), "unique networks to", picklename1, "."
+    print "pickling", len(isomorphy_classes), "isomorphy classes to", picklename2, "."
+    cPickle.dump(unique_networks, file(picklename1, "w"))
+    cPickle.dump(isomorphy_classes, file(picklename2, "w"))
     
     tend = datetime.now()
     print "total execution time:", tend-tstart
@@ -150,25 +169,23 @@ def convert_graph_to_dict(G, addzeros=False):
 
 
 def filter_disconnected(unique_networks, outfile_tag="_with_morphogene"):
-    ''' remove networks with > 1 connected component '''
-    ''' remove networks that do not contain node rr '''
+    ''' remove networks with fewer than 3 nodes and unconnected'''
     print "filtering disconnected networks..."
     G = convert_dict_to_graphs(unique_networks, addzeros=False)
     for netID in G:
-        if not G[netID] or not nx.is_connected(G[netID].to_undirected()):
-            try:
-                del unique_networks[netID]
-            except:
-                pass
-        if not 'rr' in G[netID].nodes():
-            try:
-                print netID, "does not contain the input node: removing."
-                del unique_networks[netID]
-            except:
-                pass
-    
-    print "pickling", len(unique_networks), "connected unique networks to connected_unique_networks"+outfile_tag+".db."
-    cPickle.dump(unique_networks, file("connected_unique_networks"+outfile_tag+".db", "w"))
+        if not len(G[netID].nodes())==3:
+            print netID, "contains only", len(G[netID].nodes()), "node(s): removing."
+            del unique_networks[netID]
+            continue
+
+        if not nx.is_connected(G[netID].to_undirected()):
+            print netID, "not connected: removing."
+            del unique_networks[netID]
+
+    picklename = "connected_unique_networks_three_nodes"+outfile_tag+".db"
+    backup(picklename)
+    print "pickling", len(unique_networks), "connected unique networks to", picklename, "."
+    cPickle.dump(unique_networks, file(picklename, "w"))
     print "done."
 
 
@@ -181,8 +198,10 @@ if __name__ == '__main__':
     #outfile_tag, tag_input_gene = "_without_morphogene", False # >3000
     outfile_tag, tag_input_gene = "_with_morphogene",    True  # >9000
 
-    check_isomorphism(networks, outfile_tag, tag_input_gene) 
+    #check_isomorphism(networks, outfile_tag, tag_input_gene) 
     unique_networks = cPickle.load(file("unique_networks"+outfile_tag+".db"))
     print "found", len(unique_networks), "unique networks." 
     filter_disconnected(unique_networks, outfile_tag)
-    connected_unique_networks = cPickle.load(file("connected_unique_networks"+outfile_tag+".db"))
+
+    picklename = "connected_unique_networks_three_nodes"+outfile_tag+".db"
+    networks = cPickle.load(file(picklename))
