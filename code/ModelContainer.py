@@ -49,7 +49,7 @@ class ModelContainer():
     def initializePSC(self):
         '''Computes local parameter sets and creates PSC.'''
         
-        self.message("initializePSC: is this method still up to date? compare it to ParameterSetup!")
+        #self.message("initializePSC: is this method still up to date? compare it to ParameterSetup!")
         localParameterSets = dict()
         
         varsToDo = self.varnames()
