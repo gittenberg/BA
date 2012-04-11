@@ -25,7 +25,6 @@ morphogene_interactions = {("m1","m1"):"+", ("m1","rr"):"+", ("m2","m2"):"+", ("
 def setup_models(networks, add_morphogene=True):
     models_dict_name = "models_dictionary.db"
     models_dict = shelve.open(models_dict_name)
-    #models_dict = {} # this only for pickling, not for shelving
     for i, net in enumerate(networks.values()):
         key = str(i)
         #if i>=50: break # enable for quick run
@@ -55,8 +54,7 @@ def setup_models(networks, add_morphogene=True):
             print "total execution time:", tend-tstart
         models_dict[key] = mc
     models_dict.close()
-    print "shelved", i, "model containers to", models_dict_name, "."
-    #cPickle.dump(models_dict, file(models_dict_name, "w"))
+    print "shelved", i+1, "model containers to", models_dict_name, "."
     
 if __name__=='__main__':
     picklename = "connected_unique_networks_three_nodes_with_morphogene.db"
