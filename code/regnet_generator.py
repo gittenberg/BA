@@ -5,7 +5,8 @@ import cPickle
 import os
 import imp
 import networkx as nx
-import shelve
+#import shelve
+from shove import Shove
 
 MC = imp.load_source("MC", os.path.join("ModelContainer.py"))
 
@@ -24,7 +25,8 @@ morphogene_interactions = {("m1","m1"):"+", ("m1","rr"):"+", ("m2","m2"):"+", ("
 
 def setup_models(networks, add_morphogene=True):
     models_dict_name = "models_dictionary.db"
-    models_dict = shelve.open(models_dict_name)
+    #models_dict = shelve.open(models_dict_name)
+    models_dict = Shove("file://"+models_dict_name, compress=True)
     for i, net in enumerate(networks.values()):
         key = str(i)
         #if i>=50: break # enable for quick run
@@ -63,8 +65,8 @@ if __name__=='__main__':
     setup_models(networks)
 
     models_dict_name = "models_dictionary.db"
-    models_dict = shelve.open(models_dict_name)
-    #models = cPickle.load(file(models_dict_name)) # this only for pickling, not for shelving
+    #models_dict = shelve.open(models_dict_name)
+    models_dict = Shove("file://"+models_dict_name, compress=True)
     
     print "found", len(models_dict), "models."
 
