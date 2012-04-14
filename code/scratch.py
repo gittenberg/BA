@@ -7,8 +7,9 @@ data["1"] = "example"
 data["3"] = "bla"
 
 print data
-
 data.sync()
+
+print data
 
 newdata = Shove("file://testfile_shove.db", compress=True)
 
