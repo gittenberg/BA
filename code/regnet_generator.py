@@ -73,10 +73,10 @@ if __name__=='__main__':
     networks = cPickle.load(file(picklename))
     #print len(networks)
     
-    for network in networks:
-        mc = dict_to_model(networks[network], add_morphogene=True)
-        print network, ":", len(mc._psc), "parameter sets."
-        if not network%10:
+    for nwkey in networks:
+        mc = dict_to_model(networks[nwkey], add_morphogene=True)
+        print nwkey, ":", len(mc._psc), "parameter sets."
+        if not nwkey%10:
             tend = datetime.now()
             print "total execution time:", tend-tstart
     

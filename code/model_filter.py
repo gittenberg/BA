@@ -2,8 +2,31 @@ from datetime import datetime
 tstart = datetime.now()
 
 import cPickle
-from shove import Shove
+#from shove import Shove
+from database_functions import *
 from regnet_generator import dict_to_model
+
+if os.name != 'nt':
+    print "running on linux."
+    path="/home/bude/mjseeger/git/BA/code"
+    nusmvpath = r"~/NuSMV-2.5.4-i386-redhat-linux-gnu/bin/NuSMV"    # Linux computer
+elif os.name == 'nt':
+    print "running on windows."
+    path="C:\Users\MJS\git\BA\code"
+    nusmvpath = r"C:\NuSMV\2.5.4\bin\NuSMV.exe"                     # Samsung laptop
+    #nusmvpath = "C:\Progra~2\NuSMV\2.5.4\bin\NuSMV.exe"            # Acer laptop
+
+filters_for_3_gene_networks = {
+                        0:["?(rand,mitte: rand.frozen(gg)&rand.max(gg)=0&mitte.frozen(gg)&mitte.min(gg)=1)", None, "AL"], # used to be ...&mitte.max(gg)=1 with the same number of results
+                        1:["((m1=0&m2=0)->EF(AG(gg=0)))&((m1=0&m2=1)->EF(AG(gg=1)))&((m1=1&m2=1)->EF(AG(gg=0)))", "forAll", "CTL"],
+                        # morphogene BCs, forAll, EFAG
+                        2:["((m1=0&m2=0)->AF(AG(gg=0)))&((m1=0&m2=1)->AF(AG(gg=1)))&((m1=1&m2=1)->AF(AG(gg=0)))", "forAll", "CTL"],
+                        # morphogene BCs, forAll, AFAG
+                        3:["((m1=0&m2=0)->EF(AG(gg=0)))&((m1=0&m2=1)->EF(AG(gg=1)))&((m1=1&m2=1)->EF(AG(gg=0)))", "exists", "CTL"],
+                        # morphogene BCs, exists, EFAG
+                        4:["((m1=0&m2=0)->AF(AG(gg=0)))&((m1=0&m2=1)->AF(AG(gg=1)))&((m1=1&m2=1)->AF(AG(gg=0)))", "exists", "CTL"],
+                        # morphogene BCs, exists, AFAG
+                      }
 
 if __name__=='__main__':
     #models_dict_name = "models_dictionary.db"
@@ -17,10 +40,55 @@ if __name__=='__main__':
     networks = cPickle.load(file(picklename))
     print "found", len(networks), "networks."
 
-    for network in networks:
-        mc = dict_to_model(networks[network], add_morphogene=True)
-        print network, ":", len(mc._psc), "parameter sets."
-        if not network%10:
+    # create database
+    con = create_database(path, dbname='filter_results.db')
+    
+    # create tables
+    create_tables(con)
+    
+    nodes = dict() # will be initialized below
+
+    for nwkey, nw in enumerate(networks):
+        print "===================================================================================="
+        print "Considering nwkey:", nwkey
+
+        mc = dict_to_model(networks[nwkey], add_morphogene=True)
+        IG = mc._IG
+        print nwkey, ":", len(mc._psc), "parameter sets."
+
+        lpss = mc._psc._localParameterSets
+        nodes[nwkey] = lpss.keys()
+        preds = dict([(node, IG.predecessors(node)) for node in nodes[nwkey]]) # dict containing node:[preds of node]
+
+        print "===================================================================================="
+        print "Database operations"
+
+        # write nwkey to database
+        insert_network(con, nwkey, str(nwkey))
+        
+        # write interaction graph to database
+        edges = IG.edges()
+        interactions = mc._edgeLabels
+        thresholds = mc._thresholds
+        insert_edges(con, nwkey, edges, interactions, thresholds)
+
+        ################################################################################
+        # ab hier weiterarbeiten
+        ################################################################################
+        # write nodes to database
+        insert_nodes(con, nwkey, nodes[nwkey])
+
+        # write contexts to database
+        insert_contexts(con, nwkey, nodes[nwkey], preds)        
+
+        # write local parameter sets to database
+        insert_local_parameter_sets(con, nwkey, nodes[nwkey], preds, lpss)
+        
+        # write global parameter sets to database
+        gpss = mc._psc.get_parameterSets()
+        insert_global_parameter_sets(con, nwkey, gpss)
+        
+        if not nwkey%10:
             tend = datetime.now()
             print "total execution time:", tend-tstart
     
