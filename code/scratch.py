@@ -1,6 +1,7 @@
 
 from shove import Shove
 
+'''
 data = Shove("file://testfile_shove.db", compress=True)
 
 data["1"] = "example"
@@ -10,7 +11,7 @@ print data
 data.sync()
 
 print data
-
+'''
 newdata = Shove("file://testfile_shove.db", compress=True)
 
 print newdata
