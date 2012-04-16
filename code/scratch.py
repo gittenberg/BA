@@ -1,17 +1,13 @@
 
 from shove import Shove
 
-'''
-data = Shove("file://testfile_shove.db", compress=True)
+models_dict_name = "models_dictionary.db"
+models_dict = Shove("file://"+models_dict_name, compress=True)
 
-data["1"] = "example"
-data["3"] = "bla"
+print type(models_dict)
 
-print data
-data.sync()
+md = dict(models_dict)
 
-print data
-'''
-newdata = Shove("file://testfile_shove.db", compress=True)
-
-print newdata
+print "found", len(models_dict), "models."
+print md.keys()
+print md["0"] # error...

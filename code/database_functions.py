@@ -52,35 +52,43 @@ def create_tables(con):
     
 def insert_network(con, nwkey, networks):
     # write interaction graph to database
+    print "inserting network...",
     querystring = "INSERT INTO iagraphs VALUES('%s', '%s')" % (nwkey, networks)
     print querystring
     con.execute(querystring)
     con.commit()
+    print "done."
 
 def insert_edges(con, nwkey, edges, interactions, thresholds):
+    print "inserting edges...",
     for edge in edges:
         # write edge to database
         querystring = "INSERT INTO edges VALUES('%s', '%s', '%s', '%s', '%s')" % (nwkey, edge[0], edge[1], 
             interactions[edge], thresholds[edge])
-        print querystring
+        #print querystring
         con.execute(querystring)
     con.commit()
+    print "done."
 
 def insert_nodes(con, nwkey, nodes):
+    print "inserting nodes...",
     for node in nodes:
         # write node to database
         querystring = "INSERT INTO nodes VALUES('%s', '%s')" % (nwkey, node)
         #print querystring
         con.execute(querystring)
     con.commit()
+    print "done."
 
 def insert_contexts(con, nwkey, nodes, preds):
+    print "inserting contexts...",
     for node in sorted(nodes):
         for contextID, context in enumerate(powerset(sorted(preds[node]))): 
             querystring = '''INSERT INTO contexts VALUES("%s", "%s", "%s", "%s")''' % (nwkey, node, contextID, context)
             #print querystring
             con.execute(querystring)
     con.commit()
+    print "done."
     
 def decode_contextID(preds, contextID):
     "Converts an integer to the string representation of the corresponding context"
@@ -88,6 +96,7 @@ def decode_contextID(preds, contextID):
 
 def insert_local_parameter_sets(con, nwkey, nodes, preds, lpss):
     # TODO: geht das auch ohne preds, d.h. kann die Funktion die preds selbst ausrechnen?
+    print "inserting local parameter sets...",
     for node in sorted(nodes):
         for lps in lpss[node]:
             lpsID = encode_lps(preds[node], lps, base=10)
@@ -95,13 +104,16 @@ def insert_local_parameter_sets(con, nwkey, nodes, preds, lpss):
             #print querystring
             con.execute(querystring)
     con.commit()
+    print "done."
 
 def insert_global_parameter_sets(con, nwkey, gpss):
+    print "inserting global parameter sets...",
     for gps in gpss:
         gpsID = encode_gps(gps, base=10)
         querystring = '''INSERT INTO globalparametersets VALUES("%s", "%s", "%s")''' % (nwkey, gpsID, gps)
         con.execute(querystring)
     con.commit()
+    print "done."
 
 def store_filter(con, nwkey, filterID, filterstring, filtertype, logictype):
     querystring = '''INSERT INTO filters VALUES("%s", "%s", "%s", "%s", "%s")''' % (nwkey, filterID, filterstring, filtertype, logictype)
@@ -109,6 +121,7 @@ def store_filter(con, nwkey, filterID, filterstring, filtertype, logictype):
     con.commit()
 
 def insert_filter_results(con, nwkey, gpss, filterID=1):
+    print "inserting filter results...",
     tablename = "results_iagraphID_"+str(nwkey).zfill(3)
 
     # if it does not exist aleady, create table
@@ -125,6 +138,7 @@ def insert_filter_results(con, nwkey, gpss, filterID=1):
         querystring3 = '''UPDATE %s SET %s = 1 WHERE gpsID = "%s";''' % (tablename, columnname, code)
         con.execute(querystring3)
     con.commit()
+    print "done."
 
 def powerset(iterable):
     "powerset([1,2,3]) --> () (1,) (2,) (3,) (1,2) (1,3) (2,3) (1,2,3)"

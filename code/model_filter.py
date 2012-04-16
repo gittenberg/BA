@@ -46,19 +46,21 @@ if __name__=='__main__':
     # create tables
     create_tables(con)
     
-    nodes = dict() # will be initialized below
-
     for nwkey, nw in enumerate(networks):
+        if nwkey <= 8 or nwkey >= 25: break # enable for quick check
         print "===================================================================================="
         print "Considering nwkey:", nwkey
-
-        mc = dict_to_model(networks[nwkey], add_morphogene=True)
+        
+        try:
+            mc = dict_to_model(networks[nwkey], add_morphogene=True)
+        except:
+            continue
         IG = mc._IG
         print nwkey, ":", len(mc._psc), "parameter sets."
 
         lpss = mc._psc._localParameterSets
-        nodes[nwkey] = lpss.keys()
-        preds = dict([(node, IG.predecessors(node)) for node in nodes[nwkey]]) # dict containing node:[preds of node]
+        nodes = IG.nodes()
+        preds = dict([(node, IG.predecessors(node)) for node in nodes]) # dict containing node:[preds of node]
 
         print "===================================================================================="
         print "Database operations"
@@ -72,17 +74,14 @@ if __name__=='__main__':
         thresholds = mc._thresholds
         insert_edges(con, nwkey, edges, interactions, thresholds)
 
-        ################################################################################
-        # ab hier weiterarbeiten
-        ################################################################################
         # write nodes to database
-        insert_nodes(con, nwkey, nodes[nwkey])
+        insert_nodes(con, nwkey, nodes)
 
         # write contexts to database
-        insert_contexts(con, nwkey, nodes[nwkey], preds)        
+        insert_contexts(con, nwkey, nodes, preds)        
 
         # write local parameter sets to database
-        insert_local_parameter_sets(con, nwkey, nodes[nwkey], preds, lpss)
+        insert_local_parameter_sets(con, nwkey, nodes, preds, lpss)
         
         # write global parameter sets to database
         gpss = mc._psc.get_parameterSets()
