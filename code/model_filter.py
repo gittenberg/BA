@@ -47,7 +47,7 @@ if __name__=='__main__':
     create_tables(con)
     
     for nwkey, nw in enumerate(networks):
-        if nwkey <= 8 or nwkey >= 25: break # enable for quick check
+        if nwkey >= 1000: continue # enable for quick check
         print "===================================================================================="
         print "Considering nwkey:", nwkey
         

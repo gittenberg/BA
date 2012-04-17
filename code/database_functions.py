@@ -40,7 +40,9 @@ def create_tables(con):
         PRIMARY KEY (iagraphID, node, lpsID), FOREIGN KEY (iagraphID) REFERENCES iagraphs(iagraphID), FOREIGN KEY (iagraphID, node) REFERENCES nodes(iagraphID, node))")
 
     con.execute('''DROP TABLE IF EXISTS globalparametersets''')
-    con.execute("create table globalparametersets(iagraphID INT, gpsID VARCHAR(100), globalparameterset VARCHAR(500),\
+    #con.execute("create table globalparametersets(iagraphID INT, gpsID VARCHAR(100), globalparameterset VARCHAR(500),\
+    #    PRIMARY KEY (iagraphID, gpsID), FOREIGN KEY (iagraphID) REFERENCES iagraphs(iagraphID))")
+    con.execute("create table globalparametersets(iagraphID INT, gpsID VARCHAR(100),\
         PRIMARY KEY (iagraphID, gpsID), FOREIGN KEY (iagraphID) REFERENCES iagraphs(iagraphID))")
 
     con.execute('''DROP TABLE IF EXISTS filters''')
@@ -54,7 +56,7 @@ def insert_network(con, nwkey, networks):
     # write interaction graph to database
     print "inserting network...",
     querystring = "INSERT INTO iagraphs VALUES('%s', '%s')" % (nwkey, networks)
-    print querystring
+    #print querystring
     con.execute(querystring)
     con.commit()
     print "done."
@@ -110,7 +112,8 @@ def insert_global_parameter_sets(con, nwkey, gpss):
     print "inserting global parameter sets...",
     for gps in gpss:
         gpsID = encode_gps(gps, base=10)
-        querystring = '''INSERT INTO globalparametersets VALUES("%s", "%s", "%s")''' % (nwkey, gpsID, gps)
+        #querystring = '''INSERT INTO globalparametersets VALUES("%s", "%s", "%s")''' % (nwkey, gpsID, gps)
+        querystring = '''INSERT INTO globalparametersets VALUES("%s", "%s")''' % (nwkey, gpsID)
         con.execute(querystring)
     con.commit()
     print "done."
