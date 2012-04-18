@@ -3,8 +3,9 @@ tstart = datetime.now()
 
 import cPickle
 #from shove import Shove
-from database_functions import *
-from regnet_generator import dict_to_model
+import os
+from _03_database_functions import *
+from _02_regnet_generator import dict_to_model
 
 if os.name != 'nt':
     print "running on linux."

@@ -56,59 +56,6 @@ def label_match(label1, label2):
     return label1==label2
     
     
-def check_isomorphism_OLD(networks, outfile_tag="_without_morphogene", tag_input_gene=False):
-    ''' check for isomorphism: loop through all pairs of networks and check for isomorphy '''
-    print "checking networks for isomorphism..."
-    G = convert_dict_to_graphs(networks, addzeros=False)
-    if tag_input_gene:
-        # treat label 'rr' gene differently than others (input gene)
-        print "labelling input genes in graphs...",
-        for graph in G.values():
-            graph.node['rr'] = 'input'
-        match_fct = label_match
-        print 'done.'
-    else:
-        match_fct = None
-    
-    skiplist = []
-    isomorphy_classes = {}
-    maxiter = len(networks)
-    for netID1 in networks.keys():
-        if netID1 not in skiplist:
-            isomorphy_classes[netID1] = [netID1]
-            for netID2 in range(netID1+1, maxiter):
-                if netID2 not in skiplist:
-                    if nx.is_isomorphic(G[netID1], G[netID2], node_match=match_fct, edge_match=label_match):
-                        try:
-                            #del networks[netID2]
-                            skiplist.append(netID2)
-                            isomorphy_classes[netID1].append(netID2)
-                        except:
-                            pass
-            skiplist = list(set(skiplist)) # remove double entries
-            print "isomorphy_classes[", netID1, "] =", isomorphy_classes[netID1]
-        tend = datetime.now()
-        print "total execution time:", tend-tstart
-
-    unique_networks = dict()
-    for netID in networks.keys():
-        if isomorphy_classes.has_key(netID):
-            unique_networks[netID] = networks[netID]
-
-    picklename1 = "unique_networks" + outfile_tag + ".db"
-    picklename2 = "isomorphy_classes" + outfile_tag + ".db"
-    backup(picklename1)
-    backup(picklename2)
-    print "pickling", len(unique_networks), "unique networks to", picklename1, "."
-    print "pickling", len(isomorphy_classes), "isomorphy classes to", picklename2, "."
-    cPickle.dump(unique_networks, file(picklename1, "w"))
-    cPickle.dump(isomorphy_classes, file(picklename2, "w"))
-    
-    tend = datetime.now()
-    print "total execution time:", tend-tstart
-    print "done checking networks for isomorphism."
-
-
 def check_isomorphism(networks, outfile_tag="_without_morphogene", tag_input_gene=False):
     ''' check for isomorphism: loop through all pairs of networks and check for isomorphy '''
     ''' new, faster version'''
