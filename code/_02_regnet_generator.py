@@ -20,8 +20,6 @@ elif os.name=='nt':
     nusmvpath = r"C:\NuSMV\2.5.4\bin\NuSMV.exe"                  # Samsung laptop
     #nusmvpath = "C:\Progra~2\NuSMV\2.5.4\bin\NuSMV.exe"         # Acer laptop
 
-morphogene_interactions = {("m1","m1"):"+", ("m1","rr"):"+", ("m2","m2"):"+", ("m2","rr"):"+"}
-
 
 def dict_to_model(net, add_morphogene=True):
     ''' Convert single net in networkx format to model in ModelContainer format '''
@@ -30,6 +28,7 @@ def dict_to_model(net, add_morphogene=True):
     labels = dict((edge, label) for (edge, label) in net.items() if label!='0') # TODO: obsolete iff addzeros==False in graph_enumerator
     # then set up the morphogene edges:
     if add_morphogene:
+        morphogene_interactions = {("m1","m1"):"+", ("m1","rr"):"+", ("m2","m2"):"+", ("m2","rr"):"+"}
         for edge in morphogene_interactions: # TODO: simpler way to merge dicts labels and morphogene_interactions??
             labels[edge] = morphogene_interactions[edge]
     edges = labels.keys()
