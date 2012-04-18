@@ -46,14 +46,15 @@ if __name__=='__main__':
     # create tables
     create_tables(con)
     
-    for nwkey, nw in enumerate(networks):
-        if nwkey >= 1000: continue # enable for quick check
+    for nwkey in networks:
+        #if nwkey >= 1000: continue # enable for quick check
         print "===================================================================================="
-        print "Considering nwkey:", nwkey
+        print "considering nwkey:", nwkey
         
         try:
-            mc = dict_to_model(networks[nwkey], add_morphogene=True)
+            mc = dict_to_model(networks[nwkey], add_morphogene=False)
         except:
+            print "failing to translate network to model, continuing."
             continue
         IG = mc._IG
         print nwkey, ":", len(mc._psc), "parameter sets."
@@ -63,7 +64,7 @@ if __name__=='__main__':
         preds = dict([(node, IG.predecessors(node)) for node in nodes]) # dict containing node:[preds of node]
 
         print "===================================================================================="
-        print "Database operations"
+        print "database operations"
 
         # write nwkey to database
         insert_network(con, nwkey, str(nwkey))

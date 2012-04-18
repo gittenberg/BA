@@ -1,13 +1,10 @@
+import cPickle
+from regnet_generator import dict_to_model
 
-from shove import Shove
+picklename = "connected_unique_networks_three_nodes_with_morphogene.db"
+networks = cPickle.load(file(picklename))
+print "found", len(networks), "networks."
 
-models_dict_name = "models_dictionary.db"
-models_dict = Shove("file://"+models_dict_name, compress=True)
+print networks.keys()
 
-print type(models_dict)
-
-md = dict(models_dict)
-
-print "found", len(models_dict), "models."
-print md.keys()
-print md["0"] # error...
+#mc = dict_to_model(networks[9611], add_morphogene=False)
