@@ -2,8 +2,7 @@ from datetime import datetime
 tstart = datetime.now()
 
 import cPickle
-#from shove import Shove
-import os
+#import os
 from _03_database_functions import *
 from _02_regnet_generator import dict_to_model
 
@@ -30,13 +29,6 @@ filters_for_3_gene_networks = {
                       }
 
 if __name__=='__main__':
-    #models_dict_name = "models_dictionary.db"
-    #models_dict = Shove("file://"+models_dict_name, compress=True)
-    #print "found", len(models_dict), "models."
-    #print models_dict.keys()
-    #print models_dict['1'] # error...
-    
-    # wenn das mit shove nicht funktioniert, dann muss man die models eben on-the-fly machen:
     picklename = "connected_unique_networks_three_nodes_with_morphogene.db"
     networks = cPickle.load(file(picklename))
     print "found", len(networks), "networks."
@@ -48,13 +40,14 @@ if __name__=='__main__':
     create_tables(con)
     
     for nwkey in networks:
-        #if nwkey >= 1000: continue # enable for quick check
+        if nwkey >= 10: continue # enable for quick check
         print "===================================================================================="
         print "considering nwkey:", nwkey
         
         try:
-            mc = dict_to_model(networks[nwkey], add_morphogene=False)
+            mc = dict_to_model(networks[nwkey], add_morphogene=True)
         except:
+            # this should never happen
             print "failing to translate network to model, continuing."
             continue
         IG = mc._IG
