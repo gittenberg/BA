@@ -86,7 +86,7 @@ def setup_models(networks, add_morphogene=True):
 
 
 if __name__=='__main__':
-    mode = "without_morphogene"
+    mode = "with_morphogene"
     if mode=="with_morphogene":
         add_morphogene=True
     elif mode=="without_morphogene":
@@ -96,19 +96,21 @@ if __name__=='__main__':
 
     picklename = "connected_unique_networks_three_nodes_"+mode+".db"
     networks = cPickle.load(file(picklename))
-    #print len(networks)
-    
+    print "found", len(networks), "networks."
+
+    '''
+    # only printing    
     for nwkey in networks:
         mc = dict_to_model(networks[nwkey], add_morphogene)
         print nwkey, ":", len(mc._psc), "parameter sets."
         if not nwkey%10:
             tend = datetime.now()
             print "total execution time:", tend-tstart
-    
+    '''
     #setup_models(networks, add_morphogene=True) # this crashes on the laptop
     
     models_dict_name = "models_dictionary_"+mode+".db"
-    #models_dict = shelve.open(models_dict_name)
+    print "Shoving to", models_dict_name, "."
     models_dict = Shove("file://"+models_dict_name, compress=True)
     
     print "found", len(models_dict), "models."

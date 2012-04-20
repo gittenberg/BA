@@ -115,7 +115,23 @@ def convert_graph_to_dict(G, addzeros=False):
     return dict(zip(es, ls))
 
 
-def filter_disconnected(unique_networks, mode="with_morphogene"):
+def filter_disconnected(unique_networks, mode):
+    ''' remove networks with fewer than 3 nodes and unconnected'''
+    print "filtering disconnected networks..."
+    G = convert_dict_to_graphs(unique_networks, addzeros=False)
+    for netID in G:
+        if len(G[netID].nodes())==0 or not nx.is_connected(G[netID].to_undirected()):
+            print netID, "not connected: removing."
+            del unique_networks[netID]
+
+    picklename = "connected_unique_networks_three_nodes_"+mode+".db"
+    backup(picklename)
+    print "pickling", len(unique_networks), "connected unique networks to", picklename, "."
+    cPickle.dump(unique_networks, file(picklename, "w"))
+    print "done."
+
+
+def keep_only_three_genes(unique_networks, mode):
     ''' remove networks with fewer than 3 nodes and unconnected'''
     print "filtering disconnected networks..."
     G = convert_dict_to_graphs(unique_networks, addzeros=False)
@@ -124,10 +140,6 @@ def filter_disconnected(unique_networks, mode="with_morphogene"):
             print netID, "contains only", len(G[netID].nodes()), "node(s): removing."
             del unique_networks[netID]
             continue
-
-        if not nx.is_connected(G[netID].to_undirected()):
-            print netID, "not connected: removing."
-            del unique_networks[netID]
 
     picklename = "connected_unique_networks_three_nodes_"+mode+".db"
     backup(picklename)
@@ -142,14 +154,15 @@ if __name__ == '__main__':
     #networks = dict((k, networks[k]) for k in range(500)) # enable for quick check
     print "found", len(networks), "networks." # 3^9 = 19683 if unconstrained
 
-    #mode, tag_input_gene = "without_morphogene", None # >3000    # to compare with the paper
-    mode, tag_input_gene = "with_morphogene", "rr"     # 9612???   # Hannes's favourite
-    #mode, tag_input_gene = "without_morphogene", "rr" # 9612  # Heike's favourite
+    #mode, tag_input_gene = "without_morphogene", None # >3000 # to compare with the paper
+    #mode, tag_input_gene = "with_morphogene", "rr"     # 9612 # Hannes's favourite
+    mode, tag_input_gene = "without_morphogene", "rr" # 9612   # Heike's favourite
 
     check_isomorphism(networks, mode, tag_input_gene) 
     unique_networks = cPickle.load(file("unique_networks_"+mode+".db"))
     print "found", len(unique_networks), "unique networks." 
+    keep_only_three_genes(unique_networks, mode)
     filter_disconnected(unique_networks, mode)
-
+    
     picklename = "connected_unique_networks_three_nodes_"+mode+".db"
     networks = cPickle.load(file(picklename))
