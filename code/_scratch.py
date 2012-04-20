@@ -26,21 +26,30 @@ def dict_to_model_experimental(net, add_morphogene=True):
     mc = MC.ModelContainer()
     mc.set_IG(IG)
     mc.set_edgeLabels(labels)
-    mc.set_thresholds(dict((edge, 1) for edge in edges)) # all thresholds are set to 1
+    thresholds = dict((edge, 1) for edge in edges)
+    mc.set_thresholds(thresholds) # all thresholds are set to 1
     #print mc._thresholds
     mc._NuSMVpath = nusmvpath
     mc.set_initialStates()
-    mc.set_dynamics("asynchronous")
-    #mc.initializePSC()
-    ###########################################################################
-    # BAUSTELLE
-    ###########################################################################
-    interactions = {'edges':0, 'thresholds':0, 'labels':0}
-    settings = {'interactions':interactions}
+    #mc.initializePSC() #obsolete, now using settings as follows:
+    settings = dict(interactions={'edges':edges, 'thresholds':thresholds, 'labels':labels},
+                    componentConstraints=dict(valueConstraints=dict(),
+                                              takeMin=[],
+                                              takeMax=[],
+                                              Bformulas=[],
+                                              simplified=[],
+                                              extendedValueConstraints={'rr': {('m1', 'm2'): [1]}, 'bb':{}, 'gg':{}}),
+                                              #extendedValueConstraints={}),
+                    priorityClasses={},
+                    priorityTypes={},
+                    dynamics="asynchronous",
+                    unitary=True,
+                    CTLformula='',
+                    search='',
+                    PCTLformula='',
+                    attractorLogic='',
+                    filterExtreme=None)
     mc.parameterSetup(settings)
-    ###########################################################################
-    # /BAUSTELLE
-    ###########################################################################
     return mc
 
 if __name__=='__main__':

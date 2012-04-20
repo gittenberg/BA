@@ -92,3 +92,28 @@ def check_isomorphism_OLD(networks, outfile_tag="_without_morphogene", tag_input
     print "done checking networks for isomorphism."
 
 
+def dict_to_model(net, add_morphogene=True):
+    ''' Convert single net in networkx format to model in ModelContainer format '''
+    #print "converting to model:", net, "."
+    # first set up the internal graph:
+    labels = dict((edge, label) for (edge, label) in net.items() if label!='0') # TODO: obsolete iff addzeros==False in graph_enumerator
+    # then set up the morphogene edges:
+    if add_morphogene:
+        morphogene_interactions = {("m1","m1"):"+", ("m1","rr"):"+", ("m2","m2"):"+", ("m2","rr"):"+"}
+        for edge in morphogene_interactions: # TODO: simpler way to merge dicts labels and morphogene_interactions??
+            labels[edge] = morphogene_interactions[edge]
+    edges = labels.keys()
+    IG = nx.DiGraph()
+    IG.add_edges_from(edges)
+    
+    mc = MC.ModelContainer()
+    mc.set_IG(IG)
+    mc.set_edgeLabels(labels)
+    mc.set_thresholds(dict((edge, 1) for edge in edges)) # all thresholds are set to 1
+    #print mc._thresholds
+    mc._NuSMVpath = nusmvpath
+    mc.set_initialStates()
+    mc.set_dynamics("asynchronous")
+    mc.initializePSC()
+    return mc
+

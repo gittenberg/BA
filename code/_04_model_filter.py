@@ -33,13 +33,13 @@ if __name__=='__main__':
     print "found", len(networks), "networks."
 
     # create database
-    con = create_database(path, dbname='filter_results.db')
+    con = create_database(path, dbname='filter_results.without_morphogene.db')
     
     # create tables
     create_tables(con)
     
     for nwkey in networks:
-        if nwkey >= 10: continue # enable for quick check
+        #if nwkey >= 10: continue # enable for quick check
         print "===================================================================================="
         print "considering nwkey:", nwkey
         
