@@ -15,42 +15,64 @@ elif os.name == 'nt':
     nusmvpath = r"C:\NuSMV\2.5.4\bin\NuSMV.exe"                     # Samsung laptop
     #nusmvpath = "C:\Progra~2\NuSMV\2.5.4\bin\NuSMV.exe"            # Acer laptop
 
-filters_for_3_gene_networks = {
+filters = {}
+
+filters["with_morphogene"] = {
                         0:["?(rand,mitte: rand.frozen(gg)&rand.max(gg)=0&mitte.frozen(gg)&mitte.min(gg)=1)", None, "AL"], # used to be ...&mitte.max(gg)=1 with the same number of results
-                        1:["((m1=0&m2=0)->EF(AG(gg=0)))&((m1=0&m2=1)->EF(AG(gg=1)))&((m1=1&m2=1)->EF(AG(gg=0)))", "forAll", "CTL"],
+                        1:["((m1=0&m2=0)->EF(AG(gg=0)))&((m1=0&m2=1)->EF(AG(gg=1)))&((m1=1&m2=0)->EF(AG(gg=0)))", "forAll", "CTL"],
                         # morphogene BCs, forAll, EFAG
-                        2:["((m1=0&m2=0)->AF(AG(gg=0)))&((m1=0&m2=1)->AF(AG(gg=1)))&((m1=1&m2=1)->AF(AG(gg=0)))", "forAll", "CTL"],
+                        2:["((m1=0&m2=0)->AF(AG(gg=0)))&((m1=0&m2=1)->AF(AG(gg=1)))&((m1=1&m2=0)->AF(AG(gg=0)))", "forAll", "CTL"],
                         # morphogene BCs, forAll, AFAG
-                        3:["((m1=0&m2=0)->EF(AG(gg=0)))&((m1=0&m2=1)->EF(AG(gg=1)))&((m1=1&m2=1)->EF(AG(gg=0)))", "exists", "CTL"],
+                        3:["((m1=0&m2=0)->EF(AG(gg=0)))&((m1=0&m2=1)->EF(AG(gg=1)))&((m1=1&m2=0)->EF(AG(gg=0)))", "exists", "CTL"],
                         # morphogene BCs, exists, EFAG
-                        4:["((m1=0&m2=0)->AF(AG(gg=0)))&((m1=0&m2=1)->AF(AG(gg=1)))&((m1=1&m2=1)->AF(AG(gg=0)))", "exists", "CTL"],
+                        4:["((m1=0&m2=0)->AF(AG(gg=0)))&((m1=0&m2=1)->AF(AG(gg=1)))&((m1=1&m2=0)->AF(AG(gg=0)))", "exists", "CTL"]
+                        # morphogene BCs, exists, AFAG
+                      }
+
+filters["without_morphogene"] = {
+                        0:["?(rand,mitte: rand.frozen(gg)&rand.max(gg)=0&mitte.frozen(gg)&mitte.min(gg)=1)", None, "AL"], # used to be ...&mitte.max(gg)=1 with the same number of results
+                        1:["((rr=0)->EF(AG(gg=0)))&((rr=1)->EF(AG(gg=1)))&((rr=1)->EF(AG(gg=0)))", "forAll", "CTL"],
+                        # morphogene BCs, forAll, EFAG
+                        2:["((rr=0)->AF(AG(gg=0)))&((rr=1)->AF(AG(gg=1)))&((rr=1)->AF(AG(gg=0)))", "forAll", "CTL"],
+                        # morphogene BCs, forAll, AFAG
+                        3:["((rr=0)->EF(AG(gg=0)))&((rr=1)->EF(AG(gg=1)))&((rr=1)->EF(AG(gg=0)))", "exists", "CTL"],
+                        # morphogene BCs, exists, EFAG
+                        4:["((rr=0)->AF(AG(gg=0)))&((rr=1)->AF(AG(gg=1)))&((rr=1)->AF(AG(gg=0)))", "exists", "CTL"]
                         # morphogene BCs, exists, AFAG
                       }
 
 if __name__=='__main__':
-    picklename = "connected_unique_networks_three_nodes_with_morphogene.db"
+    mode = "without_morphogene"
+    if mode=="with_morphogene":
+        add_morphogene=True
+    elif mode=="without_morphogene":
+        add_morphogene=False
+    else:
+        print "warning: morphogene mode not set."
+
+    picklename = "connected_unique_networks_three_nodes_"+mode+".db"
     networks = cPickle.load(file(picklename))
     print "found", len(networks), "networks."
 
     # create database
-    con = create_database(path, dbname='filter_results.without_morphogene.db')
+    con = create_database(path, dbname="filter_results."+mode+".db")
     
     # create tables
     create_tables(con)
     
     for nwkey in networks:
-        #if nwkey >= 10: continue # enable for quick check
+        if nwkey >= 20: continue # enable for quick check
         print "===================================================================================="
         print "considering nwkey:", nwkey
         
         try:
-            mc = dict_to_model(networks[nwkey], add_morphogene=True)
+            mc = dict_to_model(networks[nwkey], add_morphogene)
         except:
             # this should never happen
             print "failing to translate network to model, continuing."
             continue
         IG = mc._IG
-        print nwkey, ":", len(mc._psc), "parameter sets."
+        #print nwkey, ":", len(mc._psc), "parameter sets."
 
         lpss = mc._psc._localParameterSets
         nodes = IG.nodes()
@@ -81,6 +103,21 @@ if __name__=='__main__':
         gpss = mc._psc.get_parameterSets()
         insert_global_parameter_sets(con, nwkey, gpss)
         
+        for filterID in filters[mode]:
+            formula, searchtype, logictype = filters[mode][filterID]
+    
+            if logictype=="AL":
+                mc.filter_byAL(formula)
+            elif logictype=="CTL":
+                mc.filter_byCTL(formula, search=searchtype)
+                
+            # write filter details to database
+            store_filter(con, nwkey, filterID, formula, searchtype, logictype)        
+            
+            # write filter results to database
+            gpss = mc._psc.get_parameterSets()
+            insert_filter_results(con, nwkey, gpss, filterID)
+
         if not nwkey%10:
             tend = datetime.now()
             print "total execution time:", tend-tstart

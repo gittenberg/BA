@@ -119,9 +119,11 @@ def insert_global_parameter_sets(con, nwkey, gpss):
     print "done."
 
 def store_filter(con, nwkey, filterID, filterstring, filtertype, logictype):
+    print "inserting filter...",
     querystring = '''INSERT INTO filters VALUES("%s", "%s", "%s", "%s", "%s")''' % (nwkey, filterID, filterstring, filtertype, logictype)
     con.execute(querystring)
     con.commit()
+    print "done."
 
 def insert_filter_results(con, nwkey, gpss, filterID=1):
     print "inserting filter results...",

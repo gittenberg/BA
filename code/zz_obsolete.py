@@ -39,7 +39,7 @@ def is_isomorphic(network1, network2):
     return False
 
 
-def check_isomorphism_OLD(networks, outfile_tag="_without_morphogene", tag_input_gene=False):
+def check_isomorphism_OLD(networks, mode="_without_morphogene", tag_input_gene=False):
     ''' check for isomorphism: loop through all pairs of networks and check for isomorphy '''
     print "checking networks for isomorphism..."
     G = convert_dict_to_graphs(networks, addzeros=False)
@@ -78,8 +78,8 @@ def check_isomorphism_OLD(networks, outfile_tag="_without_morphogene", tag_input
         if isomorphy_classes.has_key(netID):
             unique_networks[netID] = networks[netID]
 
-    picklename1 = "unique_networks" + outfile_tag + ".db"
-    picklename2 = "isomorphy_classes" + outfile_tag + ".db"
+    picklename1 = "unique_networks" + mode + ".db"
+    picklename2 = "isomorphy_classes" + mode + ".db"
     backup(picklename1)
     backup(picklename2)
     print "pickling", len(unique_networks), "unique networks to", picklename1, "."

@@ -56,16 +56,16 @@ def label_match(label1, label2):
     return label1==label2
     
     
-def check_isomorphism(networks, outfile_tag="_without_morphogene", tag_input_gene=False):
+def check_isomorphism(networks, mode, tag_input_gene): # mode is just for filenames here... TODO: remove eventually
     ''' check for isomorphism: loop through all pairs of networks and check for isomorphy '''
     ''' new, faster version'''
     print "checking networks for isomorphism..."
     G = convert_dict_to_graphs(networks, addzeros=False)
     if tag_input_gene:
-        # treat label 'rr' gene differently than others (input gene)
+        # treat gene with label tag_input_gene gene differently than others (input gene)
         print "labelling input genes in graphs...",
         for graph in G.values():
-            graph.node['rr'] = 'input'
+            graph.node[tag_input_gene] = 'input'
         match_fct = label_match
         print 'done.'
     else:
@@ -75,7 +75,7 @@ def check_isomorphism(networks, outfile_tag="_without_morphogene", tag_input_gen
     for netID in networks.keys():
         for isomorphy_class in isomorphy_classes.values():
             if nx.is_isomorphic(G[netID], G[isomorphy_class[0]], node_match=match_fct, edge_match=label_match): # we found an isomorphism
-                isomorphy_classes[isomorphy_class[0]].append(netID)
+                isomorphy_classes[isomorphy_class[0]].append(netID) # compare with first member of isomorphy class
                 break # quit looping over isomorphy classes, continue with networks
         else: # if break was not hit, we found no isomorphy class
             isomorphy_classes[netID] = [netID] # create new isomorphy class
@@ -88,8 +88,8 @@ def check_isomorphism(networks, outfile_tag="_without_morphogene", tag_input_gen
         if isomorphy_classes.has_key(netID):
             unique_networks[netID] = networks[netID]
 
-    picklename1 = "unique_networks" + outfile_tag + ".db"
-    picklename2 = "isomorphy_classes" + outfile_tag + ".db"
+    picklename1 = "unique_networks_" + mode + ".db"
+    picklename2 = "isomorphy_classes_" + mode + ".db"
     backup(picklename1)
     backup(picklename2)
     print "pickling", len(unique_networks), "unique networks to", picklename1, "."
@@ -115,7 +115,7 @@ def convert_graph_to_dict(G, addzeros=False):
     return dict(zip(es, ls))
 
 
-def filter_disconnected(unique_networks, outfile_tag="_with_morphogene"):
+def filter_disconnected(unique_networks, mode="with_morphogene"):
     ''' remove networks with fewer than 3 nodes and unconnected'''
     print "filtering disconnected networks..."
     G = convert_dict_to_graphs(unique_networks, addzeros=False)
@@ -129,7 +129,7 @@ def filter_disconnected(unique_networks, outfile_tag="_with_morphogene"):
             print netID, "not connected: removing."
             del unique_networks[netID]
 
-    picklename = "connected_unique_networks_three_nodes"+outfile_tag+".db"
+    picklename = "connected_unique_networks_three_nodes_"+mode+".db"
     backup(picklename)
     print "pickling", len(unique_networks), "connected unique networks to", picklename, "."
     cPickle.dump(unique_networks, file(picklename, "w"))
@@ -142,13 +142,14 @@ if __name__ == '__main__':
     #networks = dict((k, networks[k]) for k in range(500)) # enable for quick check
     print "found", len(networks), "networks." # 3^9 = 19683 if unconstrained
 
-    #outfile_tag, tag_input_gene = "_without_morphogene", False # >3000
-    outfile_tag, tag_input_gene = "_with_morphogene",    True  # >9000
+    #mode, tag_input_gene = "without_morphogene", None # >3000    # to compare with the paper
+    mode, tag_input_gene = "with_morphogene", "rr"     # 9612???   # Hannes's favourite
+    #mode, tag_input_gene = "without_morphogene", "rr" # 9612  # Heike's favourite
 
-    #check_isomorphism(networks, outfile_tag, tag_input_gene) 
-    unique_networks = cPickle.load(file("unique_networks"+outfile_tag+".db"))
+    check_isomorphism(networks, mode, tag_input_gene) 
+    unique_networks = cPickle.load(file("unique_networks_"+mode+".db"))
     print "found", len(unique_networks), "unique networks." 
-    filter_disconnected(unique_networks, outfile_tag)
+    filter_disconnected(unique_networks, mode)
 
-    picklename = "connected_unique_networks_three_nodes"+outfile_tag+".db"
+    picklename = "connected_unique_networks_three_nodes_"+mode+".db"
     networks = cPickle.load(file(picklename))
