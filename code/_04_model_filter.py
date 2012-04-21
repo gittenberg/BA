@@ -61,7 +61,7 @@ if __name__=='__main__':
     create_tables(con)
     
     for nwkey in networks:
-        if nwkey >= 20: continue # enable for quick check
+        #if nwkey >= 100: continue # enable for quick check
         print "===================================================================================="
         print "considering nwkey:", nwkey
         
@@ -104,6 +104,7 @@ if __name__=='__main__':
         insert_global_parameter_sets(con, nwkey, gpss)
         
         for filterID in filters[mode]:
+            mc = dict_to_model(networks[nwkey], add_morphogene)
             formula, searchtype, logictype = filters[mode][filterID]
     
             if logictype=="AL":
@@ -118,11 +119,8 @@ if __name__=='__main__':
             gpss = mc._psc.get_parameterSets()
             insert_filter_results(con, nwkey, gpss, filterID)
 
-        if not nwkey%10:
-            tend = datetime.now()
-            print "total execution time:", tend-tstart
+        tend = datetime.now()
+        print "total execution time:", tend-tstart
     
-    tend = datetime.now()
-    print "total execution time:", tend-tstart
     print "done."
     

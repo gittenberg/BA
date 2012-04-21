@@ -158,7 +158,7 @@ if __name__ == '__main__':
     #mode, tag_input_gene = "with_morphogene", "rr"     # 9612 # Hannes's favourite
     mode, tag_input_gene = "without_morphogene", "rr" # 9612   # Heike's favourite
 
-    check_isomorphism(networks, mode, tag_input_gene) 
+    check_isomorphism(networks, mode, tag_input_gene) # takes 2 hrs
     unique_networks = cPickle.load(file("unique_networks_"+mode+".db"))
     print "found", len(unique_networks), "unique networks." 
     keep_only_three_genes(unique_networks, mode)

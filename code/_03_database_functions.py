@@ -140,6 +140,7 @@ def insert_filter_results(con, nwkey, gpss, filterID=1):
     con.execute(querystring2)
     for gps in gpss:
         code = encode_gps(gps, base=10)
+        #print "---------------------------updating with 1---------------------------"
         querystring3 = '''UPDATE %s SET %s = 1 WHERE gpsID = "%s";''' % (tablename, columnname, code)
         con.execute(querystring3)
     con.commit()
