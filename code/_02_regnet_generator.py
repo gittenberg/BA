@@ -20,17 +20,16 @@ elif os.name=='nt':
     nusmvpath = r"C:\NuSMV\2.5.4\bin\NuSMV.exe"                  # Samsung laptop
     #nusmvpath = "C:\Progra~2\NuSMV\2.5.4\bin\NuSMV.exe"         # Acer laptop
 
-morphogene_interactions = {("m1","m1"):"+", ("m1","rr"):"+", ("m2","m2"):"+", ("m2","rr"):"+"}
-
 
 def dict_to_model(net, add_morphogene=True):
     ''' Convert single net in networkx format to model in ModelContainer format '''
     #print "converting to model:", net, "."
     # first set up the internal graph:
+    morphogene_interactions = {("m1","m1"):"+", ("m1","rr"):"+", ("m2","m2"):"+", ("m2","rr"):"+"}
     labels = dict((edge, label) for (edge, label) in net.items() if label!='0') # TODO: obsolete iff addzeros==False in graph_enumerator
     # then set up the morphogene edges:
     if add_morphogene:
-        for edge in morphogene_interactions: # TODO: simpler way to merge dicts labels and morphogene_interactions??
+        for edge in morphogene_interactions:
             labels[edge] = morphogene_interactions[edge]
     edges = labels.keys()
     IG = nx.DiGraph()
@@ -39,12 +38,30 @@ def dict_to_model(net, add_morphogene=True):
     mc = MC.ModelContainer()
     mc.set_IG(IG)
     mc.set_edgeLabels(labels)
-    mc.set_thresholds(dict((edge, 1) for edge in edges)) # all thresholds are set to 1
+    thresholds = dict((edge, 1) for edge in edges)
+    mc.set_thresholds(thresholds) # all thresholds are set to 1
     #print mc._thresholds
     mc._NuSMVpath = nusmvpath
     mc.set_initialStates()
-    mc.set_dynamics("asynchronous")
-    mc.initializePSC()
+    #mc.initializePSC() #obsolete, now using settings as follows:
+    settings = dict(interactions={'edges':edges, 'thresholds':thresholds, 'labels':labels},
+                    componentConstraints=dict(valueConstraints=dict(),
+                                              takeMin=[],
+                                              takeMax=[],
+                                              Bformulas=[],
+                                              simplified=[],
+                                              extendedValueConstraints={'rr': {('m1', 'm2'): [1]}, 'bb':{}, 'gg':{}}),
+                                              #extendedValueConstraints={}),
+                    priorityClasses={},
+                    priorityTypes={},
+                    dynamics="asynchronous",
+                    unitary=True,
+                    CTLformula='',
+                    search='',
+                    PCTLformula='',
+                    attractorLogic='',
+                    filterExtreme=None)
+    mc.parameterSetup(settings)
     return mc
 
 
@@ -69,23 +86,31 @@ def setup_models(networks, add_morphogene=True):
 
 
 if __name__=='__main__':
-    picklename = "connected_unique_networks_three_nodes_with_morphogene.db"
+    mode = "with_morphogene"
+    if mode=="with_morphogene":
+        add_morphogene=True
+    elif mode=="without_morphogene":
+        add_morphogene=False
+    else:
+        print "warning: morphogene mode not set."
+
+    picklename = "connected_unique_networks_three_nodes_"+mode+".db"
     networks = cPickle.load(file(picklename))
-    #print len(networks)
-    
+    print "found", len(networks), "networks."
+
     '''
-    for network in networks:
-        mc = dict_to_model(networks[network], add_morphogene=True)
-        print network, ":", len(mc._psc), "parameter sets."
-        if not network%10:
+    # only printing    
+    for nwkey in networks:
+        mc = dict_to_model(networks[nwkey], add_morphogene)
+        print nwkey, ":", len(mc._psc), "parameter sets."
+        if not nwkey%10:
             tend = datetime.now()
             print "total execution time:", tend-tstart
     '''
+    #setup_models(networks, add_morphogene=True) # this crashes on the laptop
     
-    setup_models(networks, add_morphogene=True) # this crashes on the laptop
-    
-    models_dict_name = "models_dictionary.db"
-    #models_dict = shelve.open(models_dict_name)
+    models_dict_name = "models_dictionary_"+mode+".db"
+    print "Shoving to", models_dict_name, "."
     models_dict = Shove("file://"+models_dict_name, compress=True)
     
     print "found", len(models_dict), "models."

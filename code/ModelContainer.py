@@ -177,7 +177,7 @@ class ModelContainer():
                     if len(context)==0:
                         update_these = all_contexts
                     else:
-                        print "s" # oder nimm alle Kontexte c, die den Kontext context enthalten:
+                        #print "s" # oder nimm alle Kontexte c, die den Kontext context enthalten:
                         update_these = [c for c in all_contexts if set(context).issubset(set(c))]
                     for con in update_these:
                         __set_valueConstraints(con, vals)

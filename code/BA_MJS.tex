@@ -71,6 +71,20 @@ TBD: will we store the networks in the database???
 
 \subsubsection{Encoding and Decoding Contexts and Parameter Sets}
 
+\section{Defining the models}
+TODOs:
+\begin{enumerate}
+\item Starting point are the 9612(or 9710) equivalence classes of graphs
+\item The description is not complete yet, unless we specify the thresholds
+\item We consider Boolean networks (first?? or throughout??)
+\item Ideally, one would like to have e.g. the input gene at two or more levels, in order to activate the other genes in a defined order.
+\item Need to explain why and how Boolean can be sufficent. This has to do with the asynchronous formulation. If the thresholds e.g. from rr to bb and rr to gg are the same,
+then for each path in the state transition graph in which bb is activated before gg, there is another path in which gg is activated before bb.
+\item In consequence, if we simplify our class of networks to consider Boolean networks only, 
+we may no longer be allowed to restrict in CTL (or AL) to only filter for such networks in which necessarily/inevitably the stripe occurs, since many paths may go ''the other way''.
+A ''possibly'' formulation will be more meaningful under this simplification.
+\end{enumerate}
+
 \section{Mathematical formulation of the French flag problem}
 
 \subsection{Introduction to the French flag problem}
@@ -178,7 +192,7 @@ TODOs:
 \item The issues with forall eventually forall globally (not expressible in LTL for example)
 \item The issues with forAll states vs. there exists a state (tree with initial state vs. tree where all states are considered initial states). 
 Exists is plausible but it only makes sense if there are non-trivial results (e.g. networks that do NOT produce stripes).
-\item Any of these could be evaluated and compared in a big table.
+\item Any of these (4 different candidates for a CTL formula) could be evaluated and compared in a big table.
 \end{enumerate}
 
 \subsection{Pattern definition in AL}

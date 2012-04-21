@@ -9,15 +9,17 @@ MC = imp.load_source("MC", os.path.join("ModelContainer.py"))
 TS = imp.load_source("TS", os.path.join("TransitionSystem.py"))
 
 def create_database(path="C:\Users\MJS\git\BA\code", dbname='filter_results.db'):
-    # test
     # We delete/rename the entire database. Alternatively, one could only DROP the results tables but this was difficult. # TODO:
+    print "setting up database...",
     filepath = join(path, dbname)
     if exists(filepath+"~"): os.remove(filepath+"~")
     if exists(filepath): os.rename(filepath, filepath+"~")
     con = sqlite3.connect(filepath)
+    print "done."
     return con
 
 def create_tables(con):
+    print "creating tables...",
     con.execute('''DROP TABLE IF EXISTS iagraphs''')
     con.execute("create table iagraphs(iagraphID INT, iagraphsName VARCHAR(50), PRIMARY KEY (iagraphID))")
     
@@ -38,7 +40,9 @@ def create_tables(con):
         PRIMARY KEY (iagraphID, node, lpsID), FOREIGN KEY (iagraphID) REFERENCES iagraphs(iagraphID), FOREIGN KEY (iagraphID, node) REFERENCES nodes(iagraphID, node))")
 
     con.execute('''DROP TABLE IF EXISTS globalparametersets''')
-    con.execute("create table globalparametersets(iagraphID INT, gpsID VARCHAR(100), globalparameterset VARCHAR(500),\
+    #con.execute("create table globalparametersets(iagraphID INT, gpsID VARCHAR(100), globalparameterset VARCHAR(500),\
+    #    PRIMARY KEY (iagraphID, gpsID), FOREIGN KEY (iagraphID) REFERENCES iagraphs(iagraphID))")
+    con.execute("create table globalparametersets(iagraphID INT, gpsID VARCHAR(100),\
         PRIMARY KEY (iagraphID, gpsID), FOREIGN KEY (iagraphID) REFERENCES iagraphs(iagraphID))")
 
     con.execute('''DROP TABLE IF EXISTS filters''')
@@ -46,15 +50,19 @@ def create_tables(con):
         PRIMARY KEY (iagraphID, filterID), FOREIGN KEY (iagraphID) REFERENCES iagraphs(iagraphID))")
 
     con.commit()
+    print "done."
     
 def insert_network(con, nwkey, networks):
     # write interaction graph to database
+    print "inserting network...",
     querystring = "INSERT INTO iagraphs VALUES('%s', '%s')" % (nwkey, networks)
     #print querystring
     con.execute(querystring)
     con.commit()
+    print "done."
 
 def insert_edges(con, nwkey, edges, interactions, thresholds):
+    print "inserting edges...",
     for edge in edges:
         # write edge to database
         querystring = "INSERT INTO edges VALUES('%s', '%s', '%s', '%s', '%s')" % (nwkey, edge[0], edge[1], 
@@ -62,22 +70,27 @@ def insert_edges(con, nwkey, edges, interactions, thresholds):
         #print querystring
         con.execute(querystring)
     con.commit()
+    print "done."
 
 def insert_nodes(con, nwkey, nodes):
+    print "inserting nodes...",
     for node in nodes:
         # write node to database
         querystring = "INSERT INTO nodes VALUES('%s', '%s')" % (nwkey, node)
         #print querystring
         con.execute(querystring)
     con.commit()
+    print "done."
 
 def insert_contexts(con, nwkey, nodes, preds):
+    print "inserting contexts...",
     for node in sorted(nodes):
         for contextID, context in enumerate(powerset(sorted(preds[node]))): 
             querystring = '''INSERT INTO contexts VALUES("%s", "%s", "%s", "%s")''' % (nwkey, node, contextID, context)
             #print querystring
             con.execute(querystring)
     con.commit()
+    print "done."
     
 def decode_contextID(preds, contextID):
     "Converts an integer to the string representation of the corresponding context"
@@ -85,6 +98,7 @@ def decode_contextID(preds, contextID):
 
 def insert_local_parameter_sets(con, nwkey, nodes, preds, lpss):
     # TODO: geht das auch ohne preds, d.h. kann die Funktion die preds selbst ausrechnen?
+    print "inserting local parameter sets...",
     for node in sorted(nodes):
         for lps in lpss[node]:
             lpsID = encode_lps(preds[node], lps, base=10)
@@ -92,20 +106,27 @@ def insert_local_parameter_sets(con, nwkey, nodes, preds, lpss):
             #print querystring
             con.execute(querystring)
     con.commit()
+    print "done."
 
 def insert_global_parameter_sets(con, nwkey, gpss):
+    print "inserting global parameter sets...",
     for gps in gpss:
         gpsID = encode_gps(gps, base=10)
-        querystring = '''INSERT INTO globalparametersets VALUES("%s", "%s", "%s")''' % (nwkey, gpsID, gps)
+        #querystring = '''INSERT INTO globalparametersets VALUES("%s", "%s", "%s")''' % (nwkey, gpsID, gps)
+        querystring = '''INSERT INTO globalparametersets VALUES("%s", "%s")''' % (nwkey, gpsID)
         con.execute(querystring)
     con.commit()
+    print "done."
 
 def store_filter(con, nwkey, filterID, filterstring, filtertype, logictype):
+    print "inserting filter...",
     querystring = '''INSERT INTO filters VALUES("%s", "%s", "%s", "%s", "%s")''' % (nwkey, filterID, filterstring, filtertype, logictype)
     con.execute(querystring)
     con.commit()
+    print "done."
 
 def insert_filter_results(con, nwkey, gpss, filterID=1):
+    print "inserting filter results...",
     tablename = "results_iagraphID_"+str(nwkey).zfill(3)
 
     # if it does not exist aleady, create table
@@ -119,9 +140,11 @@ def insert_filter_results(con, nwkey, gpss, filterID=1):
     con.execute(querystring2)
     for gps in gpss:
         code = encode_gps(gps, base=10)
+        #print "---------------------------updating with 1---------------------------"
         querystring3 = '''UPDATE %s SET %s = 1 WHERE gpsID = "%s";''' % (tablename, columnname, code)
         con.execute(querystring3)
     con.commit()
+    print "done."
 
 def powerset(iterable):
     "powerset([1,2,3]) --> () (1,) (2,) (3,) (1,2) (1,3) (2,3) (1,2,3)"
@@ -208,6 +231,26 @@ if __name__=='__main__':
     # create tables
     create_tables(con)
     
+    filters_for_3_gene_networks = {
+                            0:["?(rand,mitte: rand.frozen(gg)&rand.max(gg)=0&mitte.frozen(gg)&mitte.min(gg)=1)", None, "AL"], # used to be ...&mitte.max(gg)=1 with the same number of results
+                            1:["((rr=2&bb=0&gg=1)->EF(AG(gg=0)))&((rr=1&bb=0&gg=1)->EF(AG(gg=1)))&((rr=0&bb=0&gg=0)->EF(AG(gg=0)))", "forAll", "CTL"],
+                            # tight BCs, forAll, EFAG, with rr decay
+                            3:["((rr=2&bb=0&gg=1)->AF(AG(gg=0)))&((rr=1&bb=0&gg=1)->AF(AG(gg=1)))&((rr=0&bb=0&gg=0)->AF(AG(gg=0)))", "forAll", "CTL"],
+                            # tight BCs, forAll, AFAG, with rr decay
+                            5:["((rr=2&bb=0&gg=1)->EF(AG(gg=0)))&((rr=1&bb=0&gg=1)->EF(AG(gg=1)))&((rr=0&bb=0&gg=0)->EF(AG(gg=0)))", "exists", "CTL"],
+                            # tight BCs, exists, EFAG, with rr decay
+                            7:["((rr=2&bb=0&gg=1)->AF(AG(gg=0)))&((rr=1&bb=0&gg=1)->AF(AG(gg=1)))&((rr=0&bb=0&gg=0)->AF(AG(gg=0)))", "exists", "CTL"],
+                            # tight BCs, exists, AFAG, with rr decay
+                            9:["((rr=2)->EF(AG(gg=0)))&((rr=1)->EF(AG(gg=1)))&((rr=0)->EF(AG(gg=0)))", "forAll", "CTL"],
+                            # loose BCs, forAll, EFAG, with rr decay
+                            11:["((rr=2)->AF(AG(gg=0)))&((rr=1)->AF(AG(gg=1)))&((rr=0)->AF(AG(gg=0)))", "forAll", "CTL"],
+                            # loose BCs, forAll, AFAG, with rr decay
+                            13:["((rr=2)->EF(AG(gg=0)))&((rr=1)->EF(AG(gg=1)))&((rr=0)->EF(AG(gg=0)))", "exists", "CTL"],
+                            # loose BCs, exists, EFAG, with rr decay
+                            15:["((rr=2)->AF(AG(gg=0)))&((rr=1)->AF(AG(gg=1)))&((rr=0)->AF(AG(gg=0)))", "exists", "CTL"]
+                            # loose BCs, exists, AFAG, with rr decay
+                          }
+
     # setup objects
     networks = dict()
     interactions = dict()
@@ -216,62 +259,26 @@ if __name__=='__main__':
     valueConstraints = dict()
     dynamics = dict()
     
-    nw_specific_filters = {
-                            0:["?(rand,mitte: rand.frozen(gg)&rand.max(gg)=0&mitte.frozen(gg)&mitte.min(gg)=1)", None, "AL"], # used to be ...&mitte.max(gg)=1 with the same number of results
-                            1:["((rr=2&bb=0&gg=1)->EF(AG(gg=0)))&((rr=1&bb=0&gg=1)->EF(AG(gg=1)))&((rr=0&bb=0&gg=0)->EF(AG(gg=0)))", "forAll", "CTL"],
-                            # tight BCs, forAll, EFAG, with rr decay
-                            #2:["((rr=2&bb=0&gg=1)->EF(AG(gg=0&rr=2)))&((rr=1&bb=0&gg=1)->EF(AG(gg=1&rr=1)))&((rr=0&bb=0&gg=0)->EF(AG(gg=0&rr=0)))", "forAll", "CTL"],
-                            # tight BCs, forAll, EFAG, without rr decay
-                            3:["((rr=2&bb=0&gg=1)->AF(AG(gg=0)))&((rr=1&bb=0&gg=1)->AF(AG(gg=1)))&((rr=0&bb=0&gg=0)->AF(AG(gg=0)))", "forAll", "CTL"],
-                            # tight BCs, forAll, AFAG, with rr decay
-                            #4:["((rr=2&bb=0&gg=1)->AF(AG(gg=0&rr=2)))&((rr=1&bb=0&gg=1)->AF(AG(gg=1&rr=1)))&((rr=0&bb=0&gg=0)->AF(AG(gg=0&rr=0)))", "forAll", "CTL"],
-                            # tight BCs, forAll, AFAG, without rr decay
-                            5:["((rr=2&bb=0&gg=1)->EF(AG(gg=0)))&((rr=1&bb=0&gg=1)->EF(AG(gg=1)))&((rr=0&bb=0&gg=0)->EF(AG(gg=0)))", "exists", "CTL"],
-                            # tight BCs, exists, EFAG, with rr decay
-                            #6:["((rr=2&bb=0&gg=1)->EF(AG(gg=0&rr=2)))&((rr=1&bb=0&gg=1)->EF(AG(gg=1&rr=1)))&((rr=0&bb=0&gg=0)->EF(AG(gg=0&rr=0)))", "exists", "CTL"],
-                            # tight BCs, exists, EFAG, without rr decay
-                            7:["((rr=2&bb=0&gg=1)->AF(AG(gg=0)))&((rr=1&bb=0&gg=1)->AF(AG(gg=1)))&((rr=0&bb=0&gg=0)->AF(AG(gg=0)))", "exists", "CTL"],
-                            # tight BCs, exists, AFAG, with rr decay
-                            #8:["((rr=2&bb=0&gg=1)->AF(AG(gg=0&rr=2)))&((rr=1&bb=0&gg=1)->AF(AG(gg=1&rr=1)))&((rr=0&bb=0&gg=0)->AF(AG(gg=0&rr=0)))", "exists", "CTL"],
-                            # tight BCs, exists, AFAG, without rr decay
-                            9:["((rr=2)->EF(AG(gg=0)))&((rr=1)->EF(AG(gg=1)))&((rr=0)->EF(AG(gg=0)))", "forAll", "CTL"],
-                            # loose BCs, forAll, EFAG, with rr decay
-                            #10:["((rr=2)->EF(AG(gg=0&rr=2)))&((rr=1)->EF(AG(gg=1&rr=1)))&((rr=0)->EF(AG(gg=0&rr=0)))", "forAll", "CTL"],
-                            # loose BCs, forAll, EFAG, without rr decay
-                            11:["((rr=2)->AF(AG(gg=0)))&((rr=1)->AF(AG(gg=1)))&((rr=0)->AF(AG(gg=0)))", "forAll", "CTL"],
-                            # loose BCs, forAll, AFAG, with rr decay
-                            #12:["((rr=2)->AF(AG(gg=0&rr=2)))&((rr=1)->AF(AG(gg=1&rr=1)))&((rr=0)->AF(AG(gg=0&rr=0)))", "forAll", "CTL"],
-                            # loose BCs, forAll, AFAG, without rr decay
-                            13:["((rr=2)->EF(AG(gg=0)))&((rr=1)->EF(AG(gg=1)))&((rr=0)->EF(AG(gg=0)))", "exists", "CTL"],
-                            # loose BCs, exists, EFAG, with rr decay
-                            #14:["((rr=2)->EF(AG(gg=0&rr=2)))&((rr=11)->EF(AG(gg=1&rr=1)))&((rr=0)->EF(AG(gg=0&rr=0)))", "exists", "CTL"],
-                            # loose BCs, exists, EFAG, without rr decay
-                            15:["((rr=2)->AF(AG(gg=0)))&((rr=1)->AF(AG(gg=1)))&((rr=0)->AF(AG(gg=0)))", "exists", "CTL"]
-                            # loose BCs, exists, AFAG, with rr decay
-                            #16:["((rr=2)->AF(AG(gg=0&rr=2)))&((rr=1)->AF(AG(gg=1&rr=1)))&((rr=0)->AF(AG(gg=0&rr=0)))", "exists", "CTL"]
-                            # loose BCs, exists, AFAG, without rr decay
-                          }
-
     # example network: graph A in figure 2 of Cotterel/Sharpe
     # strict edge labels, without morphogene, green activated earlier than blue
     networks[1] = '(A) Incoherent type 1 feed-forward, with self-loop on rr @ threshold = 1'
     interactions[1] = {("rr","rr"):"+", ("rr","gg"):"+", ("rr","bb"):"+", ("bb","gg"):"-", ("gg","gg"):"+"}
     thresholds[1] = {("rr","rr"):1, ("rr","gg"):1, ("rr","bb"):2, ("bb","gg"):1, ("gg","gg"):1}
-    filters[1] = nw_specific_filters
+    filters[1] = filters_for_3_gene_networks
 
     # example network: graph A in figure 2 of Cotterel/Sharpe
     # strict edge labels, without morphogene, green activated earlier than blue
     networks[2] = '(A) Incoherent type 1 feed-forward, with self-loop on rr @ threshold = 2'
     interactions[2] = {("rr","rr"):"+", ("rr","gg"):"+", ("rr","bb"):"+", ("bb","gg"):"-", ("gg","gg"):"+"}
     thresholds[2] = {("rr","rr"):1, ("rr","gg"):1, ("rr","bb"):2, ("bb","gg"):1, ("gg","gg"):1}
-    filters[2] = nw_specific_filters
+    filters[2] = filters_for_3_gene_networks
 
     # example network: graph A in figure 2 of Cotterel/Sharpe
     # strict edge labels, without morphogene, green activated earlier than blue
     networks[3] = '(A) Incoherent type 1 feed-forward, with self-loop on rr @ threshold = 2'
     interactions[3] = {("rr","gg"):"+", ("rr","bb"):"+", ("bb","gg"):"-", ("gg","gg"):"+"}
     thresholds[3] = {("rr","gg"):1, ("rr","bb"):2, ("bb","gg"):1, ("gg","gg"):1}
-    filters[3] = nw_specific_filters
+    filters[3] = filters_for_3_gene_networks
 
     '''
     # strict edge labels, with 1 morphogene, green activated earlier than blue
@@ -336,6 +343,7 @@ if __name__=='__main__':
     '''
     
     edges = dict(zip(interactions.keys(), [interactions[key].keys() for key in interactions.keys()]))
+    # this dict = {key : [(edgestart, edgeend), ...]}
     nodes = dict() # will be initialized below
     
     # main loop over different regulatory networks:
@@ -349,10 +357,9 @@ if __name__=='__main__':
             IG.add_edges_from(edges[nwkey])
                     
         mc = MC.ModelContainer()
-
         mc._NuSMVpath = nusmvpath
-
         mc.set_IG(IG)
+
         if interactions.has_key(nwkey):
             mc.set_edgeLabels(interactions[nwkey])
 

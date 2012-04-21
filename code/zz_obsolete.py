@@ -39,3 +39,81 @@ def is_isomorphic(network1, network2):
     return False
 
 
+def check_isomorphism_OLD(networks, mode="_without_morphogene", tag_input_gene=False):
+    ''' check for isomorphism: loop through all pairs of networks and check for isomorphy '''
+    print "checking networks for isomorphism..."
+    G = convert_dict_to_graphs(networks, addzeros=False)
+    if tag_input_gene:
+        # treat label 'rr' gene differently than others (input gene)
+        print "labelling input genes in graphs...",
+        for graph in G.values():
+            graph.node['rr'] = 'input'
+        match_fct = label_match
+        print 'done.'
+    else:
+        match_fct = None
+    
+    skiplist = []
+    isomorphy_classes = {}
+    maxiter = len(networks)
+    for netID1 in networks.keys():
+        if netID1 not in skiplist:
+            isomorphy_classes[netID1] = [netID1]
+            for netID2 in range(netID1+1, maxiter):
+                if netID2 not in skiplist:
+                    if nx.is_isomorphic(G[netID1], G[netID2], node_match=match_fct, edge_match=label_match):
+                        try:
+                            #del networks[netID2]
+                            skiplist.append(netID2)
+                            isomorphy_classes[netID1].append(netID2)
+                        except:
+                            pass
+            skiplist = list(set(skiplist)) # remove double entries
+            print "isomorphy_classes[", netID1, "] =", isomorphy_classes[netID1]
+        tend = datetime.now()
+        print "total execution time:", tend-tstart
+
+    unique_networks = dict()
+    for netID in networks.keys():
+        if isomorphy_classes.has_key(netID):
+            unique_networks[netID] = networks[netID]
+
+    picklename1 = "unique_networks" + mode + ".db"
+    picklename2 = "isomorphy_classes" + mode + ".db"
+    backup(picklename1)
+    backup(picklename2)
+    print "pickling", len(unique_networks), "unique networks to", picklename1, "."
+    print "pickling", len(isomorphy_classes), "isomorphy classes to", picklename2, "."
+    cPickle.dump(unique_networks, file(picklename1, "w"))
+    cPickle.dump(isomorphy_classes, file(picklename2, "w"))
+    
+    tend = datetime.now()
+    print "total execution time:", tend-tstart
+    print "done checking networks for isomorphism."
+
+
+def dict_to_model(net, add_morphogene=True):
+    ''' Convert single net in networkx format to model in ModelContainer format '''
+    #print "converting to model:", net, "."
+    # first set up the internal graph:
+    labels = dict((edge, label) for (edge, label) in net.items() if label!='0') # TODO: obsolete iff addzeros==False in graph_enumerator
+    # then set up the morphogene edges:
+    if add_morphogene:
+        morphogene_interactions = {("m1","m1"):"+", ("m1","rr"):"+", ("m2","m2"):"+", ("m2","rr"):"+"}
+        for edge in morphogene_interactions: # TODO: simpler way to merge dicts labels and morphogene_interactions??
+            labels[edge] = morphogene_interactions[edge]
+    edges = labels.keys()
+    IG = nx.DiGraph()
+    IG.add_edges_from(edges)
+    
+    mc = MC.ModelContainer()
+    mc.set_IG(IG)
+    mc.set_edgeLabels(labels)
+    mc.set_thresholds(dict((edge, 1) for edge in edges)) # all thresholds are set to 1
+    #print mc._thresholds
+    mc._NuSMVpath = nusmvpath
+    mc.set_initialStates()
+    mc.set_dynamics("asynchronous")
+    mc.initializePSC()
+    return mc
+
