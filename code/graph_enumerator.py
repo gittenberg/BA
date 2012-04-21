@@ -198,7 +198,7 @@ if __name__ == '__main__':
     #outfile_tag, tag_input_gene = "_without_morphogene", False # >3000
     outfile_tag, tag_input_gene = "_with_morphogene",    True  # >9000
 
-    #check_isomorphism(networks, outfile_tag, tag_input_gene) 
+    check_isomorphism(networks, outfile_tag, tag_input_gene) 
     unique_networks = cPickle.load(file("unique_networks"+outfile_tag+".db"))
     print "found", len(unique_networks), "unique networks." 
     filter_disconnected(unique_networks, outfile_tag)
