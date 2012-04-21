@@ -158,13 +158,8 @@ if __name__ == '__main__':
     #mode, tag_input_gene = "with_morphogene", "rr"     # 9612 # Hannes's favourite
     mode, tag_input_gene = "without_morphogene", "rr" # 9612   # Heike's favourite
 
-<<<<<<< HEAD:code/graph_enumerator.py
-    check_isomorphism(networks, outfile_tag, tag_input_gene) 
-    unique_networks = cPickle.load(file("unique_networks"+outfile_tag+".db"))
-=======
     check_isomorphism(networks, mode, tag_input_gene) # takes 2 hrs
     unique_networks = cPickle.load(file("unique_networks_"+mode+".db"))
->>>>>>> cab6bb2bad0ea51e332a5e5df73b91bfd589dfb0:code/_01_graph_enumerator.py
     print "found", len(unique_networks), "unique networks." 
     keep_only_three_genes(unique_networks, mode)
     filter_disconnected(unique_networks, mode)
