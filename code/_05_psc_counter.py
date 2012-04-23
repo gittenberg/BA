@@ -25,7 +25,8 @@ if __name__=='__main__':
     else:
         print "warning: morphogene mode not set."
     pstotal = 0
-
+    graphcount = 0
+    
     picklename = "connected_unique_networks_three_nodes_"+mode+".db"
     networks = cPickle.load(file(picklename))
     print "found", len(networks), "networks."
@@ -34,7 +35,30 @@ if __name__=='__main__':
         #if nwkey >= 100: continue # enable for quick check
         print "===================================================================================="
         print "considering nwkey:", nwkey
-        
+        #print networks[nwkey]
+
+        ##############################################################################
+        # <HACK>
+        ##############################################################################
+        #the following block is a hack to remove graphs with indegree(rr) > 3:
+        net = networks[nwkey]        
+        morphogene_interactions = {("m1","m1"):"+", ("m1","rr"):"+", ("m2","m2"):"+", ("m2","rr"):"+"}
+        labels = dict((edge, label) for (edge, label) in net.items() if label!='0') # TODO: obsolete iff addzeros==False in graph_enumerator
+        # then set up the morphogene edges:
+        if add_morphogene:
+            for edge in morphogene_interactions:
+                labels[edge] = morphogene_interactions[edge]
+        edges = labels.keys()
+        IG = nx.DiGraph()
+        IG.add_edges_from(edges)
+        if IG.in_degree('rr') > 3:
+            continue
+        graphcount +=1
+        print "this is graph no.", graphcount
+        ##############################################################################
+        # </HACK>
+        ##############################################################################
+
         mc = dict_to_model(networks[nwkey], add_morphogene)
         npsc = len(mc._psc)
         print nwkey, ":", npsc, "parameter sets."
