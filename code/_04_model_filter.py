@@ -42,7 +42,9 @@ filters["without_morphogene"] = {
                       }
 
 if __name__=='__main__':
-    mode = "without_morphogene"
+    mode = "with_morphogene"
+    indegree_restriction = 3
+
     if mode=="with_morphogene":
         add_morphogene=True
     elif mode=="without_morphogene":
@@ -61,18 +63,24 @@ if __name__=='__main__':
     create_tables(con)
     
     for nwkey in networks:
-        #if nwkey >= 100: continue # enable for quick check
+        #if nwkey >= 10: continue # enable for quick check
         print "===================================================================================="
         print "considering nwkey:", nwkey
         
         try:
             mc = dict_to_model(networks[nwkey], add_morphogene)
+            #print nwkey, ":", len(mc._psc), "parameter sets."
         except:
             # this should never happen
             print "failing to translate network to model, continuing."
             continue
         IG = mc._IG
-        #print nwkey, ":", len(mc._psc), "parameter sets."
+
+        #TODO: speed this up by performing the check before creating a MC
+        if indegree_restriction!=None:
+            if IG.in_degree('rr') > indegree_restriction:
+                print "skipping graph", nwkey, "due to indegree restriction."
+                continue
 
         lpss = mc._psc._localParameterSets
         nodes = IG.nodes()

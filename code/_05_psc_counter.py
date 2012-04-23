@@ -17,7 +17,7 @@ elif os.name == 'nt':
 
 
 if __name__=='__main__':
-    mode = "with_morphogene"
+    mode = "without_morphogene"
     if mode=="with_morphogene":
         add_morphogene=True
     elif mode=="without_morphogene":
