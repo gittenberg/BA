@@ -108,12 +108,14 @@ def insert_local_parameter_sets(con, nwkey, nodes, preds, lpss):
     con.commit()
     print "done."
 
-def insert_global_parameter_sets(con, nwkey, gpss):
+def insert_global_parameter_sets(con, nwkey, gpss, verbose=False):
     print "inserting global parameter sets...",
     for gps in gpss:
         gpsID = encode_gps(gps, base=10)
-        #querystring = '''INSERT INTO globalparametersets VALUES("%s", "%s", "%s")''' % (nwkey, gpsID, gps)
-        querystring = '''INSERT INTO globalparametersets VALUES("%s", "%s")''' % (nwkey, gpsID)
+        if verbose:
+            querystring = '''INSERT INTO globalparametersets VALUES("%s", "%s", "%s")''' % (nwkey, gpsID, gps)
+        else:
+            querystring = '''INSERT INTO globalparametersets VALUES("%s", "%s")''' % (nwkey, gpsID)
         con.execute(querystring)
     con.commit()
     print "done."
