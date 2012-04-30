@@ -25,11 +25,17 @@ if __name__=='__main__':
         #nusmvpath = "C:\Progra~2\NuSMV\2.5.4\bin\NuSMV.exe"            # Acer laptop
 
     # setup objects
-    add_morphogene = True
+    add_morphogene = False
+    
+    if add_morphogene:
+        mode_token = 'with_morphogene'
+    else:
+        mode_token = 'without_morphogene'
+    dbname = 'filter_results_toy_model_'+mode_token+'.db'
     verbose = True
     morphogene_interactions = {("m1","m1"):"+", ("m1","aa"):"+"}
     networks = dict()
-    labels = ["-", "+"]
+    labels = ["free", "free"]
     edges = [('aa', 'bb'), ('bb', 'aa')]
     #edges = [('aa', 'bb'), ('bb', 'aa'), ('aa', 'aa'), ('bb', 'bb')] # 16 parameter sets
     
@@ -51,7 +57,7 @@ if __name__=='__main__':
     nodes = dict() # will be initialized below
     
     # create database
-    con = create_database(path, dbname='filter_results_toy_model.db')
+    con = create_database(path, dbname)
     # create tables
     create_tables(con, verbose)
 
@@ -104,7 +110,7 @@ if __name__=='__main__':
         
         gpss = mc._psc.get_parameterSets()
         for gps in gpss:
-            print gps
+            #print gps
             #print encode_gps(gps, base=10)
             #print decode_gps(encode_gps(gps, base=10), IG, base=10)
             #print TS.TransitionSystem(mc, gps)
