@@ -18,7 +18,7 @@ def create_database(path="C:\Users\MJS\git\BA\code", dbname='filter_results.db')
     print "done."
     return con
 
-def create_tables(con):
+def create_tables(con, verbose=False):
     print "creating tables...",
     con.execute('''DROP TABLE IF EXISTS iagraphs''')
     con.execute("create table iagraphs(iagraphID INT, iagraphsName VARCHAR(50), PRIMARY KEY (iagraphID))")
@@ -40,10 +40,12 @@ def create_tables(con):
         PRIMARY KEY (iagraphID, node, lpsID), FOREIGN KEY (iagraphID) REFERENCES iagraphs(iagraphID), FOREIGN KEY (iagraphID, node) REFERENCES nodes(iagraphID, node))")
 
     con.execute('''DROP TABLE IF EXISTS globalparametersets''')
-    #con.execute("create table globalparametersets(iagraphID INT, gpsID VARCHAR(100), globalparameterset VARCHAR(500),\
-    #    PRIMARY KEY (iagraphID, gpsID), FOREIGN KEY (iagraphID) REFERENCES iagraphs(iagraphID))")
-    con.execute("create table globalparametersets(iagraphID INT, gpsID VARCHAR(100),\
-        PRIMARY KEY (iagraphID, gpsID), FOREIGN KEY (iagraphID) REFERENCES iagraphs(iagraphID))")
+    if verbose:
+        con.execute("create table globalparametersets(iagraphID INT, gpsID VARCHAR(100), globalparameterset VARCHAR(500),\
+            PRIMARY KEY (iagraphID, gpsID), FOREIGN KEY (iagraphID) REFERENCES iagraphs(iagraphID))")
+    else:
+        con.execute("create table globalparametersets(iagraphID INT, gpsID VARCHAR(100),\
+            PRIMARY KEY (iagraphID, gpsID), FOREIGN KEY (iagraphID) REFERENCES iagraphs(iagraphID))")
 
     con.execute('''DROP TABLE IF EXISTS filters''')
     con.execute("create table filters(iagraphID INT, filterID INT, filterstring VARCHAR(500), filtertype VARCHAR(10), logictype VARCHAR(5),\
@@ -114,6 +116,7 @@ def insert_global_parameter_sets(con, nwkey, gpss, verbose=False):
         gpsID = encode_gps(gps, base=10)
         if verbose:
             querystring = '''INSERT INTO globalparametersets VALUES("%s", "%s", "%s")''' % (nwkey, gpsID, gps)
+            print querystring
         else:
             querystring = '''INSERT INTO globalparametersets VALUES("%s", "%s")''' % (nwkey, gpsID)
         con.execute(querystring)

@@ -24,30 +24,37 @@ if __name__=='__main__':
         nusmvpath = r"C:\NuSMV\2.5.4\bin\NuSMV.exe"                     # Samsung laptop
         #nusmvpath = "C:\Progra~2\NuSMV\2.5.4\bin\NuSMV.exe"            # Acer laptop
 
-    # create database
-    con = create_database(path, dbname='filter_results_toy_model.db')
-    
-    # create tables
-    create_tables(con)
-
     # setup objects
+    add_morphogene = True
+    verbose = True
+    morphogene_interactions = {("m1","m1"):"+", ("m1","aa"):"+"}
     networks = dict()
     labels = ["-", "+"]
     edges = [('aa', 'bb'), ('bb', 'aa')]
+    #edges = [('aa', 'bb'), ('bb', 'aa'), ('aa', 'aa'), ('bb', 'bb')] # 16 parameter sets
     
-    def generate_networks(edges):
-        print "generating all networks...",
-        labelcombinations = itertools.product(labels, repeat=len(edges)) # all combinations of len(edges) labels
+    def generate_networks(edges, add_morphogene):
+        print "generating all networks..."
+        labelcombinations = [list(x) for x in itertools.product(labels, repeat=len(edges))] # all combinations of len(edges) labels
+        if add_morphogene:
+            edges.extend(morphogene_interactions.keys())
+            for x in labelcombinations:
+                x.extend(["+", "+"])
+            
         networks = dict(enumerate(dict(zip(edges, labelcombination)) for labelcombination in labelcombinations))
     
         print "found", len(networks), "networks." # 3^9 = 19683 if unconstrained
         print "done."
         return networks
     
-    networks = generate_networks(edges)
-
+    networks = generate_networks(edges, add_morphogene)
     nodes = dict() # will be initialized below
     
+    # create database
+    con = create_database(path, dbname='filter_results_toy_model.db')
+    # create tables
+    create_tables(con, verbose)
+
     # main loop over different regulatory networks:
     for nwkey in networks:
         print "===================================================================================="
@@ -79,7 +86,6 @@ if __name__=='__main__':
         # write network to database
         insert_network(con, nwkey, str(nwkey))
         # write interaction graph to database
-        print thresholds
         insert_edges(con, nwkey, networks[nwkey].keys(), networks[nwkey], thresholds)
         # write nodes to database
         insert_nodes(con, nwkey, nodes[nwkey])
@@ -89,7 +95,7 @@ if __name__=='__main__':
         insert_local_parameter_sets(con, nwkey, nodes[nwkey], preds, lpss)
         # write global parameter sets to database
         gpss = mc._psc.get_parameterSets()
-        insert_global_parameter_sets(con, nwkey, gpss)
+        insert_global_parameter_sets(con, nwkey, gpss, verbose)
         
         print "===================================================================================="
         print "Exporting .gml..."
