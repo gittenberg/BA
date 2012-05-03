@@ -116,7 +116,7 @@ def insert_global_parameter_sets(con, nwkey, gpss, verbose=False):
         gpsID = encode_gps(gps, base=10)
         if verbose:
             querystring = '''INSERT INTO globalparametersets VALUES("%s", "%s", "%s")''' % (nwkey, gpsID, gps)
-            print querystring
+            #print querystring
         else:
             querystring = '''INSERT INTO globalparametersets VALUES("%s", "%s")''' % (nwkey, gpsID)
         con.execute(querystring)

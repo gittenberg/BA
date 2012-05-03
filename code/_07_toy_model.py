@@ -36,8 +36,9 @@ if __name__=='__main__':
     morphogene_interactions = {("m1","m1"):"+", ("m1","aa"):"+"}
     networks = dict()
     labels = ["free", "free"]
-    edges = [('aa', 'bb'), ('bb', 'aa')]
-    #edges = [('aa', 'bb'), ('bb', 'aa'), ('aa', 'aa'), ('bb', 'bb')] # 16 parameter sets
+    #edges = [('aa', 'bb'), ('bb', 'aa')] # 4 parameter sets without morphogene
+    edges = [('aa', 'bb'), ('bb', 'aa'), ('aa', 'aa')] # 64 parameter sets without morphogene
+    #edges = [('aa', 'bb'), ('bb', 'aa'), ('aa', 'aa'), ('bb', 'bb')] # 256 parameter sets without morphogene
     
     def generate_networks(edges, add_morphogene):
         print "generating all networks..."
