@@ -25,7 +25,7 @@ if __name__=='__main__':
         #nusmvpath = "C:\Progra~2\NuSMV\2.5.4\bin\NuSMV.exe"            # Acer laptop
 
     # setup objects
-    add_morphogene = False
+    add_morphogene = True
     
     if add_morphogene:
         mode_token = 'with_morphogene'
@@ -36,9 +36,9 @@ if __name__=='__main__':
     morphogene_interactions = {("m1","m1"):"+", ("m1","aa"):"+"}
     networks = dict()
     labels = ["free", "free"]
-    #edges = [('aa', 'bb'), ('bb', 'aa')] # 4 parameter sets without morphogene
-    edges = [('aa', 'bb'), ('bb', 'aa'), ('aa', 'aa')] # 64 parameter sets without morphogene
-    #edges = [('aa', 'bb'), ('bb', 'aa'), ('aa', 'aa'), ('bb', 'bb')] # 256 parameter sets without morphogene
+    #edges = [('aa', 'bb'), ('bb', 'aa')] # 4 parameter sets without morphogene for + labels
+    #edges = [('aa', 'bb'), ('bb', 'aa'), ('aa', 'aa')] # 64 parameter sets without morphogene
+    edges = [('aa', 'bb'), ('bb', 'aa'), ('aa', 'aa'), ('bb', 'bb')] # 256 parameter sets without morphogene
     
     def generate_networks(edges, add_morphogene):
         print "generating all networks..."
@@ -115,7 +115,7 @@ if __name__=='__main__':
             #print encode_gps(gps, base=10)
             #print decode_gps(encode_gps(gps, base=10), IG, base=10)
             #print TS.TransitionSystem(mc, gps)
-            export_STG(mc, gps, filename=str(nwkey).zfill(3)+"_"+encode_gps(gps, base=10)+".gml", initialRules=None)
+            export_STG(mc, gps, filename=join("gml", str(nwkey).zfill(3)+"_"+encode_gps(gps, base=10)+".gml"), initialRules=None)
 
         #mc.export_commonSTG(Type="transitions", filename="A_commonSTG_transitions_strict.gml", initialRules=None)
 
