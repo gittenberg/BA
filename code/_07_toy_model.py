@@ -35,10 +35,12 @@ if __name__=='__main__':
     verbose = True
     morphogene_interactions = {("m1","m1"):"+", ("m1","aa"):"+"}
     networks = dict()
-    labels = ["free", "free"]
-    #edges = [('aa', 'bb'), ('bb', 'aa')] # 4 parameter sets without morphogene for + labels
-    #edges = [('aa', 'bb'), ('bb', 'aa'), ('aa', 'aa')] # 64 parameter sets without morphogene
-    edges = [('aa', 'bb'), ('bb', 'aa'), ('aa', 'aa'), ('bb', 'bb')] # 256 parameter sets without morphogene
+    labels = ["+", "-"]
+    #labels = ["free"]
+    #edges = [('aa', 'bb'), ('bb', 'aa')] 
+    edges = [('aa', 'bb'), ('bb', 'aa'), ('aa', 'aa')]
+    #edges = [('aa', 'bb'), ('bb', 'aa'), ('aa', 'aa'), ('bb', 'bb')]
+    all_gps_codes = []
     
     def generate_networks(edges, add_morphogene):
         print "generating all networks..."
@@ -112,13 +114,27 @@ if __name__=='__main__':
         gpss = mc._psc.get_parameterSets()
         for gps in gpss:
             #print gps
-            #print encode_gps(gps, base=10)
+            all_gps_codes.append(encode_gps(gps))
+            #print encode_gps(gps)
             #print decode_gps(encode_gps(gps, base=10), IG, base=10)
             #print TS.TransitionSystem(mc, gps)
-            export_STG(mc, gps, filename=join("gml", str(nwkey).zfill(3)+"_"+encode_gps(gps, base=10)+".gml"), initialRules=None)
+            #export_STG(mc, gps, filename=join("gml", str(nwkey).zfill(3)+"_"+encode_gps(gps, base=10)+".gml"), initialRules=None)
+            #pass
 
         #mc.export_commonSTG(Type="transitions", filename="A_commonSTG_transitions_strict.gml", initialRules=None)
 
     con.commit()
     con.close()
+    print all_gps_codes
+    # diese gps_codes jetzt in 2 Teile zerlegen:
+    # den teil mit m1==0 und den teil mit m1==1.
+    # hierzu:
+    # welche stellen des codes gehören überhaupt zu m1
+    # diese stellen streichen, es entstehen codes für den graphen ohne morphogen
+    # diese auf duplikate überprüfen (es müssen ja die 72 irgendwie auf die 64 ohne morphogen abbildbar sein).
+    # anschließend die "kleinen" GPS speichern
+    # neue/modifizierte CTL-Formeln aufstellen
+    # model checken
+    
+    print len(all_gps_codes)
     print "Done."
