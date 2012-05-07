@@ -7,6 +7,7 @@ import sqlite3
 import itertools
 
 from _03_database_functions import *
+from _05_psc_functions import *
 
 MC = imp.load_source("MC", os.path.join("ModelContainer.py"))
 TS = imp.load_source("TS", os.path.join("TransitionSystem.py"))
@@ -25,7 +26,7 @@ if __name__=='__main__':
         #nusmvpath = "C:\Progra~2\NuSMV\2.5.4\bin\NuSMV.exe"            # Acer laptop
 
     # setup objects
-    add_morphogene = True
+    add_morphogene = False
     
     if add_morphogene:
         mode_token = 'with_morphogene'
@@ -35,10 +36,10 @@ if __name__=='__main__':
     verbose = True
     morphogene_interactions = {("m1","m1"):"+", ("m1","aa"):"+"}
     networks = dict()
-    labels = ["+", "-"]
-    #labels = ["free"]
-    #edges = [('aa', 'bb'), ('bb', 'aa')] 
-    edges = [('aa', 'bb'), ('bb', 'aa'), ('aa', 'aa')]
+    #labels = ["+", "-"]
+    labels = ["free"]
+    edges = [('aa', 'bb'), ('bb', 'aa')] 
+    #edges = [('aa', 'bb'), ('bb', 'aa'), ('aa', 'aa')]
     #edges = [('aa', 'bb'), ('bb', 'aa'), ('aa', 'aa'), ('bb', 'bb')]
     all_gps_codes = []
     
@@ -110,10 +111,12 @@ if __name__=='__main__':
         print "Exporting .gml..."
         mc.initializePSC()
         print "number of parameter sets:", len(mc._psc)
+        #mc._psc.reject([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])
         
         gpss = mc._psc.get_parameterSets()
         for gps in gpss:
-            #print gps
+            print gps
+            print strictest_labels(edges, [gps])
             all_gps_codes.append(encode_gps(gps))
             #print encode_gps(gps)
             #print decode_gps(encode_gps(gps, base=10), IG, base=10)
@@ -125,14 +128,15 @@ if __name__=='__main__':
 
     con.commit()
     con.close()
+    
     print all_gps_codes
     # diese gps_codes jetzt in 2 Teile zerlegen:
     # den teil mit m1==0 und den teil mit m1==1.
     # hierzu:
-    # welche stellen des codes gehören überhaupt zu m1
-    # diese stellen streichen, es entstehen codes für den graphen ohne morphogen
-    # diese auf duplikate überprüfen (es müssen ja die 72 irgendwie auf die 64 ohne morphogen abbildbar sein).
-    # anschließend die "kleinen" GPS speichern
+    # welche stellen des codes gehoeren ueberhaupt zu m1
+    # diese stellen streichen, es entstehen codes fuer den graphen ohne morphogen
+    # diese auf duplikate ueberpruefen (es muessen ja die 72 irgendwie auf die 64 ohne morphogen abbildbar sein).
+    # anschliessend die "kleinen" GPS speichern
     # neue/modifizierte CTL-Formeln aufstellen
     # model checken
     
