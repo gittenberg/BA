@@ -38,8 +38,8 @@ if __name__=='__main__':
     networks = dict()
     #labels = ["+", "-"]
     labels = ["free"]
-    edges = [('aa', 'bb'), ('bb', 'aa')] 
-    #edges = [('aa', 'bb'), ('bb', 'aa'), ('aa', 'aa')]
+    #edges = [('aa', 'bb'), ('bb', 'aa')] 
+    edges = [('aa', 'bb'), ('bb', 'aa'), ('aa', 'aa')]
     #edges = [('aa', 'bb'), ('bb', 'aa'), ('aa', 'aa'), ('bb', 'bb')]
     all_gps_codes = []
     
@@ -115,13 +115,13 @@ if __name__=='__main__':
         
         gpss = mc._psc.get_parameterSets()
         for gps in gpss:
-            print gps
+            #print gps
             print strictest_labels(edges, [gps])
             all_gps_codes.append(encode_gps(gps))
-            #print encode_gps(gps)
+            print encode_gps(gps)
             #print decode_gps(encode_gps(gps, base=10), IG, base=10)
             #print TS.TransitionSystem(mc, gps)
-            #export_STG(mc, gps, filename=join("gml", str(nwkey).zfill(3)+"_"+encode_gps(gps, base=10)+".gml"), initialRules=None)
+            export_STG(mc, gps, filename=join("gml", str(nwkey).zfill(3)+"_"+encode_gps(gps, base=10)+".gml"), initialRules=None)
             #pass
 
         #mc.export_commonSTG(Type="transitions", filename="A_commonSTG_transitions_strict.gml", initialRules=None)
