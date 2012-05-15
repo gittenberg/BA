@@ -72,18 +72,18 @@ def setup_models(networks, add_morphogene=True):
     models_dict_name = "models_dictionary.db"
     #models_dict = shelve.open(models_dict_name)
     models_dict = Shove("file://"+models_dict_name, compress=True)
-    for i, net in enumerate(networks.values()):
-        print i, ":",
-        #if i>=50: break # enable for quick run
+    for localparset, net in enumerate(networks.values()):
+        print localparset, ":",
+        #if localparset>=50: break # enable for quick run
         mc = dict_to_model(net, add_morphogene)
         print len(mc._psc), "parameter sets, shoving."
-        if not i%10:
+        if not localparset%10:
             tend = datetime.now()
             print "total execution time:", tend-tstart
-        models_dict[str(i)] = mc
+        models_dict[str(localparset)] = mc
         models_dict.sync()
     #models_dict.close()
-    print "shoved", i+1, "model containers to", models_dict_name, "."
+    print "shoved", localparset+1, "model containers to", models_dict_name, "."
 
 
 if __name__=='__main__':

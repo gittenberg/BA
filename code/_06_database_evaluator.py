@@ -20,7 +20,7 @@ if __name__=='__main__':
     conn = sqlite3.connect(dbname)
     c = conn.cursor()
     c.execute('SELECT * FROM globalparametersets')
-    for i in range(10):
+    for localparset in range(10):
         print c.fetchone()
 
     print "Done."
