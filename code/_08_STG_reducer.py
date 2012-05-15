@@ -7,7 +7,7 @@ from _03_database_functions import encode_gps
 
 
 def subparset(parset, is_m1_in, is_m2_in):
-    return {key:{tuple(y for y in context if y!='m1' and y!='m2'):parset[key][context] for context in parset[key].keys() if key != 'rr' or ('m1' in context) == is_m1_in and ('m2' in context) == is_m2_in} for key in parset.keys() if key != 'm1' and key != 'm2'}
+    return {key:{tuple(y for y in context if y!="m1" and y!="m2"):parset[key][context] for context in parset[key].keys() if key!="rr" or ("m1" in context)==is_m1_in and ("m2" in context)==is_m2_in} for key in parset.keys() if key!="m1" and key!="m2"}
     
 
 if __name__=='__main__':
@@ -30,7 +30,7 @@ if __name__=='__main__':
     
     allsubgpss = set()
     for nwkey in networks:
-        #if nwkey >= 2: continue # enable for quick check
+        if nwkey >= 2: continue # enable for quick check
         print "===================================================================================="
         print "considering nwkey:", nwkey
         #print networks[nwkey]
