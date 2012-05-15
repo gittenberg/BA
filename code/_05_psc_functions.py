@@ -92,7 +92,7 @@ def strictest_labels(edges, gpslist):
     return strictestEdgeLabels
 
 if __name__=='__main__':
-    mode = "without_morphogene"
+    mode = "with_morphogene"
     if mode=="with_morphogene":
         add_morphogene=True
     elif mode=="without_morphogene":
@@ -107,11 +107,12 @@ if __name__=='__main__':
     print "found", len(networks), "networks."
 
     for nwkey in networks:
-        #if nwkey >= 100: continue # enable for quick check
+        if nwkey >= 10: continue # enable for quick check
         print "===================================================================================="
         print "considering nwkey:", nwkey
         #print networks[nwkey]
 
+        '''
         ##############################################################################
         # <HACK>
         ##############################################################################
@@ -133,7 +134,8 @@ if __name__=='__main__':
         ##############################################################################
         # </HACK>
         ##############################################################################
-
+        '''
+        
         mc = dict_to_model(networks[nwkey], add_morphogene)
         npsc = len(mc._psc)
         print nwkey, ":", npsc, "parameter sets."

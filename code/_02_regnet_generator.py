@@ -51,6 +51,7 @@ def dict_to_model(net, add_morphogene=True):
                                               Bformulas=[],
                                               simplified=[],
                                               extendedValueConstraints={'rr': {('m1', 'm2'): [1]}, 'bb':{}, 'gg':{}}),
+                                              #extendedValueConstraints={'rr': {('m1', 'm2'): [1]}}),
                                               #extendedValueConstraints={}),
                     priorityClasses={},
                     priorityTypes={},
