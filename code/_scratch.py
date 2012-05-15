@@ -1,71 +1,15 @@
-from datetime import datetime
-tstart = datetime.now()
 
-import imp
-import os
-import networkx as nx
-import cPickle
+parset = {'gg': {('gg', 'rr'): 1, ('bb', 'rr'): 1, ('bb', 'gg', 'rr'): 0, ('gg',): 1, ('rr',): 1, (): 1, ('bb', 'gg'): 1, ('bb',): 1}, 
+          'm1': {(): 0, ('m1',): 1}, 
+          'rr': {('bb', 'gg', 'm1', 'm2'): 1, ('bb', 'm2', 'rr'): 1, ('bb', 'gg', 'm1'): 1, ('bb', 'm1'): 1, ('bb', 'gg', 'm2'): 1, ('rr',): 1, ('gg', 'm1', 'rr'): 1, ('gg', 'm1', 'm2'): 1, ('bb', 'rr'): 1, ('m2',): 1, ('gg', 'm1', 'm2', 'rr'): 1, ('bb', 'gg', 'rr'): 0, ('gg', 'm2'): 1, ('gg',): 1, ('bb', 'gg', 'm1', 'm2', 'rr'): 1, ('bb',): 1, ('gg', 'm2', 'rr'): 1, ('bb', 'gg', 'm1', 'rr'): 1, ('bb', 'gg'): 1, ('m1', 'm2', 'rr'): 1, ('bb', 'm1', 'm2', 'rr'): 1, ('bb', 'gg', 'm2', 'rr'): 1, ('gg', 'm1'): 1, ('bb', 'm1', 'm2'): 1, ('m2', 'rr'): 1, ('m1',): 1, ('gg', 'rr'): 1, ('m1', 'm2'): 1, ('bb', 'm1', 'rr'): 1, (): 1, ('bb', 'm2'): 1, ('m1', 'rr'): 1}, 
+          'bb': {('gg', 'rr'): 1, ('bb', 'rr'): 1, ('bb', 'gg', 'rr'): 0, ('gg',): 1, ('rr',): 1, (): 1, ('bb', 'gg'): 1, ('bb',): 1}, 
+          'm2': {('m2',): 1, (): 0}}
 
-MC = imp.load_source("MC", os.path.join("ModelContainer.py"))
-nusmvpath = r"C:\NuSMV\2.5.4\bin\NuSMV.exe"                  # Samsung laptop
+testlist = [[j for j in i.keys()  if 'm1' not in j and 'm2' not in j] for i in parset.values()]
 
-def dict_to_model_experimental(net, add_morphogene=True):
-    ''' Convert single net in networkx format to model in ModelContainer format '''
-    #print "converting to model:", net, "."
-    # first set up the internal graph:
-    morphogene_interactions = {("m1","m1"):"+", ("m1","rr"):"+", ("m2","m2"):"+", ("m2","rr"):"+"}
-    labels = dict((edge, label) for (edge, label) in net.items() if label!='0') # TODO: obsolete iff addzeros==False in graph_enumerator
-    # then set up the morphogene edges:
-    if add_morphogene:
-        for edge in morphogene_interactions:
-            labels[edge] = morphogene_interactions[edge]
-    edges = labels.keys()
-    IG = nx.DiGraph()
-    IG.add_edges_from(edges)
-    
-    mc = MC.ModelContainer()
-    mc.set_IG(IG)
-    mc.set_edgeLabels(labels)
-    thresholds = dict((edge, 1) for edge in edges)
-    mc.set_thresholds(thresholds) # all thresholds are set to 1
-    #print mc._thresholds
-    mc._NuSMVpath = nusmvpath
-    mc.set_initialStates()
-    #mc.initializePSC() #obsolete, now using settings as follows:
-    settings = dict(interactions={'edges':edges, 'thresholds':thresholds, 'labels':labels},
-                    componentConstraints=dict(valueConstraints=dict(),
-                                              takeMin=[],
-                                              takeMax=[],
-                                              Bformulas=[],
-                                              simplified=[],
-                                              extendedValueConstraints={'rr': {('m1', 'm2'): [1]}, 'bb':{}, 'gg':{}}),
-                                              #extendedValueConstraints={}),
-                    priorityClasses={},
-                    priorityTypes={},
-                    dynamics="asynchronous",
-                    unitary=True,
-                    CTLformula='',
-                    search='',
-                    PCTLformula='',
-                    attractorLogic='',
-                    filterExtreme=None)
-    mc.parameterSetup(settings)
-    return mc
+for elem in testlist:
+    print elem
 
-if __name__=='__main__':
-    picklename = "connected_unique_networks_three_nodes_with_morphogene.db"
-    networks = cPickle.load(file(picklename))
-    print "found", len(networks), "networks."
+#newparset = {key:value for value in newvalues for key in parset if key not in ['m1', 'm2'] and parset[key]}
 
-    for nwkey in networks:
-        if nwkey >= 10: continue # enable for quick check
-        print "===================================================================================="
-        print "considering nwkey:", nwkey
-        
-        mc = dict_to_model_experimental(networks[nwkey], add_morphogene=True)
-        IG = mc._IG
-        print nwkey, ":", len(mc._psc), "parameter sets."
-
-tend = datetime.now()
-print "total execution time:", tend-tstart
-print "done."
+#print newparset

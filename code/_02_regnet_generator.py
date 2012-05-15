@@ -110,11 +110,11 @@ if __name__=='__main__':
     '''
     #setup_models(networks, add_morphogene=True) # this crashes on the laptop
     
-    models_dict_name = "models_dictionary_"+mode+".db"
-    print "Shoving to", models_dict_name, "."
-    models_dict = Shove("file://"+models_dict_name, compress=True)
+    #models_dict_name = "models_dictionary_"+mode+".db"
+    #print "Shoving to", models_dict_name, "."
+    #models_dict = Shove("file://"+models_dict_name, compress=True)
     
-    print "found", len(models_dict), "models."
+    #print "found", len(models_dict), "models."
     
     tend = datetime.now()
     print "total execution time:", tend-tstart

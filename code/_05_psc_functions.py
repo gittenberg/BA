@@ -107,7 +107,7 @@ if __name__=='__main__':
     print "found", len(networks), "networks."
 
     for nwkey in networks:
-        if nwkey >= 10: continue # enable for quick check
+        if nwkey >= 2: continue # enable for quick check
         print "===================================================================================="
         print "considering nwkey:", nwkey
         #print networks[nwkey]
