@@ -2,6 +2,7 @@ from datetime import datetime
 tstart = datetime.now()
 
 import cPickle
+import shelve
 from _02_regnet_generator import dict_to_model
 from _03_database_functions import encode_gps
 
@@ -24,7 +25,8 @@ if __name__=='__main__':
         print "warning: morphogene mode not set."
     pstotal = 0
     graphcount = 0
-    
+    shelvefilename = "unique_small_gps_codes.db"
+    d = shelve.open(shelvefilename)    
     combis = [(False, False), (True, False), (False, True)] # low, medium, high
     
     picklename = "connected_unique_networks_three_nodes_"+mode+".db"
@@ -45,19 +47,22 @@ if __name__=='__main__':
         pstotal += npsc
         print nwkey, ":", pstotal, "parameter sets in total."
         gpss = mc._psc.get_parameterSets()
+        thesesubgpss = set()
         for gps in gpss:
             for combi in combis:
                 #print subparset(gps, is_m1_in=combi[0], is_m2_in=combi[1])
                 subgps = encode_gps(subparset(gps, is_m1_in=combi[0], is_m2_in=combi[1]))
-                allsubgpss.add(subgps)
+                thesesubgpss.add(subgps)
             #print gps
             #print encode_gps(gps)
-        print len(allsubgpss)
+        allsubgpss = allsubgpss.union(thesesubgpss)
+        print "unique small gps to date:", len(allsubgpss)
         split_gps_store[nwkey] = [npsc, pstotal, len(allsubgpss)]
-
+        d[str(nwkey)] = thesesubgpss
         tend = datetime.now()
         print "total execution time:", tend-tstart
-    
+
+    d.close()    
     print "pickling results to: split_gps_store.pkl"
     cPickle.dump(split_gps_store, file("split_gps_store.pkl", "w"))
     print "done."
