@@ -1,3 +1,12 @@
+''' This script takes the database of all 9612 connected unique (isomorphic)
+networks with three nodes (by default with morphogene) and generates:
+
+d: a shelve object which contains nwkey:[all codes of gps of subgraphs for all
+   three combinations of morphogenes]
+split_gps_store: a dict which contains nwkey:[number of gps, 
+   cumulative number of gps, number of sub-gps in nwkey]
+'''
+
 from datetime import datetime
 tstart = datetime.now()
 
@@ -16,12 +25,14 @@ def subparset(parset, is_m1_in, is_m2_in):
 
 if __name__=='__main__':
     mode = "with_morphogene"
+    
     if mode=="with_morphogene":
         add_morphogene=True
     elif mode=="without_morphogene":
         add_morphogene=False
     else:
         print "warning: morphogene mode not set."
+    
     pstotal = 0
     graphcount = 0
     shelvefilename = "unique_small_gps_codes.db"
