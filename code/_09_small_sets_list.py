@@ -1,3 +1,7 @@
+''' This script takes the dict of sub-gps codes (which is large)
+and creates a list of all 480679 unique sub-gps codes which occur
+'''
+
 import shelve
 import cPickle
 

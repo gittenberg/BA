@@ -3,21 +3,17 @@ import shelve
 from _01_graph_enumerator import convert_dict_to_graphs
 from _03_database_functions import decode_gps
 
-split_gps = cPickle.load(file("all_small_gps_encodings.pkl"))
+allsetslist = cPickle.load(file("all_small_gps_encodings.pkl"))
 
-# the main part of this script still assumes that split_gps is a dict. TODO: change
+# the main part of this script still assumes that allsetslist is a dict. TODO: change
 
-print len(split_gps)
-print split_gps[0] # parsets for this nwkey, total parsets so far, subparsets for this nwkey)
-print split_gps[19682] # parsets for this nwkey, total parsets so far, subparsets for this nwkey)
+print len(allsetslist)
 
-
-networks = cPickle.load(file("all_networks.db"))
-print "found", len(networks), "networks." # 3^9 = 19683 if unconstrained
+networks = cPickle.load(file("all_networks.db")) # we need this becaus we have to create the corresponding IG
 
 shelvefilename = "unique_small_gps_codes.remote_generated.db"
 d = shelve.open(shelvefilename)    
-for nwkey in [0, 1, 2, 3, 19681, 19682]:
+for nwkey in [0, 1, 19681, 19682]:
     strnwkey = str(nwkey) # because shelve only accepts string keys
     print strnwkey
     print networks[nwkey]

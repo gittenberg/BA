@@ -197,6 +197,35 @@ def encode_gps(gps, base=10):
     #return long(gps_encoding)
     return gps_encoding.zfill(totallength)
 
+def encode_gps_full(gps, base=10):
+    "converts a global parameter set object into an integer representation"
+    gps_encoding = ""
+    context_encoding = ""
+    totallength = 0
+    nodes = gps.keys()
+    for node in sorted(nodes):
+        # first reverse engineer contexts, predecessors, lps
+        contexts = gps[node].keys()
+        n = len(contexts)
+        preds = sorted(list(set().union(*contexts)))
+        contextstring = str(preds)
+        print "contextstring =", contextstring
+        lps = gps[node]
+        #print "lps (from encode_gps):", lps
+        
+        # then encode current lps
+        code = encode_lps(preds, lps, base)
+        
+        # finally shift digits and add n-k zeros
+        k = len(str(code))
+        codestring = (n-k)*'0' + str(code)
+        gps_encoding = codestring + gps_encoding
+        context_encoding = contextstring + context_encoding    
+        totallength += n
+    #return long(gps_encoding)
+    finalencoding = gps_encoding.zfill(totallength)+"_"+context_encoding
+    return finalencoding
+
 def decode_gps(encoding, IG, base=10):
     decoded = dict()
     for node in sorted(IG.nodes()):

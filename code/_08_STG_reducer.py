@@ -13,7 +13,7 @@ tstart = datetime.now()
 import cPickle
 import shelve
 from _02_regnet_generator import dict_to_model
-from _03_database_functions import encode_gps
+from _03_database_functions import encode_gps, encode_gps_full
 
 
 def reduced_lps(parset, is_m1_in, is_m2_in, key):
@@ -46,7 +46,7 @@ if __name__=='__main__':
     
     allsubgpss = set()
     for nwkey in networks:
-        #if nwkey >= 2: continue # enable for quick check
+        if nwkey >= 2: continue # enable for quick check
         print "===================================================================================="
         print "considering nwkey:", nwkey
         #print networks[nwkey]
@@ -61,7 +61,8 @@ if __name__=='__main__':
         for gps in gpss:
             for combi in combis:
                 #print subparset(gps, is_m1_in=combi[0], is_m2_in=combi[1])
-                subgps = encode_gps(subparset(gps, is_m1_in=combi[0], is_m2_in=combi[1]))
+                subgps = encode_gps_full(subparset(gps, is_m1_in=combi[0], is_m2_in=combi[1]))
+                # TODO: add nodes and edges???
                 thesesubgpss.add(subgps)
             #print gps
             #print encode_gps(gps)
@@ -74,6 +75,6 @@ if __name__=='__main__':
 
     d.close()    
     print "pickling results to: split_gps_store.pkl"
-    cPickle.dump(split_gps_store, file("split_gps_store.pkl", "w"))
+    cPickle.dump(split_gps_store, file("split_gps_store.test.pkl", "w"))
     print "done."
     
