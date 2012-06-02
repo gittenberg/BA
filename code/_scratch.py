@@ -85,6 +85,7 @@ if __name__=='__main__':
             print encode_gps_full(gps, base=10)
             #print decode_gps(encode_gps(gps, base=10), IG, base=10)
             #print TS.TransitionSystem(mc, gps)
+            print "===================================================================================="
 
         #mc.export_commonSTG(Type="transitions", filename="A_commonSTG_transitions_strict.gml", initialRules=None)
 

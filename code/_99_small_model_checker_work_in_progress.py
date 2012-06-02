@@ -13,6 +13,7 @@ networks = cPickle.load(file("all_networks.db")) # we need this becaus we have t
 
 shelvefilename = "unique_small_gps_codes.remote_generated.db"
 d = shelve.open(shelvefilename)    
+print "len(d) =", len(d)
 for nwkey in [0, 1, 19681, 19682]:
     strnwkey = str(nwkey) # because shelve only accepts string keys
     print strnwkey
