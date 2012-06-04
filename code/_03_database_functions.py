@@ -245,7 +245,7 @@ def decode_gps_full(code):
     edges = [tuple(edgestring.split(" ")) for edgestring in edgestrings]
     IG = nx.DiGraph()
     IG.add_edges_from(edges)
-    return decode_gps(int(first), IG)
+    return decode_gps(int(first), IG), IG
 
 def export_STG(mc, gps, filename, initialRules=None):
     if initialRules:
