@@ -1,11 +1,11 @@
 ''' This script takes the dict of sub-gps codes (which is large)
-and creates a list of all 480679 unique sub-gps codes which occur
+and creates a list of all 910890 unique sub-gps codes which occur
 '''
 
 import shelve
 import cPickle
 
-shelvefilename = "unique_small_gps_codes.remote_generated.db"
+shelvefilename = "unique_small_gps_codes.full.remote_generated.db"
 d = shelve.open(shelvefilename)    
 
 allsets = set()
