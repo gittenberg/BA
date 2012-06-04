@@ -237,6 +237,16 @@ def decode_gps(encoding, IG, base=10):
             decoded[node][context] = int(digit)
     return decoded
 
+def decode_gps_full(code):
+    '''Decodes GPS encodings of the form codestring.edgestring
+    where codestring is in encode_gps and edgestring is 'e1 e2_e3 e4_...'''
+    first, second = code.split(".")
+    edgestrings = second.split("_")
+    edges = [tuple(edgestring.split(" ")) for edgestring in edgestrings]
+    IG = nx.DiGraph()
+    IG.add_edges_from(edges)
+    return decode_gps(int(first), IG)
+
 def export_STG(mc, gps, filename, initialRules=None):
     if initialRules:
         mc.set_initialRules(initialRules)

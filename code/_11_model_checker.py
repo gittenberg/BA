@@ -3,7 +3,6 @@ tstart = datetime.now()
 
 import cPickle
 from _01_graph_enumerator import convert_dict_to_graphs
-from _03_database_functions import decode_gps
 
 ctlformulas = ["EFAG(gg=0)", "AFAG(gg=0)", "EFAG(gg=1)", "AFAG(gg=1)"]
 
