@@ -1,5 +1,6 @@
 def generate_smv(container, parameterSet, formula=None):
     """Creates a Model written in NuSMV language from a set of parameters K"""
+    print container
     priorityClasses = container._priorityClasses
     priorityTypes = container._priorityTypes
     dynamics = container._dynamics

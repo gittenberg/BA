@@ -23,7 +23,6 @@ elif os.name == 'nt':
 CTLformulas = ["True", "False", "EFAG(gg=0)", "AFAG(gg=0)", "EFAG(gg=1)", "AFAG(gg=1)"]
 
 
-
 def filter_single_parameterSet_byCTL(container, parameterSet, CTLspec, search="exists"):
     '''Adds indices to _filteredParametersIndexList for parameterSets that do not satisfy the CTL formula for all states (search="forAll") or for at least one state (search="exists").'''
     SMVpath = os.path.join(os.getcwd(), "temp.smv")
@@ -37,9 +36,8 @@ def filter_single_parameterSet_byCTL(container, parameterSet, CTLspec, search="e
         raise Exception("search should be exist or forAll!")
 
     accepted = False
-    fileString = LFG.generate_smv(parameterSet, formula)
-    print "so far, so good."
-    
+    fileString = LFG.generate_smv(mc, parameterSet, formula)
+        
     tempFile = open("temp.smv", "w")
     tempFile.write(fileString)
     tempFile.close()
@@ -64,11 +62,11 @@ if __name__=="__main__":
         mc = MC.ModelContainer()
         mc.set_IG(IG)
         # is this required?
-        mc.set_thresholds(dict((edge, 1) for edge in IG.edges()))
-        # is this required?
-        mc.initializePSC()
-
-        filter_single_parameterSet_byCTL(mc, parameterset, CTLspec, search="exists")
+        mc.set_thresholds(dict((edge, 1) for edge in mc._IG.edges()))
+        mc.set_dynamics("asynchronous")
+        mc.set_initialStates()
+        print mc
+        print filter_single_parameterSet_byCTL(mc, parameterset, CTLspec, search="exists")
 
     tend = datetime.now()
     print "total execution time:", tend-tstart
