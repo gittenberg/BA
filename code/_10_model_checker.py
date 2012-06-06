@@ -5,6 +5,7 @@ import os
 import imp
 import subprocess as SP
 import cPickle
+import shelve
 from _03_database_functions import decode_gps_full
 
 MC = imp.load_source("MC", os.path.join("ModelContainer.py"))
@@ -19,8 +20,6 @@ elif os.name == 'nt':
     path="C:\Users\MJS\git\BA\code"
     nusmvpath = r"C:\NuSMV\2.5.4\bin\NuSMV.exe"                     # Samsung laptop
     #nusmvpath = "C:\Progra~2\NuSMV\2.5.4\bin\NuSMV.exe"            # Acer laptop
-
-CTLformulas = ["True", "False", "EFAG(gg=0)", "AFAG(gg=0)", "EFAG(gg=1)", "AFAG(gg=1)"]
 
 
 def filter_single_parameterSet_byCTL(container, parameterSet, CTLspec, search="exists"):
@@ -51,23 +50,36 @@ def filter_single_parameterSet_byCTL(container, parameterSet, CTLspec, search="e
         accepted = True
     return accepted
 
+
 if __name__=="__main__":
+    CTLformulas = ["EF(AG(gg=0))", "AF(AG(gg=0))", "EF(AG(gg=1))", "AF(AG(gg=1))"]
+
     allsetslist = cPickle.load(file("all_small_gps_encodings.pkl"))
     print len(allsetslist) #910890
     
+    shelvefilename = "small_gps_pass_test.db"
+    d = shelve.open(shelvefilename)    
+
     CTLspec = CTLformulas[0]
     
-    for code in allsetslist[:10]:
-        parameterset, IG = decode_gps_full(code)
-        mc = MC.ModelContainer()
-        mc.set_IG(IG)
-        # is this required?
-        mc.set_thresholds(dict((edge, 1) for edge in mc._IG.edges()))
-        mc.set_dynamics("asynchronous")
-        mc.set_initialStates()
-        print mc
-        print filter_single_parameterSet_byCTL(mc, parameterset, CTLspec, search="exists")
-
+    for i, code in enumerate(allsetslist[:100000]):
+        if not i%100: #
+            print i, "sets done"
+            tend = datetime.now()
+            print "total execution time:", tend-tstart
+        tmp = []
+        for CTLspec in CTLformulas:
+            parameterset, IG = decode_gps_full(code)
+            mc = MC.ModelContainer()
+            mc.set_IG(IG)
+            mc.set_thresholds(dict((edge, 1) for edge in mc._IG.edges()))
+            mc.set_dynamics("asynchronous")
+            mc.set_initialStates()
+            
+            accepted = filter_single_parameterSet_byCTL(mc, parameterset, CTLspec, search="exists")
+            #if accepted: print "accepted:", code
+            tmp.append(accepted*1)
+        d[code] = tmp
     tend = datetime.now()
     print "total execution time:", tend-tstart
     print "done."

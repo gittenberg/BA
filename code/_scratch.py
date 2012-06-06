@@ -1,11 +1,7 @@
-from datetime import datetime
-tstart = datetime.now()
+import shelve
 
-import cPickle
+shelvefilename = "small_gps_pass_test.db"
+d = shelve.open(shelvefilename)    
 
-allsetslist = cPickle.load(file("all_small_gps_encodings.pkl"))
-
-print "hi."
-
-tend = datetime.now()
-print "total execution time:", tend-tstart
+for x in d:
+    print x, d[x]
