@@ -62,11 +62,15 @@ if __name__=="__main__":
 
     CTLspec = CTLformulas[0]
     
-    for i, code in enumerate(allsetslist[:300000]):
+    setstocheck = 300000
+    start = 0
+    
+    for i, code in enumerate(allsetslist[start:start+setstocheck]):
         if not i%100: #
             print i, "sets done"
             tend = datetime.now()
             print "total execution time:", tend-tstart
+            print "expected finishing time:", tstart + (tend - tstart) * i / setstocheck
         tmp = []
         for CTLspec in CTLformulas:
             parameterset, IG = decode_gps_full(code)
