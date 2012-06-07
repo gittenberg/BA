@@ -62,7 +62,7 @@ if __name__=="__main__":
 
     CTLspec = CTLformulas[0]
     
-    for i, code in enumerate(allsetslist[:100000]):
+    for i, code in enumerate(allsetslist[:300000]):
         if not i%100: #
             print i, "sets done"
             tend = datetime.now()
