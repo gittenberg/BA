@@ -66,11 +66,11 @@ if __name__=="__main__":
     start = 0
     
     for i, code in enumerate(allsetslist[start:start+setstocheck]):
-        if not i%100: #
+        if not i%100 and i!=0:
             print i, "sets done"
             tend = datetime.now()
-            print "total execution time:", tend-tstart
-            print "expected finishing time:", tstart + (tend - tstart) * (setstocheck - i) / setstocheck
+            print "total execution time:", tend - tstart
+            print "expected finishing time:", tstart + (tend - tstart) * setstocheck / i
         tmp = []
         for CTLspec in CTLformulas:
             parameterset, IG = decode_gps_full(code)
