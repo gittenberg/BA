@@ -70,7 +70,7 @@ if __name__=="__main__":
             print i, "sets done"
             tend = datetime.now()
             print "total execution time:", tend-tstart
-            print "expected finishing time:", tstart + (tend - tstart) * i / setstocheck
+            print "expected finishing time:", tstart + (tend - tstart) * (setstocheck - i) / setstocheck
         tmp = []
         for CTLspec in CTLformulas:
             parameterset, IG = decode_gps_full(code)
