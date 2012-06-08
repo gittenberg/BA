@@ -63,7 +63,7 @@ if __name__=="__main__":
     CTLspec = CTLformulas[0]
     
     setstocheck = 300000
-    start = 0
+    start = 100000
     
     for i, code in enumerate(allsetslist[start:start+setstocheck]):
         if not i%100 and i!=0:
