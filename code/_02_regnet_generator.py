@@ -19,8 +19,7 @@ elif os.name=='nt':
     path = "C:\Users\MJS\git\BA\code"
     nusmvpath = r"C:\NuSMV\2.5.4\bin\NuSMV.exe"                  # Samsung laptop
     #nusmvpath = "C:\Progra~2\NuSMV\2.5.4\bin\NuSMV.exe"         # Acer laptop
-
-
+    
 def dict_to_model(net, add_morphogene=True):
     ''' Convert single net in networkx format to model in ModelContainer format '''
     #print "converting to model:", net, "."

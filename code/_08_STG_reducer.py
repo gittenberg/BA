@@ -3,7 +3,7 @@ networks with three nodes (by default with morphogene) and generates:
 
 d: a shelve object which contains nwkey:[all codes of gps of subgraphs for all
    three combinations of morphogenes]
-split_gps_store: a dict which contains nwkey:[number of gps, 
+small_gps_codes: a dict which contains nwkey:[number of gps, 
    cumulative number of gps, number of sub-gps in nwkey]
    
 WARNING: the full script ran 12 h 43 min last time on gaia35
@@ -23,6 +23,7 @@ def reduced_lps(parset, is_m1_in, is_m2_in, key):
     return dict((tuple(y for y in context if y != "m1" and y != "m2"), parset[key][context]) for context in parset[key].keys() if key != "rr" or ("m1" in context) == is_m1_in and ("m2" in context) == is_m2_in)
 
 def subparset(parset, is_m1_in, is_m2_in):
+    ''' returns the sub-parameter dict obtained from parset by restricting to activity subsets of m1 and m2 '''
     return dict((key, reduced_lps(parset, is_m1_in, is_m2_in, key)) for key in parset.keys() if key!="m1" and key!="m2")
     
 
@@ -45,7 +46,7 @@ if __name__=='__main__':
     picklename = "connected_unique_networks_three_nodes_"+mode+".db"
     networks = cPickle.load(file(picklename))
     print "found", len(networks), "networks."
-    split_gps_store = dict() # will be {nwkey:[encoding_of_split_gps1, ..., encoding_of_split_gps3]}
+    small_gps_codes = dict() # will be {nwkey:[encoding_of_split_gps1, ..., encoding_of_split_gps3]}
     
     allsubgpss = set()
     for nwkey in networks:
@@ -71,14 +72,14 @@ if __name__=='__main__':
             #print encode_gps(gps)
         allsubgpss = allsubgpss.union(thesesubgpss)
         print "unique small gps to date:", len(allsubgpss)
-        split_gps_store[nwkey] = [npsc, pstotal, len(allsubgpss)]
+        small_gps_codes[nwkey] = [npsc, pstotal, len(allsubgpss)]
         d[str(nwkey)] = thesesubgpss
         tend = datetime.now()
         print "total execution time:", tend-tstart
 
     d.close()    
-    picklename = "split_gps_store.full.pkl"
+    picklename = "small_gps_codes.full.pkl"
     print "pickling results to:", picklename
-    cPickle.dump(split_gps_store, file(picklename, "w"))
+    cPickle.dump(small_gps_codes, file(picklename, "w"))
     print "done."
     

@@ -1,7 +1,11 @@
 import shelve
 
-shelvefilename = "small_gps_pass_test.db"
+shelvefilename = "small_gps_pass_test.01.db"
 d = shelve.open(shelvefilename)    
 
-for x in d:
-    print x, d[x]
+print len(d)
+
+print "\n".join(d.keys()[:10])
+
+#for x in d:
+#    print x, d[x]
