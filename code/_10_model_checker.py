@@ -55,15 +55,16 @@ if __name__=="__main__":
     CTLformulas = ["EF(AG(gg=0))", "AF(AG(gg=0))", "EF(AG(gg=1))", "AF(AG(gg=1))"]
 
     allsetslist = cPickle.load(file("all_small_gps_encodings.pkl"))
-    print len(allsetslist) #910890
+    lenallsets = len(allsetslist) 
+    print lenallsets #910890
     
     shelvefilename = "small_gps_pass_test.db"
     d = shelve.open(shelvefilename)    
 
     CTLspec = CTLformulas[0]
     
-    setstocheck = 300000
-    start = 400000
+    start = 700000
+    setstocheck = lenallsets - start
     
     for i, code in enumerate(allsetslist[start:start+setstocheck]):
         if not i%100 and i!=0:
