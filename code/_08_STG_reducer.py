@@ -7,7 +7,7 @@ small_gps_codes: a dict which contains nwkey:[number of gps,
    cumulative number of gps, number of sub-gps in nwkey]
    
 WARNING: the full script ran 12 h 43 min last time on gaia35
-before encode_gps_full was used.
+even before encode_gps_full was used.
 '''
 
 from datetime import datetime
