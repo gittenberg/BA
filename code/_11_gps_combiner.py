@@ -8,11 +8,6 @@ from _03_database_functions import encode_gps_full
 from _08_STG_reducer import subparset
 
 
-def combine_truth_values(*args):
-    ll = len(args[0])
-    return [all([arg[i] for arg in args])*1 for i in range(ll)]
-
-
 if __name__=='__main__':
     mode = "with_morphogene"
     picklename = "connected_unique_networks_three_nodes_"+mode+".db"
@@ -32,14 +27,14 @@ if __name__=='__main__':
     pss = shelve.open(passing_sets_shelvename)
 
     networks = cPickle.load(file(picklename))
-    tocheck = len(networks)
+    tocheck = 3000 #tocheck = len(networks)
     print "found", tocheck, "networks."
     
     pstotal = 0
     current = 0
     for nwkey in networks:
         current += 1
-        if nwkey<1000 or nwkey>=3000: continue # enable for quick check
+        if nwkey<3000 or nwkey>=6000: continue # enable for quick check
         print "===================================================================================="
         print "considering nwkey:", nwkey
         
