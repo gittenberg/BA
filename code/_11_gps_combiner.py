@@ -27,7 +27,7 @@ if __name__=='__main__':
     pss = shelve.open(passing_sets_shelvename)
 
     networks = cPickle.load(file(picklename))
-    tocheck = 3000 #tocheck = len(networks)
+    tocheck = 6000 #tocheck = len(networks)
     print "found", tocheck, "networks."
     
     pstotal = 0
