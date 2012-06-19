@@ -23,7 +23,7 @@ elif os.name == 'nt':
 
 
 def filter_single_parameterSet_byCTL(container, parameterSet, CTLspec, search="exists"):
-    '''Adds indices to _filteredParametersIndexList for parameterSets that do not satisfy the CTL formula for all states (search="forAll") or for at least one state (search="exists").'''
+    '''returns Boolean whether parameterSet satisfies CTLspec for all states (search="forAll") or for at least one state (search="exists").'''
     SMVpath = os.path.join(os.getcwd(), "temp.smv")
     if search == "exists":
         validation = "is false"
@@ -35,7 +35,7 @@ def filter_single_parameterSet_byCTL(container, parameterSet, CTLspec, search="e
         raise Exception("search should be exist or forAll!")
 
     accepted = False
-    fileString = LFG.generate_smv(mc, parameterSet, formula)
+    fileString = LFG.generate_smv(container, parameterSet, formula)
         
     tempFile = open("temp.smv", "w")
     tempFile.write(fileString)
@@ -73,6 +73,7 @@ if __name__=="__main__":
             print "total execution time:", tend - tstart
             print "expected finishing time:", tstart + (tend - tstart) * setstocheck / i
         tmp = []
+        # TODO: is this doing 4 times more than it should (can the loop be moved before accepted)?
         for CTLspec in CTLformulas:
             parameterset, IG = decode_gps_full(code)
             mc = MC.ModelContainer()
@@ -84,8 +85,6 @@ if __name__=="__main__":
             accepted = filter_single_parameterSet_byCTL(mc, parameterset, CTLspec, search="exists")
             #if accepted: print "accepted:", code
             tmp.append(accepted*1)
-        if tmp[0]!=tmp[1] or tmp[2]!=tmp[3]:
-            print tmp
         d[code] = tmp
         
     d.close()
