@@ -27,7 +27,7 @@ if __name__=='__main__':
     pss = shelve.open(passing_sets_shelvename)
 
     networks = cPickle.load(file(picklename))
-    tocheck = 6000 #tocheck = len(networks)
+    tocheck = 4000 #tocheck = len(networks)
     print "found", tocheck, "networks."
     
     pstotal = 0
@@ -35,7 +35,7 @@ if __name__=='__main__':
     for nwkey in networks:
         current += 1
         #if nwkey>=2: continue # enable for quick check
-        if nwkey<12000: continue # enable for quick check
+        if nwkey<12000 or nwkey>=16000: continue # enable for quick check
         print "===================================================================================="
         print "considering nwkey:", nwkey
         
