@@ -58,7 +58,7 @@ if __name__=="__main__":
     lenallsets = len(allsetslist) 
     print lenallsets #910890
     
-    shelvefilename = "small_gps_pass_test.db"
+    shelvefilename = "small_gps_pass_test.test.db"
     d = shelve.open(shelvefilename)    
 
     CTLspec = CTLformulas[0]
@@ -84,7 +84,11 @@ if __name__=="__main__":
             accepted = filter_single_parameterSet_byCTL(mc, parameterset, CTLspec, search="exists")
             #if accepted: print "accepted:", code
             tmp.append(accepted*1)
+        if tmp[0]!=tmp[1] or tmp[2]!=tmp[3]:
+            print tmp
         d[code] = tmp
+        
+    d.close()
     tend = datetime.now()
     print "total execution time:", tend-tstart
     print "done."

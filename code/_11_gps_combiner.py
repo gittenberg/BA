@@ -34,7 +34,8 @@ if __name__=='__main__':
     current = 0
     for nwkey in networks:
         current += 1
-        if nwkey<6000 or nwkey>=12000: continue # enable for quick check
+        #if nwkey>=2: continue # enable for quick check
+        if nwkey<12000: continue # enable for quick check
         print "===================================================================================="
         print "considering nwkey:", nwkey
         
