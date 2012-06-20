@@ -8,8 +8,13 @@ for key in d.keys()[200:220]:
     print key, d[key]
 '''
 
-pssname = "combined_results.db"
+#pssname = "passing_sets.db"
+#pssname = "combined_results.db"
+pssname = "small_gps_pass_test_AL.db"
 d = shelve.open(pssname)
 
-print d.keys()    
-print d.values()    
+for key in d:
+    print key, d[key]
+#print len(d)
+#print d.keys()    
+#print d.values()    

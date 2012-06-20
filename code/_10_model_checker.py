@@ -61,8 +61,6 @@ if __name__=="__main__":
     shelvefilename = "small_gps_pass_test.test.db"
     d = shelve.open(shelvefilename)    
 
-    #CTLspec = CTLformulas[0]
-    
     start = 700000
     setstocheck = lenallsets - start
     
