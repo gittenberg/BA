@@ -27,7 +27,7 @@ if __name__=='__main__':
         tocheck = int(sys.argv[2])
 
     # main loop
-    print "considering networks from", start_nwkey, "to", start_nwkey+tocheck, "."
+    print "considering networks from", start_nwkey, "to", start_nwkey+tocheck-1, "."
     current = 0
     pstotal = 0
     for nwkey in networks:

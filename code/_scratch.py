@@ -1,20 +1,23 @@
 import shelve
-import sys
+from operator import itemgetter
 
-for i, arg in enumerate(sys.argv): 
-    print i, arg
-    
+resultsdict = "combined_results_AL.db"
+resultslist = []
 
-#pssname = "passing_sets.db"
-#pssname = "combined_results.db"
-pssname = "small_gps_pass_test_AL.db"
-d = shelve.open(pssname)
+d = shelve.open(resultsdict)
 
 for key in d:
-    #print key, d[key]
-    pass
-print len(d)
-'''
-#print d.keys()    
-#print d.values()    
-'''
+    thiskeylist = [int(key)] + d[key]
+    resultslist.append(thiskeylist)
+
+#sortkey = lambda elem: elem[3]
+
+resultslist = sorted(resultslist, key=itemgetter(3, 1), reverse=True)
+
+start = 6000
+range = 1000
+
+for i, elem in enumerate(resultslist):
+    if i<=start or i>=start+range: continue
+    print i, elem
+
