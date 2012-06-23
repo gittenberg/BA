@@ -1,26 +1,17 @@
 
-import networkx as nx
+import cPickle
 
-G=nx.DiGraph()
-G.add_edges_from([(1,2),(1,3)])
+iso_classes_name = "isomorphy_classes_without_morphogene.db"
+isoclasses = cPickle.load(file(iso_classes_name))
 
-print G.edges()
+def lookup_iso_rep(number):
+    for isoclass in isoclasses:
+        if number in isoclasses[isoclass]:
+            return isoclass
+    # only executed if never found:
+    print "isomorphism representative not found!"
+    return -1
 
-for line in nx.generate_edgelist(G, data=False):
-    print line
-    
-    
-Gstring = "_".join(nx.generate_edgelist(G, data=False))
-
-print Gstring
-
-lines = Gstring.split("_")
-print lines
-
-H=nx.DiGraph()
-H.add_edges_from(nx.parse_edgelist(lines, nodetype = int).edges())
-#H = nx.parse_edgelist(lines, nodetype = int)
-print H.edges()
-
-print nx.is_isomorphic(H, G)
-print H==G
+numbers = [7747, 7423, 18343, 12007, 14284]
+for number in numbers:
+    print number, lookup_iso_rep(number)
