@@ -20,8 +20,8 @@ elif os.name=='nt':
     nusmvpath = r"C:\NuSMV\2.5.4\bin\NuSMV.exe"                  # Samsung laptop
     #nusmvpath = "C:\Progra~2\NuSMV\2.5.4\bin\NuSMV.exe"         # Acer laptop
     
-def dict_to_model(net, add_morphogene=True):
-    ''' Convert single net in networkx format to model in ModelContainer format '''
+def dict_to_model(net, thresholds=None, add_morphogene=True):
+    ''' Convert single net in dict format to model in ModelContainer format '''
     #print "converting to model:", net, "."
     # first set up the internal graph:
     morphogene_interactions = {("m1","m1"):"+", ("m1","rr"):"+", ("m2","m2"):"+", ("m2","rr"):"+"}
@@ -37,8 +37,14 @@ def dict_to_model(net, add_morphogene=True):
     mc = MC.ModelContainer()
     mc.set_IG(IG)
     mc.set_edgeLabels(labels)
-    thresholds = dict((edge, 1) for edge in edges)
-    mc.set_thresholds(thresholds) # all thresholds are set to 1
+    if not thresholds:
+        thresholds = dict((edge, 1) for edge in edges) # all thresholds are set to 1 unless stated otherwise
+    else:
+        thresholds[("m1","m1")] = 1
+        thresholds[("m1","rr")] = 1
+        thresholds[("m2","m2")] = 1
+        thresholds[("m2","rr")] = 1
+    mc.set_thresholds(thresholds) 
     #print mc._thresholds
     mc._NuSMVpath = nusmvpath
     mc.set_initialStates()
