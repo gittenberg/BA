@@ -56,7 +56,7 @@ def label_match(label1, label2):
     return label1==label2
     
     
-def check_isomorphism(networks, mode, tag_input_gene): # mode is just for filenames here... TODO: remove eventually
+def check_isomorphism(networks, mode, tag_input_gene, tag_output_gene): # mode is just for filenames here... TODO: remove eventually
     ''' check for isomorphism: loop through all pairs of networks and check for isomorphy '''
     ''' new, faster version'''
     print "checking networks for isomorphism..."
@@ -68,7 +68,14 @@ def check_isomorphism(networks, mode, tag_input_gene): # mode is just for filena
             graph.node[tag_input_gene] = 'input'
         match_fct = label_match
         print 'done.'
-    else:
+    if tag_output_gene:
+        # treat gene with label tag_output_gene gene differently than others (input gene)
+        print "labelling input genes in graphs...",
+        for graph in G.values():
+            graph.node[tag_output_gene] = 'output'
+        match_fct = label_match
+        print 'done.'
+    if not tag_input_gene and not tag_output_gene:
         match_fct = None
     
     isomorphy_classes = {}
@@ -154,11 +161,11 @@ if __name__ == '__main__':
     #networks = dict((k, networks[k]) for k in range(500)) # enable for quick check
     print "found", len(networks), "networks." # 3^9 = 19683 if unconstrained
 
-    #mode, tag_input_gene = "without_morphogene", None # >3000 # to compare with the paper
-    #mode, tag_input_gene = "with_morphogene", "rr"     # 9612 # Hannes's favourite
-    mode, tag_input_gene = "without_morphogene", "rr" # 9612   # Heike's favourite
+    #mode, tag_input_gene, tag_output_gene = "with_morphogene", "rr", None   # 9612   # Hannes's favourite
+    mode, tag_input_gene, tag_output_gene = "without_morphogene", "rr", None # 9612   # Heike's favourite
+    #mode, tag_input_gene, tag_output_gene = "without_morphogene_tagging_output", "rr", "gg" # looks like 19683 # CHECK
 
-    check_isomorphism(networks, mode, tag_input_gene) # takes 2 hrs
+    check_isomorphism(networks, mode, tag_input_gene, tag_output_gene) # takes 2 hrs
     unique_networks = cPickle.load(file("unique_networks_"+mode+".db"))
     print "found", len(unique_networks), "unique networks." 
     keep_only_three_genes(unique_networks, mode)
