@@ -20,7 +20,7 @@ elif os.name=='nt':
     nusmvpath = r"C:\NuSMV\2.5.4\bin\NuSMV.exe"                  # Samsung laptop
     #nusmvpath = "C:\Progra~2\NuSMV\2.5.4\bin\NuSMV.exe"         # Acer laptop
     
-def dict_to_model(net, thresholds=None, add_morphogene=True):
+def dict_to_model(net, add_morphogene=True, thresholds=None):
     ''' Convert single net in dict format to model in ModelContainer format '''
     #print "converting to model:", net, "."
     # first set up the internal graph:
@@ -55,8 +55,8 @@ def dict_to_model(net, thresholds=None, add_morphogene=True):
                                               takeMax=[],
                                               Bformulas=[],
                                               simplified=[],
-                                              extendedValueConstraints={'rr': {('m1', 'm2'): [1]}, 'bb':{}, 'gg':{}}),
-                                              #extendedValueConstraints={'rr': {('m1', 'm2'): [1]}}),
+                                              #extendedValueConstraints={'rr': {('m1', 'm2'): [1]}, 'bb':{}, 'gg':{}}),
+                                              extendedValueConstraints={'rr': {('m1', 'm2'): [1]}}),
                                               #extendedValueConstraints={}),
                     priorityClasses={},
                     priorityTypes={},
@@ -104,16 +104,14 @@ if __name__=='__main__':
     networks = cPickle.load(file(picklename))
     print "found", len(networks), "networks."
 
-    '''
     # only printing    
     for nwkey in networks:
-        mc = dict_to_model(networks[nwkey], add_morphogene)
-        print nwkey, ":", len(mc._psc), "parameter sets."
-        if not nwkey%10:
-            tend = datetime.now()
-            print "total execution time:", tend-tstart
-    '''    
-    #print "found", len(models_dict), "models."
+        if nwkey <= 10: # FIXME: for quick check
+            mc = dict_to_model(networks[nwkey], add_morphogene, thresholds=None)
+            print nwkey, ":", len(mc._psc), "parameter sets."
+            if not nwkey%10:
+                tend = datetime.now()
+                print "total execution time:", tend-tstart
     
     tend = datetime.now()
     print "total execution time:", tend-tstart

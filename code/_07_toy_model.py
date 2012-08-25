@@ -120,9 +120,7 @@ if __name__=='__main__':
             all_gps_codes.append(encode_gps(gps))
             print encode_gps(gps)
             #print decode_gps(encode_gps(gps, base=10), IG, base=10)
-            #print TS.TransitionSystem(mc, gps)
-            export_STG(mc, gps, filename=join("gml", str(nwkey).zfill(3)+"_"+encode_gps(gps, base=10)+".gml"), initialRules=None)
-            #pass
+            #export_STG(mc, gps, filename=join(str(nwkey).zfill(3)+"_"+encode_gps(gps, base=10)+".gml"), initialRules=None)
 
         #mc.export_commonSTG(Type="transitions", filename="A_commonSTG_transitions_strict.gml", initialRules=None)
 
