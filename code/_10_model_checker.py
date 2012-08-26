@@ -54,15 +54,15 @@ def filter_single_parameterSet_byCTL(container, parameterSet, CTLspec, search="e
 if __name__=="__main__":
     CTLformulas = ["EF(AG(gg=0))", "AF(AG(gg=0))", "EF(AG(gg=1))", "AF(AG(gg=1))"]
 
-    allsetslist = cPickle.load(file("all_small_gps_encodings.pkl"))
+    allsetslist = cPickle.load(file("all_small_gps_encodings_from_unconstrained_excluding_overregulated.pkl"))
     lenallsets = len(allsetslist) 
-    print lenallsets #910890
+    print lenallsets #910890 (old) /318796 (new)
     
-    shelvefilename = "small_gps_pass_test.test.db"
+    shelvefilename = "small_gps_pass_test_from_unconstrained_without_overregulated.db"
     d = shelve.open(shelvefilename)    
 
-    start = 700000
-    setstocheck = lenallsets - start
+    start = 0
+    setstocheck = 100
     
     for i, code in enumerate(allsetslist[start:start+setstocheck]):
         if not i%100 and i!=0:

@@ -39,7 +39,7 @@ if __name__=='__main__':
     
     pstotal = 0
     graphcount = 0
-    shelvefilename = "unique_small_gps_codes.db"
+    shelvefilename = "unique_small_gps_codes_from_unconstrained_excluding_overregulated.db"
     d = shelve.open(shelvefilename)    
     combis = [(False, False), (True, False), (False, True)] # low, medium, high
     
@@ -50,10 +50,15 @@ if __name__=='__main__':
     
     allsubgpss = set()
     for nwkey in networks:
-        #if nwkey >= 2: continue # enable for quick check
+        #if nwkey < 2: continue # enable for quick check
+        if networks[nwkey][('bb', 'rr')]!='0' and networks[nwkey][('gg', 'rr')]!='0' and networks[nwkey][('rr', 'rr')]!='0': 
+            print "network", nwkey, "is overregulated, skipping."
+            continue # we skip if rr is overregulated (too slow)
+            # it takes 3:30 hrs on the laptop with this
         print "===================================================================================="
         print "considering nwkey:", nwkey
         #print networks[nwkey]
+        print networks[nwkey]
 
         mc = dict_to_model(networks[nwkey], add_morphogene)
         npsc = len(mc._psc)
@@ -62,11 +67,11 @@ if __name__=='__main__':
         print nwkey, ":", pstotal, "parameter sets in total."
         gpss = mc._psc.get_parameterSets()
         thesesubgpss = set()
-        #print "IG.edges() =", mc._IG.edges()
+        print "IG.edges() =", mc._IG.edges()
         for gps in gpss:
             for combi in combis:
                 #print subparset(gps, is_m1_in=combi[0], is_m2_in=combi[1])
-                subgps = encode_gps_full(subparset(gps, is_m1_in=combi[0], is_m2_in=combi[1]))
+                subgps = encode_gps_full(subparset(gps, is_m1_in=combi[0], is_m2_in=combi[1])) # full means include edges in the encoding
                 thesesubgpss.add(subgps)
             #print gps
             #print encode_gps(gps)
@@ -74,11 +79,12 @@ if __name__=='__main__':
         print "unique small gps to date:", len(allsubgpss)
         small_gps_codes[nwkey] = [npsc, pstotal, len(allsubgpss)]
         d[str(nwkey)] = thesesubgpss
+        # d[x] contains for network x for all gps for all regions the subgps
         tend = datetime.now()
         print "total execution time:", tend-tstart
 
     d.close()    
-    picklename = "small_gps_codes.full.pkl"
+    picklename = "small_gps_codes_from_unconstrained_excluding_overregulated.pkl"
     print "pickling results to:", picklename
     cPickle.dump(small_gps_codes, file(picklename, "w"))
     print "done."

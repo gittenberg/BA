@@ -42,8 +42,8 @@ def dict_to_model(net, add_morphogene=True, thresholds=None):
                                               takeMax=[],
                                               Bformulas=[],
                                               simplified=[],
-                                              extendedValueConstraints={'rr': {('m1', 'm2'): [1]}}),  # gibt 7 PS
-                                              #extendedValueConstraints={}),                           # gibt 9 PS
+                                              #extendedValueConstraints={'rr': {('m1', 'm2'): [1]}}),  # gibt 7 PS
+                                              extendedValueConstraints={}),                           # gibt 9 PS
                     priorityClasses={},
                     priorityTypes={},
                     dynamics="asynchronous",
@@ -57,7 +57,7 @@ def dict_to_model(net, add_morphogene=True, thresholds=None):
     return mc
 
 ##########################################
-net = {('rr', 'bb'):'+', ('bb', 'rr'):'+'}
+net = {('rr', 'bb'):'+', ('bb', 'rr'):'-'}
 
 mc = dict_to_model(net)
 
