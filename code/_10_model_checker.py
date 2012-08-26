@@ -62,7 +62,7 @@ if __name__=="__main__":
     d = shelve.open(shelvefilename)    
 
     start = 0
-    setstocheck = 100
+    setstocheck = lenallsets
     
     for i, code in enumerate(allsetslist[start:start+setstocheck]):
         if not i%100 and i!=0:
