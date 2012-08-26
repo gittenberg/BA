@@ -67,7 +67,7 @@ if __name__=='__main__':
         print nwkey, ":", pstotal, "parameter sets in total."
         gpss = mc._psc.get_parameterSets()
         thesesubgpss = set()
-        print "IG.edges() =", mc._IG.edges()
+        #print "IG.edges() =", mc._IG.edges()
         for gps in gpss:
             for combi in combis:
                 #print subparset(gps, is_m1_in=combi[0], is_m2_in=combi[1])

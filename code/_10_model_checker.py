@@ -72,15 +72,15 @@ if __name__=="__main__":
             print "expected finishing time:", tstart + (tend - tstart) * setstocheck / i
         tmp = []
         # TODO: is this doing 4 times more than it should (can the loop be moved before accepted)?
+        parameterset, IG = decode_gps_full(code)
+        mc = MC.ModelContainer()
+        mc.set_IG(IG)
+        mc.set_thresholds(dict((edge, 1) for edge in mc._IG.edges()))
+        mc.set_dynamics("asynchronous")
+        mc.set_initialStates()
         for CTLspec in CTLformulas:
-            parameterset, IG = decode_gps_full(code)
-            mc = MC.ModelContainer()
-            mc.set_IG(IG)
-            mc.set_thresholds(dict((edge, 1) for edge in mc._IG.edges()))
-            mc.set_dynamics("asynchronous")
-            mc.set_initialStates()
-            
-            accepted = filter_single_parameterSet_byCTL(mc, parameterset, CTLspec, search="exists")
+            mccopy = mc
+            accepted = filter_single_parameterSet_byCTL(mccopy, parameterset, CTLspec, search="exists")
             #if accepted: print "accepted:", code
             tmp.append(accepted*1)
         d[code] = tmp
