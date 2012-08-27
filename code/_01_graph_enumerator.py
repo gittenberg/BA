@@ -56,7 +56,7 @@ def label_match(label1, label2):
     return label1==label2
     
     
-def check_isomorphism(networks, mode, tag_input_gene, tag_output_gene): # mode is just for filenames here... TODO: remove eventually
+def check_isomorphism(networks, mode, tag_input_gene=True, tag_output_gene=False): # mode is just for filenames here... TODO: remove eventually
     ''' check for isomorphism: loop through all pairs of networks and check for isomorphy '''
     ''' new, faster version'''
     print "checking networks for isomorphism..."
@@ -80,11 +80,16 @@ def check_isomorphism(networks, mode, tag_input_gene, tag_output_gene): # mode i
     
     isomorphy_classes = {}
     for netID in networks.keys():
+        found = False
         for isomorphy_class in isomorphy_classes.values():
             if nx.is_isomorphic(G[netID], G[isomorphy_class[0]], node_match=match_fct, edge_match=label_match): # we found an isomorphism
                 isomorphy_classes[isomorphy_class[0]].append(netID) # compare with first member of isomorphy class
+                found = True
+                print "found isomorphy class for netID:", netID, "."
                 break # quit looping over isomorphy classes, continue with networks
-        else: # if break was not hit, we found no isomorphy class
+        # FIXME: check the indentation here!!!
+        # in theory the break throws us here
+        if not found: # if break was not hit, we found no isomorphy class
             isomorphy_classes[netID] = [netID] # create new isomorphy class
             print "creating new isomorphy class for netID:", netID, "."
     tend = datetime.now()
@@ -122,36 +127,34 @@ def convert_graph_to_dict(G, addzeros=False):
     return dict(zip(es, ls))
 
 
-def filter_disconnected(unique_networks, mode):
-    ''' remove networks with fewer than 3 nodes and unconnected'''
-    print "filtering disconnected networks..."
-    G = convert_dict_to_graphs(unique_networks, addzeros=False)
+def filter_disconnected(networks, mode):
+    ''' remove unconnected networks and empty network'''
+    print "filtering disconnected on a set of", len(networks), "networks."
+    G = convert_dict_to_graphs(networks, addzeros=False)
     for netID in G:
         if len(G[netID].nodes())==0 or not nx.is_connected(G[netID].to_undirected()):
             print netID, "not connected: removing."
-            del unique_networks[netID]
-
-    picklename = "connected_unique_networks_three_nodes_"+mode+".db"
+            del networks[netID]
+    picklename = "connected_networks_"+mode+".db"
     backup(picklename)
-    print "pickling", len(unique_networks), "connected unique networks to", picklename, "."
-    cPickle.dump(unique_networks, file(picklename, "w"))
+    print "pickling", len(networks), "connected networks to", picklename, "."
+    cPickle.dump(networks, file(picklename, "w"))
     print "done."
 
 
-def keep_only_three_genes(unique_networks, mode):
+def keep_only_three_genes(networks, mode):
     ''' remove networks with fewer than 3 nodes and unconnected'''
-    print "filtering disconnected networks..."
-    G = convert_dict_to_graphs(unique_networks, addzeros=False)
+    print "keeping three-node networks on a set of", len(networks), "networks."
+    G = convert_dict_to_graphs(networks, addzeros=False)
     for netID in G:
         if not len(G[netID].nodes())==3:
             print netID, "contains only", len(G[netID].nodes()), "node(s): removing."
-            del unique_networks[netID]
+            del networks[netID]
             continue
-
-    picklename = "connected_unique_networks_three_nodes_"+mode+".db"
+    picklename = "networks_three_nodes_"+mode+".db"
     backup(picklename)
-    print "pickling", len(unique_networks), "connected unique networks to", picklename, "."
-    cPickle.dump(unique_networks, file(picklename, "w"))
+    print "pickling", len(networks), "networks with three nodes to", picklename, "."
+    cPickle.dump(networks, file(picklename, "w"))
     print "done."
 
 
@@ -165,11 +168,14 @@ if __name__ == '__main__':
     mode, tag_input_gene, tag_output_gene = "without_morphogene", "rr", None # 9612   # Heike's favourite
     #mode, tag_input_gene, tag_output_gene = "without_morphogene_tagging_output", "rr", "gg" # looks like 19683 # CHECK
 
-    check_isomorphism(networks, mode, tag_input_gene, tag_output_gene) # takes 2 hrs
-    unique_networks = cPickle.load(file("unique_networks_"+mode+".db"))
-    print "found", len(unique_networks), "unique networks." 
-    keep_only_three_genes(unique_networks, mode)
-    filter_disconnected(unique_networks, mode)
+    #unique_networks = cPickle.load(file("unique_networks_"+mode+".db"))
+    keep_only_three_genes(networks, mode)
     
-    picklename = "connected_unique_networks_three_nodes_"+mode+".db"
-    networks = cPickle.load(file(picklename))
+    three_gene_networks = cPickle.load(file("networks_three_nodes_"+mode+".db"))
+    
+    filter_disconnected(three_gene_networks, mode)
+    networks = cPickle.load(file("connected_networks_"+mode+".db"))
+    check_isomorphism(networks, mode, tag_input_gene, tag_output_gene) # takes 2 hrs
+
+    #picklename = "connected_unique_networks_three_nodes_"+mode+".db"
+    #networks = cPickle.load(file(picklename))

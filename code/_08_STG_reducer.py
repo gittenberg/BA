@@ -51,6 +51,7 @@ if __name__=='__main__':
     allsubgpss = set()
     for nwkey in networks:
         #if nwkey < 2: continue # enable for quick check
+        # the following is the special reduction, keep if valueConstraint is not meaningful
         if networks[nwkey][('bb', 'rr')]!='0' and networks[nwkey][('gg', 'rr')]!='0' and networks[nwkey][('rr', 'rr')]!='0': 
             print "network", nwkey, "is overregulated, skipping."
             continue # we skip if rr is overregulated (too slow)
