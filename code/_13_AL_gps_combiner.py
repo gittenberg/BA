@@ -10,9 +10,9 @@ from _08_STG_reducer import subparset
 
 if __name__=='__main__':
     combis = [(False, False), (True, False), (False, True)] # low, medium, high
-    small_gps_pass_shelvename = "small_gps_pass_test_AL.db"
+    small_gps_pass_shelvename = "small_gps_pass_test_AL_from_unconstrained_without_overregulated.db"
     d = shelve.open(small_gps_pass_shelvename)    
-    combined_results_shelvename = "combined_results_AL.db"
+    combined_results_shelvename = "combined_results_AL_from_unconstrained_without_overregulated.db"
     crs = shelve.open(combined_results_shelvename)
     picklename = "connected_unique_networks_three_nodes_with_morphogene.db"
     networks = cPickle.load(file(picklename))

@@ -19,4 +19,4 @@ for key in d.keys():
 allsetslist = list(allsets)
 allsetslist.sort() # in-place sorting
 
-cPickle.dump(allsetslist, file("all_small_gps_encodings_from_unconstrained_excluding_overregulated.pkl", "w"))
+cPickle.dump(allsetslist, file("all_small_gps_encodings_from_unconstrained_without_overregulated.pkl", "w"))
