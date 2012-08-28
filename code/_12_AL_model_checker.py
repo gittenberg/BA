@@ -25,11 +25,11 @@ def filter_byAL(container, parameterSet, ALformula):
 if __name__=="__main__":
     ALformulas = ["?(outside: outside.frozen(gg)&outside.max(gg)=0)", "?(inside: inside.frozen(gg)&inside.min(gg)=1)",
                   "?(instable: !instable.frozen(gg))"]
-    allsetslist = cPickle.load(file("all_small_gps_encodings.pkl"))
+    allsetslist = cPickle.load(file("all_small_gps_encodings_from_unconstrained_without_overregulated.pkl"))
     lenallsets = len(allsetslist) 
     print lenallsets #910890
     
-    shelvefilename = "small_gps_pass_test_AL.db"
+    shelvefilename = "small_gps_pass_test_AL_from_unconstrained_without_overregulated.db"
     d = shelve.open(shelvefilename)    
 
     start = 0
