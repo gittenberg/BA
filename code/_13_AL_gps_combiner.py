@@ -17,6 +17,9 @@ if __name__=='__main__':
     picklename = "connected_unique_networks_three_nodes_with_morphogene.db"
     networks = cPickle.load(file(picklename))
 
+    start_nwkey = 0
+    tocheck = len(networks)
+    '''
     if not sys.argv[1]:
         start_nwkey = 0
     else:
@@ -25,12 +28,16 @@ if __name__=='__main__':
         tocheck = 1000 #tocheck = len(networks)
     else:
         tocheck = int(sys.argv[2])
-
+    '''
+    
     # main loop
     print "considering networks from", start_nwkey, "to", start_nwkey+tocheck-1, "."
     current = 0
     pstotal = 0
     for nwkey in networks:
+        if networks[nwkey][('bb', 'rr')]!='0' and networks[nwkey][('gg', 'rr')]!='0' and networks[nwkey][('rr', 'rr')]!='0': 
+            print "network", nwkey, "is overregulated, skipping."
+            continue # we skip if rr is overregulated (too slow)
         current += 1
         if nwkey<start_nwkey or nwkey>=start_nwkey+tocheck: continue
         print "===================================================================================="
