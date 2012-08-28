@@ -10,7 +10,6 @@ from _08_STG_reducer import subparset
 
 if __name__=='__main__':
     mode = "with_morphogene"
-    picklename = "connected_unique_networks_three_nodes_"+mode+".db"
     if mode=="with_morphogene":
         add_morphogene=True
     elif mode=="without_morphogene":
@@ -26,6 +25,7 @@ if __name__=='__main__':
     passing_sets_shelvename = "passing_sets_from_unconstrained_without_overregulated.db"
     pss = shelve.open(passing_sets_shelvename)
 
+    picklename = "connected_unique_networks_three_nodes_"+mode+".db"
     networks = cPickle.load(file(picklename))
     tocheck = len(networks) # tocheck = 4000 #
     print "found", tocheck, "networks."
@@ -33,6 +33,9 @@ if __name__=='__main__':
     pstotal = 0
     current = 0
     for nwkey in networks:
+        if networks[nwkey][('bb', 'rr')]!='0' and networks[nwkey][('gg', 'rr')]!='0' and networks[nwkey][('rr', 'rr')]!='0': 
+            print "network", nwkey, "is overregulated, skipping."
+            continue # we skip if rr is overregulated (too slow)
         current += 1
         #if nwkey>=2: continue # enable for quick check
         #if nwkey<12000 or nwkey>=16000: continue
