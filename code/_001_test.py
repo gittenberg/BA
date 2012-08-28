@@ -12,9 +12,23 @@ shelvefilename = "unique_small_gps_codes_from_unconstrained_excluding_overregula
 d = shelve.open(shelvefilename)    
 #print d.keys()
 print d["4"]
-print len(d["1"])/3
+
 for key in d.keys():
     #print key
     pass
 
 print len(d.keys())
+
+####################################################
+
+shelvefilename = "small_gps_pass_test_from_unconstrained_without_overregulated.db"
+d = shelve.open(shelvefilename)    
+
+print len(d.keys())
+
+#print d.keys()
+#print d["4"]
+
+for key in d.keys()[:100]:
+    print key
+    #pass
