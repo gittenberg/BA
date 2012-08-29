@@ -33,6 +33,7 @@ if __name__=='__main__':
     pstotal = 0
     current = 0
     for nwkey in networks:
+        # disable this to keep overregulated networks
         if networks[nwkey][('bb', 'rr')]!='0' and networks[nwkey][('gg', 'rr')]!='0' and networks[nwkey][('rr', 'rr')]!='0': 
             print "network", nwkey, "is overregulated, skipping."
             continue # we skip if rr is overregulated (too slow)
