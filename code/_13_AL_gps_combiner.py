@@ -9,8 +9,10 @@ from _03_database_functions import encode_gps_full
 from _08_STG_reducer import subparset
 
 if __name__=='__main__':
+    print "--------------------------------------------------------------------"
+    print "running _13_AL_gps_combiner.py"
     combis = [(False, False), (True, False), (False, True)] # low, medium, high
-    small_gps_pass_shelvename = "small_gps_pass_test_AL_from_unconstrained_without_overregulated.db"
+    small_gps_pass_shelvename = "_12_small_gps_pass_test_AL_from_unconstrained_without_overregulated.db"
     d = shelve.open(small_gps_pass_shelvename)    
     combined_results_shelvename = "_13_combined_results_AL_from_unconstrained_without_overregulated.db"
     crs = shelve.open(combined_results_shelvename)
