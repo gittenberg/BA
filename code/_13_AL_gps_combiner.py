@@ -12,9 +12,11 @@ if __name__=='__main__':
     print "--------------------------------------------------------------------"
     print "running _13_AL_gps_combiner.py"
     combis = [(False, False), (True, False), (False, True)] # low, medium, high
-    small_gps_pass_shelvename = "_12_small_gps_pass_test_AL_from_unconstrained_without_overregulated.db"
+    small_gps_pass_shelvename = "_12_small_gps_pass_test_AL.db"
+    #small_gps_pass_shelvename = "_12_small_gps_pass_test_AL_from_unconstrained_without_overregulated.db"
     d = shelve.open(small_gps_pass_shelvename)    
-    combined_results_shelvename = "_13_combined_results_AL_from_unconstrained_without_overregulated.db"
+    combined_results_shelvename = "_13_combined_results_AL.db"
+    #combined_results_shelvename = "_13_combined_results_AL_from_unconstrained_without_overregulated.db"
     crs = shelve.open(combined_results_shelvename)
     picklename = "connected_unique_networks_three_nodes_with_morphogene.db"
     networks = cPickle.load(file(picklename))
@@ -37,10 +39,12 @@ if __name__=='__main__':
     current = 0
     pstotal = 0
     for nwkey in networks:
-        # disable this to keep overregulated networks
-        if networks[nwkey][('bb', 'rr')]!='0' and networks[nwkey][('gg', 'rr')]!='0' and networks[nwkey][('rr', 'rr')]!='0': 
-            print "network", nwkey, "is overregulated, skipping."
-            continue # we skip if rr is overregulated (too slow)
+        #print "===================================================================================="
+        #print nwkey, networks[nwkey]
+        ## disable following to keep overregulated networks
+        #if networks[nwkey][('bb', 'rr')]!='0' and networks[nwkey][('gg', 'rr')]!='0' and networks[nwkey][('rr', 'rr')]!='0': 
+        #    print "network", nwkey, "is overregulated, skipping."
+        #    continue # we skip if rr is overregulated (too slow)
         current += 1
         if nwkey<start_nwkey or nwkey>=start_nwkey+tocheck: continue
         print "===================================================================================="

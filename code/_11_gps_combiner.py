@@ -20,9 +20,9 @@ if __name__=='__main__':
     combis = [(False, False), (True, False), (False, True)] # low, medium, high
     small_gps_pass_shelvename = "small_gps_pass_test_from_unconstrained_without_overregulated.db"
     d = shelve.open(small_gps_pass_shelvename)    
-    combined_results_shelvename = "combined_results_from_unconstrained_without_overregulated.db"
+    combined_results_shelvename = "_11_combined_results_from_unconstrained_without_overregulated.db"
     crs = shelve.open(combined_results_shelvename)
-    passing_sets_shelvename = "passing_sets_from_unconstrained_without_overregulated.db"
+    passing_sets_shelvename = "_11_passing_sets_from_unconstrained_without_overregulated.db"
     pss = shelve.open(passing_sets_shelvename)
 
     picklename = "connected_unique_networks_three_nodes_"+mode+".db"
