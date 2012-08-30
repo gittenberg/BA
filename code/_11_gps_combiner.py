@@ -18,11 +18,14 @@ if __name__=='__main__':
         print "warning: morphogene mode not set."
     
     combis = [(False, False), (True, False), (False, True)] # low, medium, high
-    small_gps_pass_shelvename = "small_gps_pass_test_from_unconstrained_without_overregulated.db"
+    #small_gps_pass_shelvename = "small_gps_pass_test_from_unconstrained_without_overregulated.db"
+    small_gps_pass_shelvename = "_10_small_gps_pass_test.db"
     d = shelve.open(small_gps_pass_shelvename)    
-    combined_results_shelvename = "_11_combined_results_from_unconstrained_without_overregulated.db"
+    #combined_results_shelvename = "_11_combined_results_from_unconstrained_without_overregulated.db"
+    combined_results_shelvename = "_11_combined_results.db"
     crs = shelve.open(combined_results_shelvename)
-    passing_sets_shelvename = "_11_passing_sets_from_unconstrained_without_overregulated.db"
+    #passing_sets_shelvename = "_11_passing_sets_from_unconstrained_without_overregulated.db"
+    passing_sets_shelvename = "_11_passing_sets.db"
     pss = shelve.open(passing_sets_shelvename)
 
     picklename = "connected_unique_networks_three_nodes_"+mode+".db"
@@ -33,10 +36,10 @@ if __name__=='__main__':
     pstotal = 0
     current = 0
     for nwkey in networks:
-        # disable this to keep overregulated networks
-        if networks[nwkey][('bb', 'rr')]!='0' and networks[nwkey][('gg', 'rr')]!='0' and networks[nwkey][('rr', 'rr')]!='0': 
-            print "network", nwkey, "is overregulated, skipping."
-            continue # we skip if rr is overregulated (too slow)
+        ## disable this to keep overregulated networks
+        #if networks[nwkey][('bb', 'rr')]!='0' and networks[nwkey][('gg', 'rr')]!='0' and networks[nwkey][('rr', 'rr')]!='0': 
+        #    print "network", nwkey, "is overregulated, skipping."
+        #    continue # we skip if rr is overregulated (too slow)
         current += 1
         #if nwkey>=2: continue # enable for quick check
         #if nwkey<12000 or nwkey>=16000: continue

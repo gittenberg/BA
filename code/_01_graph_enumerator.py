@@ -176,6 +176,3 @@ if __name__ == '__main__':
     filter_disconnected(three_gene_networks, mode)
     networks = cPickle.load(file("connected_networks_"+mode+".db"))
     check_isomorphism(networks, mode, tag_input_gene, tag_output_gene) # takes 2 hrs
-
-    #picklename = "connected_unique_networks_three_nodes_"+mode+".db"
-    #networks = cPickle.load(file(picklename))

@@ -100,7 +100,7 @@ if __name__=='__main__':
     else:
         print "warning: morphogene mode not set."
 
-    picklename = "connected_unique_networks_three_nodes_"+mode+".db"
+    picklename = "connected_unique_networks_three_nodes_"+mode+".db" # heisst jetzt anders
     networks = cPickle.load(file(picklename))
     print "found", len(networks), "networks."
 

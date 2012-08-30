@@ -71,7 +71,6 @@ if __name__=="__main__":
             print "total execution time:", tend - tstart
             print "expected finishing time:", tstart + (tend - tstart) * setstocheck / i
         tmp = []
-        # TODO: is this doing 4 times more than it should (can the loop be moved before accepted)?
         parameterset, IG = decode_gps_full(code)
         mc = MC.ModelContainer()
         mc.set_IG(IG)

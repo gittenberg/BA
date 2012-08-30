@@ -43,6 +43,7 @@ if __name__=='__main__':
     d = shelve.open(shelvefilename)    
     combis = [(False, False), (True, False), (False, True)] # low, medium, high
     
+    #picklename = "unique_networks_"+mode+".db"
     picklename = "connected_unique_networks_three_nodes_"+mode+".db"
     networks = cPickle.load(file(picklename))
     print "found", len(networks), "networks."
