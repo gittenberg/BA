@@ -27,7 +27,7 @@ if __name__=="__main__":
                   "?(instable: !instable.frozen(gg))"]
     allsetslist = cPickle.load(file("all_small_gps_encodings_from_unconstrained_without_overregulated.pkl"))
     lenallsets = len(allsetslist) 
-    print lenallsets #910890 (old)/318796 (new)
+    print "found", lenallsets, "sets" #910890 (old)/318796 (new)
     
     shelvefilename = "_12_small_gps_pass_test_AL_from_unconstrained_without_overregulated.db"
     d = shelve.open(shelvefilename)    
