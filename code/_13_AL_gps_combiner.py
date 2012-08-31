@@ -12,6 +12,9 @@ if __name__=='__main__':
     mode = "with_morphogene"
     add_morphogene = True
 
+    non = sorted(cPickle.load(open("_000_not_overregulated_networks.pkl")))
+    print "there are", len(non), "not overregulated networks."
+    
     print "--------------------------------------------------------------------"
     print "running _13_AL_gps_combiner.py"
     combis = [(False, False), (True, False), (False, True)] # low, medium, high
@@ -49,10 +52,13 @@ if __name__=='__main__':
         #print nwkey, networks[nwkey]
         # disable following to keep overregulated networks
         if networks[nwkey][('bb', 'rr')]!='0' and networks[nwkey][('gg', 'rr')]!='0' and networks[nwkey][('rr', 'rr')]!='0': 
+            if nwkey in non:
+                print "i am making a mistake at", nwkey
+                sys.exit()
             print "network", nwkey, "is overregulated, skipping."
             continue # we skip if rr is overregulated (too slow)
         current += 1
-        if nwkey<start_nwkey or nwkey>=start_nwkey+tocheck: continue
+        #if nwkey<start_nwkey or nwkey>=start_nwkey+tocheck: continue
         print "===================================================================================="
         print "considering nwkey:", nwkey
         mc = dict_to_model(networks[nwkey], add_morphogene)
@@ -79,4 +85,5 @@ if __name__=='__main__':
     
     d.close()
     crs.close()
+    print "wrote", len(crs), "objects to", combined_results_shelvename, "."
     print "done."
