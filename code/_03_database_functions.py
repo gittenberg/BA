@@ -209,6 +209,7 @@ def encode_gps_full(gps, base=10):
         n = len(contexts)
         preds = sorted(list(set().union(*contexts)))
         edges += [(pred, node) for pred in preds]
+        #print node
         lps = gps[node]
         #print "lps (from encode_gps):", lps
         

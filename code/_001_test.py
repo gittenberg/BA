@@ -110,7 +110,7 @@ print len(combiresults) # 6642
 
 ####################################################
 
-shelvefilename = "passing_sets.db"
+shelvefilename = "_11_passing_sets.db"
 combiresults = shelve.open(shelvefilename)    
 
 print shelvefilename
@@ -118,11 +118,11 @@ print len(combiresults) # ???
 
 ####################################################
 
-shelvefilename = "passing_sets_from_unconstrained_without_overregulated.db"
+shelvefilename = "_11_passing_sets_from_unconstrained_without_overregulated.db"
 combiresults = shelve.open(shelvefilename)    
 
 print shelvefilename
-print len(combiresults) # ???
+print len(combiresults) # 6642
 
 ####################################################
 
@@ -160,7 +160,7 @@ for key in d.keys()[:5]:
 
 ####################################################
 
-shelvefilename = "small_gps_pass_test_from_unconstrained_without_overregulated.db"
+shelvefilename = "_10_small_gps_pass_test_from_unconstrained_without_overregulated.db"
 d = shelve.open(shelvefilename)    
 
 print shelvefilename
@@ -187,7 +187,7 @@ for key in d.keys()[:5]:
 
 ####################################################
 
-shelvefilename = "small_gps_pass_test.db"
+shelvefilename = "_10_small_gps_pass_test.db"
 d = shelve.open(shelvefilename)    
 
 print shelvefilename

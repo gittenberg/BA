@@ -58,7 +58,8 @@ if __name__=="__main__":
     lenallsets = len(allsetslist) 
     print lenallsets #910890 (old) /318796 (new)
     
-    shelvefilename = "small_gps_pass_test_from_unconstrained_without_overregulated.db"
+    shelvefilename = "_10_small_gps_pass_test_from_unconstrained_without_overregulated.db"
+    #shelvefilename = "_10_small_gps_pass_test.db"
     d = shelve.open(shelvefilename)    
 
     start = 0

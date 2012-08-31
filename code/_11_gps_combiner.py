@@ -1,45 +1,58 @@
 from datetime import datetime
 tstart = datetime.now()
 
+import sys
 import cPickle
 import shelve
 from _02_regnet_generator import dict_to_model
 from _03_database_functions import encode_gps_full
 from _08_STG_reducer import subparset
 
-
 if __name__=='__main__':
     mode = "with_morphogene"
-    if mode=="with_morphogene":
-        add_morphogene=True
-    elif mode=="without_morphogene":
-        add_morphogene=False
-    else:
-        print "warning: morphogene mode not set."
-    
+    add_morphogene = True
+
+    print "--------------------------------------------------------------------"
+    print "running _11_gps_combiner.py"
     combis = [(False, False), (True, False), (False, True)] # low, medium, high
-    #small_gps_pass_shelvename = "small_gps_pass_test_from_unconstrained_without_overregulated.db"
-    small_gps_pass_shelvename = "_10_small_gps_pass_test.db"
+
+    small_gps_pass_shelvename = "_10_small_gps_pass_test_from_unconstrained_without_overregulated.db"
+    #small_gps_pass_shelvename = "_10_small_gps_pass_test.db"
     d = shelve.open(small_gps_pass_shelvename)    
-    #combined_results_shelvename = "_11_combined_results_from_unconstrained_without_overregulated.db"
-    combined_results_shelvename = "_11_combined_results.db"
+
+    combined_results_shelvename = "_11_combined_results_from_unconstrained_without_overregulated.db"
+    #combined_results_shelvename = "_11_combined_results.db"
     crs = shelve.open(combined_results_shelvename)
-    #passing_sets_shelvename = "_11_passing_sets_from_unconstrained_without_overregulated.db"
-    passing_sets_shelvename = "_11_passing_sets.db"
+
+    passing_sets_shelvename = "_11_passing_sets_from_unconstrained_without_overregulated.db"
+    #passing_sets_shelvename = "_11_passing_sets.db"
     pss = shelve.open(passing_sets_shelvename)
 
-    picklename = "connected_unique_networks_three_nodes_"+mode+".db"
+    #picklename = "connected_unique_networks_three_nodes_"+mode+".db" # heisst jetzt vermutlich anders
+    picklename = "unique_networks_"+mode+".db"
     networks = cPickle.load(file(picklename))
+    start_nwkey = 0
     tocheck = len(networks) # tocheck = 4000 #
-    print "found", tocheck, "networks."
+    '''
+    if not sys.argv[1]:
+        start_nwkey = 0
+    else:
+        start_nwkey = int(sys.argv[1])
+    if not sys.argv[2]:
+        tocheck = 1000 #tocheck = len(networks)
+    else:
+        tocheck = int(sys.argv[2])
+    '''
     
+    # main loop
+    print "considering networks from", start_nwkey, "to", start_nwkey+tocheck-1, "."
     pstotal = 0
     current = 0
     for nwkey in networks:
-        ## disable this to keep overregulated networks
-        #if networks[nwkey][('bb', 'rr')]!='0' and networks[nwkey][('gg', 'rr')]!='0' and networks[nwkey][('rr', 'rr')]!='0': 
-        #    print "network", nwkey, "is overregulated, skipping."
-        #    continue # we skip if rr is overregulated (too slow)
+        # disable this to keep overregulated networks
+        if networks[nwkey][('bb', 'rr')]!='0' and networks[nwkey][('gg', 'rr')]!='0' and networks[nwkey][('rr', 'rr')]!='0': 
+            print "network", nwkey, "is overregulated, skipping."
+            continue # we skip if rr is overregulated (too slow)
         current += 1
         #if nwkey>=2: continue # enable for quick check
         #if nwkey<12000 or nwkey>=16000: continue
@@ -77,7 +90,7 @@ if __name__=='__main__':
                 #subgps[combi] = encode_gps_full(subparset(gps, is_m1_in=combi[0], is_m2_in=combi[1]))
                 #print combi, subgps[combi], d[subgps[combi]]
         results = [count_exists, count_forall, npsc, count_exists*1.0/npsc, count_forall*1.0/npsc]
-        print results
+        print "results =", results
         crs[str(nwkey)] = results
         passing_sets = [pss_exists, pss_forall]
         #print passing_sets

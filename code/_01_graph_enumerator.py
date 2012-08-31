@@ -164,8 +164,7 @@ if __name__ == '__main__':
     #networks = dict((k, networks[k]) for k in range(500)) # enable for quick check
     print "found", len(networks), "networks." # 3^9 = 19683 if unconstrained
 
-    #mode, tag_input_gene, tag_output_gene = "with_morphogene", "rr", None   # 9612   # Hannes's favourite
-    mode, tag_input_gene, tag_output_gene = "without_morphogene", "rr", None # 9612   # Heike's favourite
+    mode, tag_input_gene, tag_output_gene = "with_morphogene", "rr", None # 9612
     #mode, tag_input_gene, tag_output_gene = "without_morphogene_tagging_output", "rr", "gg" # looks like 19683 # CHECK
 
     #unique_networks = cPickle.load(file("unique_networks_"+mode+".db"))

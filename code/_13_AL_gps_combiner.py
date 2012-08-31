@@ -9,15 +9,21 @@ from _03_database_functions import encode_gps_full
 from _08_STG_reducer import subparset
 
 if __name__=='__main__':
+    mode = "with_morphogene"
+    add_morphogene = True
+
     print "--------------------------------------------------------------------"
     print "running _13_AL_gps_combiner.py"
     combis = [(False, False), (True, False), (False, True)] # low, medium, high
+
     #small_gps_pass_shelvename = "_12_small_gps_pass_test_AL.db"
     small_gps_pass_shelvename = "_12_small_gps_pass_test_AL_from_unconstrained_without_overregulated.db"
     d = shelve.open(small_gps_pass_shelvename)    
+
     #combined_results_shelvename = "_13_combined_results_AL.db"
     combined_results_shelvename = "_13_combined_results_AL_from_unconstrained_without_overregulated.db"
     crs = shelve.open(combined_results_shelvename)
+
     picklename = "connected_unique_networks_three_nodes_with_morphogene.db"
     networks = cPickle.load(file(picklename))
 
@@ -41,15 +47,15 @@ if __name__=='__main__':
     for nwkey in networks:
         #print "===================================================================================="
         #print nwkey, networks[nwkey]
-        ## disable following to keep overregulated networks
-        #if networks[nwkey][('bb', 'rr')]!='0' and networks[nwkey][('gg', 'rr')]!='0' and networks[nwkey][('rr', 'rr')]!='0': 
-        #    print "network", nwkey, "is overregulated, skipping."
-        #    continue # we skip if rr is overregulated (too slow)
+        # disable following to keep overregulated networks
+        if networks[nwkey][('bb', 'rr')]!='0' and networks[nwkey][('gg', 'rr')]!='0' and networks[nwkey][('rr', 'rr')]!='0': 
+            print "network", nwkey, "is overregulated, skipping."
+            continue # we skip if rr is overregulated (too slow)
         current += 1
         if nwkey<start_nwkey or nwkey>=start_nwkey+tocheck: continue
         print "===================================================================================="
         print "considering nwkey:", nwkey
-        mc = dict_to_model(networks[nwkey], add_morphogene=True)
+        mc = dict_to_model(networks[nwkey], add_morphogene)
         npsc = len(mc._psc)
         print nwkey, ":", npsc, "parameter sets."
         pstotal += npsc
