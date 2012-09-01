@@ -96,7 +96,7 @@ shelvefilename = "_13_combined_results_AL_from_unconstrained_without_overregulat
 combiresults = shelve.open(shelvefilename)    
 
 print shelvefilename
-print len(combiresults) # 4812??? # TODO:check by independent method!!
+print len(combiresults) # 6642
 # of these, the overregulated are excluded
 
 ####################################################
