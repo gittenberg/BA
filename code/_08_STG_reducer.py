@@ -20,6 +20,7 @@ from _03_database_functions import encode_gps_full
 
 
 def reduced_lps(parset, is_m1_in, is_m2_in, key):
+    ''' returns the local parameter set at key obtained from parset by restricting to activity subsets of m1 and m2 '''
     return dict((tuple(y for y in context if y != "m1" and y != "m2"), parset[key][context]) for context in parset[key].keys() if key != "rr" or ("m1" in context) == is_m1_in and ("m2" in context) == is_m2_in)
 
 def subparset(parset, is_m1_in, is_m2_in):

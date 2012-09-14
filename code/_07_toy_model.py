@@ -13,6 +13,14 @@ MC = imp.load_source("MC", os.path.join("ModelContainer.py"))
 TS = imp.load_source("TS", os.path.join("TransitionSystem.py"))
 
 
+def reduced_lps(parset, is_m1_in, key):
+    return dict((tuple(y for y in context if y != "m1"), parset[key][context]) for context in parset[key].keys() if key != "rr" or ("m1" in context) == is_m1_in)
+
+def subparset(parset, is_m1_in):
+    ''' returns the sub-parameter dict obtained from parset by restricting to activity subsets of m1'''
+    return dict((key, reduced_lps(parset, is_m1_in, key)) for key in parset.keys() if key!="m1")
+    
+
 if __name__=='__main__':
 
     if os.name != 'nt':
@@ -26,7 +34,13 @@ if __name__=='__main__':
         #nusmvpath = "C:\Progra~2\NuSMV\2.5.4\bin\NuSMV.exe"            # Acer laptop
 
     # setup objects
+    # EITHER:
+    #add_morphogene = True
+    #labels = ["+", "-"]
+
+    # OR:
     add_morphogene = False
+    labels = ["free"]
     
     if add_morphogene:
         mode_token = 'with_morphogene'
@@ -34,13 +48,11 @@ if __name__=='__main__':
         mode_token = 'without_morphogene'
     dbname = 'filter_results_toy_model_'+mode_token+'.db'
     verbose = True
-    morphogene_interactions = {("m1","m1"):"+", ("m1","aa"):"+"}
+    morphogene_interactions = {("m1","m1"):"+", ("m1","rr"):"+"}
     networks = dict()
-    #labels = ["+", "-"]
-    labels = ["free"]
-    #edges = [('aa', 'bb'), ('bb', 'aa')] 
-    edges = [('aa', 'bb'), ('bb', 'aa'), ('aa', 'aa')]
-    #edges = [('aa', 'bb'), ('bb', 'aa'), ('aa', 'aa'), ('bb', 'bb')]
+    #edges = [('rr', 'bb'), ('bb', 'rr')] 
+    edges = [('rr', 'bb'), ('bb', 'rr'), ('rr', 'rr')]
+    #edges = [('rr', 'bb'), ('bb', 'rr'), ('rr', 'rr'), ('bb', 'bb')]
     all_gps_codes = []
     
     def generate_networks(edges, add_morphogene):
@@ -90,6 +102,7 @@ if __name__=='__main__':
         nodes[nwkey] = lpss.keys()
         preds = dict([(node, IG.predecessors(node)) for node in nodes[nwkey]]) # dict containing node:[preds of node]
 
+        '''
         print "===================================================================================="
         print "Database operations"
 
@@ -106,9 +119,10 @@ if __name__=='__main__':
         # write global parameter sets to database
         gpss = mc._psc.get_parameterSets()
         insert_global_parameter_sets(con, nwkey, gpss, verbose)
+        '''
         
         print "===================================================================================="
-        print "Exporting .gml..."
+        #print "Exporting .gml..."
         mc.initializePSC()
         print "number of parameter sets:", len(mc._psc)
         #mc._psc.reject([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])
@@ -118,12 +132,17 @@ if __name__=='__main__':
             #print gps
             print strictest_labels(edges, [gps])
             all_gps_codes.append(encode_gps(gps))
+            print gps
             print encode_gps(gps)
             #print decode_gps(encode_gps(gps, base=10), IG, base=10)
-            #export_STG(mc, gps, filename=join(str(nwkey).zfill(3)+"_"+encode_gps(gps, base=10)+".gml"), initialRules=None)
-
-        #mc.export_commonSTG(Type="transitions", filename="A_commonSTG_transitions_strict.gml", initialRules=None)
-
+            export_STG(mc, gps, filename=join(str(nwkey).zfill(3)+"_"+encode_gps(gps, base=10)+".gml"), initialRules=None)
+            
+            subgps_0 = subparset(gps, False)
+            print "strictest labels m1=0:", strictest_labels([('rr', 'rr'), ('rr', 'bb'), ('bb', 'rr')], [subgps_0])
+            
+            subgps_1 = subparset(gps, True)
+            print "strictest labels m1=1:", strictest_labels([('rr', 'rr'), ('rr', 'bb'), ('bb', 'rr')], [subgps_1])
+            
     con.commit()
     con.close()
     

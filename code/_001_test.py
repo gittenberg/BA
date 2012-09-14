@@ -2,6 +2,57 @@ import cPickle, shelve
 
 ####################################################
 
+shelvefilename = "_12_small_gps_pass_test_AL_from_unconstrained_without_overregulated.db"
+d = shelve.open(shelvefilename)    
+
+print shelvefilename
+print len(d) # 318796
+
+for key in d.keys()[:5]:
+    #print key
+    pass
+
+####################################################
+
+shelvefilename = "_10_small_gps_pass_test_from_unconstrained_without_overregulated.db"
+d = shelve.open(shelvefilename)    
+
+print shelvefilename
+print len(d.keys()) # 318796
+
+#print d.keys()
+print d.values()[22]
+
+for key in d.keys()[:5]:
+    #print key
+    pass
+
+####################################################
+
+shelvefilename = "_12_small_gps_pass_test_AL.db"
+d = shelve.open(shelvefilename)    
+
+print shelvefilename
+print len(d) # 910890
+
+for key in d.keys()[:5]:
+    #print key
+    pass
+
+####################################################
+
+shelvefilename = "_10_small_gps_pass_test.db"
+d = shelve.open(shelvefilename)    
+
+print shelvefilename
+print len(d) # 910890
+
+for key in d.keys()[:5]:
+    #print key
+    pass
+
+####################################################
+
 shelvename = "unique_small_gps_codes_from_unconstrained_excluding_overregulated.db"
 bla = shelve.open(shelvename)    
 
@@ -145,55 +196,4 @@ d = shelve.open(shelvefilename)
 print d["4"]
 
 print len(d.keys()) # 9612
-
-####################################################
-
-shelvefilename = "_12_small_gps_pass_test_AL_from_unconstrained_without_overregulated.db"
-d = shelve.open(shelvefilename)    
-
-print shelvefilename
-print len(d) # 318796
-
-for key in d.keys()[:5]:
-    #print key
-    pass
-
-####################################################
-
-shelvefilename = "_10_small_gps_pass_test_from_unconstrained_without_overregulated.db"
-d = shelve.open(shelvefilename)    
-
-print shelvefilename
-print len(d.keys()) # 318796
-
-#print d.keys()
-#print d["4"]
-
-for key in d.keys()[:5]:
-    #print key
-    pass
-
-####################################################
-
-shelvefilename = "_12_small_gps_pass_test_AL.db"
-d = shelve.open(shelvefilename)    
-
-print shelvefilename
-print len(d) # 910890
-
-for key in d.keys()[:5]:
-    #print key
-    pass
-
-####################################################
-
-shelvefilename = "_10_small_gps_pass_test.db"
-d = shelve.open(shelvefilename)    
-
-print shelvefilename
-print len(d) # 910890
-
-for key in d.keys()[:5]:
-    #print key
-    pass
 
