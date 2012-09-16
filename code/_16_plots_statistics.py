@@ -13,8 +13,8 @@ MC = imp.load_source("MC", os.path.join("ModelContainer.py"))
 #combined_results_shelvenames = ["_13_combined_results_AL_from_unconstrained_without_overregulated.db", "_11_combined_results_from_unconstrained_without_overregulated.db"]
 #combined_results_shelvenames = ["_13_combined_results_AL.db", "_11_combined_results.db"]
 #combined_results_shelvenames = ["_13_combined_results_AL.db"]
-combined_results_shelvenames = ["_11_combined_results.db"]
-#combined_results_shelvenames = ["_13_combined_results_AL.db", "_11_combined_results.db", "_13_combined_results_AL_from_unconstrained_without_overregulated.db", "_11_combined_results_from_unconstrained_without_overregulated.db"]
+#combined_results_shelvenames = ["_11_combined_results.db"]
+combined_results_shelvenames = ["_13_combined_results_AL.db", "_11_combined_results.db", "_13_combined_results_AL_from_unconstrained_without_overregulated.db", "_11_combined_results_from_unconstrained_without_overregulated.db"]
 
 picklename = "connected_unique_networks_three_nodes_with_morphogene.db"
 networks = cPickle.load(file(picklename))
@@ -48,15 +48,21 @@ def create_overall_statistics():
         print "using results from:", crsname
         crs = shelve.open(crsname)
         print len(crs)
-        ngpss = np.array([0]*len(crs.values()[0]))
+        size = len(crs['1']) # 5 or 3, this is how long the list crs[result] is
+        posfraction = (size+1)/2 # 3 or 2, this is where the fraction of passing sets are stored
+        ngpss = dict()
+        for i in range(1, 10):
+            ngpss[i] = np.array([0] * size)
         for result in crs:
-            if crs[result][3]==1:
+            if True: #crs[result][posfraction]>0.7:
                 nwkey = int(result)
                 networks[nwkey] = {edge:networks[nwkey][edge] for edge in networks[nwkey] if networks[nwkey][edge]!='0'}
                 #if networks[nwkey].has_key(('bb', 'gg')) and networks[nwkey].has_key(('rr', 'bb')):
-                if networks[nwkey].has_key(('bb', 'gg')):
-                    print result, crs[result]
-                    print networks[nwkey]
+                #if networks[nwkey].has_key(('bb', 'gg')):
+                    #print result, crs[result]
+                    #print networks[nwkey]
+                numedges = len(networks[nwkey])
+                ngpss[numedges] += crs[result]
                 '''
                 IG = nx.DiGraph()
                 IG.add_edges_from(networks[nwkey].keys())
@@ -75,8 +81,12 @@ def create_overall_statistics():
                 print "encoding the last gps to test_unregulated_gg.gml"
                 export_STG(mc, gps, filename="test_unregulated_gg.gml", initialRules=None)
                 '''
-            ngpss += crs[result]
-        print "total sum of results vector:", ngpss
+        print "========================================="
+        for i in range(1, 10):
+            print i, ngpss[i]
+            if ngpss[i][size/2]!=0:
+                print 1.0*ngpss[i][size/2-1]/ngpss[i][size/2]
+        print sum(ngpss[i] for i in range(1, 10))
     
 def special_example():
     for crsname in combined_results_shelvenames:
@@ -107,8 +117,17 @@ def special_example():
         print "encoding the last gps to test_unregulated_gg.gml"
         export_STG(mc, gps, filename="test_unregulated_gg.gml", initialRules=None)
     
-    
+def count_nonzeros(): 
+    for crsname in combined_results_shelvenames:
+        print "========================================="
+        print "using results from:", crsname
+        crs = shelve.open(crsname)
+        print len(crs)
+        print "zeros:", len({key:crs[key] for key in crs if crs[key][0]==0})
+        print "non-zeros:", len({key:crs[key] for key in crs if crs[key][0]!=0})
+
 if __name__=='__main__':
     #create_overall_plots()
     #create_overall_statistics()
-    special_example()
+    #special_example()
+    count_nonzeros()
