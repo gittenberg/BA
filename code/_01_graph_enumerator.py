@@ -168,10 +168,11 @@ if __name__ == '__main__':
     #mode, tag_input_gene, tag_output_gene = "without_morphogene_tagging_output", "rr", "gg" # looks like 19683 # CHECK
 
     #unique_networks = cPickle.load(file("unique_networks_"+mode+".db"))
+    filter_disconnected(networks, mode)
+    networks = cPickle.load(file("connected_networks_"+mode+".db"))
+
     keep_only_three_genes(networks, mode)
     
     three_gene_networks = cPickle.load(file("networks_three_nodes_"+mode+".db"))
     
-    filter_disconnected(three_gene_networks, mode)
-    networks = cPickle.load(file("connected_networks_"+mode+".db"))
     check_isomorphism(networks, mode, tag_input_gene, tag_output_gene) # takes 2 hrs
