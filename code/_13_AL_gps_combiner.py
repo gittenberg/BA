@@ -72,7 +72,7 @@ if __name__=='__main__':
         for gps in gpss:
             # decompose gps code into 3 small gps codes
             subgps = dict((combi, encode_gps_full(subparset(gps, is_m1_in=combi[0], is_m2_in=combi[1]))) for combi in combis)
-            accepted = d[subgps[combis[0]]][0] and d[subgps[combis[1]]][1] and d[subgps[combis[2]]][0]
+            accepted = d[subgps[combis[0]]][0] and d[subgps[combis[1]]][1] and d[subgps[combis[2]]][0] # d[][2] (the one with 'instable') is not used here
             #print accepted
             if accepted:
                 count_accepted += 1

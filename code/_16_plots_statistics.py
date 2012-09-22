@@ -1,3 +1,11 @@
+'''
+from matplotlib import rc
+rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
+## for Palatino and other serif fonts use:
+#rc('font',**{'family':'serif','serif':['Palatino']})
+rc('text', usetex=True)
+'''
+
 import imp
 import networkx as nx
 import numpy as np
@@ -127,7 +135,7 @@ def count_nonzeros():
         print "non-zeros:", len({key:crs[key] for key in crs if crs[key][0]!=0})
 
 if __name__=='__main__':
-    #create_overall_plots()
+    create_overall_plots()
     #create_overall_statistics()
     #special_example()
     count_nonzeros()

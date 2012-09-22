@@ -174,7 +174,7 @@ def decode_lps(preds, encoding, base=10):
     return decoding
 
 def encode_gps(gps, base=10):
-    "converts a global parameter set object into an integer representation"
+    "converts a global parameter set object into a string representation"
     gps_encoding = ""
     totallength = 0
     nodes = gps.keys()
@@ -198,7 +198,7 @@ def encode_gps(gps, base=10):
     return gps_encoding.zfill(totallength)
 
 def encode_gps_full(gps, base=10):
-    "converts a global parameter set object into an integer representation"
+    "converts a global parameter set object into a string representation"
     gps_encoding = ""
     totallength = 0
     nodes = gps.keys()

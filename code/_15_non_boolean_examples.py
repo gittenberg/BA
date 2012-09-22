@@ -41,6 +41,8 @@ for letter in 'A': # in C, unfortunately green is the input gene
     print len(mc._psc), "parameter sets."
 
     gpss = mc._psc.get_parameterSets()
+    countaccepted = 0
+    countrejected = 0
     for gps in gpss:
         #print gps
         subgps = dict((combi, encode_gps_full(subparset(gps, is_m1_in=combi[0], is_m2_in=combi[1]))) for combi in combis)
@@ -50,4 +52,10 @@ for letter in 'A': # in C, unfortunately green is the input gene
         if accepted:
             print "accepting:", gps
             export_STG(mc, gps, filename="_nonboolean_"+letter+"_"+encode_gps(gps, base=10)+".gml", initialRules=None)
-    
+            countaccepted += 1
+        else:
+            print "rejecting:", gps
+            countrejected += 1
+    print "accepted:", countaccepted
+    print "rejected:", countrejected
+        
