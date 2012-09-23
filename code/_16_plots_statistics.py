@@ -43,7 +43,7 @@ def create_overall_plots():
         x = [val[lastpos] for val in crs.values()]
         n, histbins, patches = pl.hist(x, bins=100, normed=0, histtype='stepfilled')
         pl.setp(patches, 'facecolor', 'g', 'alpha', 0.75)
-        pl.xlabel("Fraction of accepted networks")
+        pl.xlabel("Pass ratio")
         pl.ylabel("Number of networks (total ="+str(len(crs))+")")
         pl.xlim(xmin=0)
         pl.grid(True)
